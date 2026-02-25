@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents 第一个工作流教程，从零开始运行 do 流程，详解 7 个阶段的执行过程。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>第一个工作流：从零运行 do 流程 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / 第一个工作流
+        </div>
+        <h1 class="article-title">第一个工作流：从零运行 do 流程</h1>
+        <div class="article-meta">
+          <span>分类：起步</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#what-is-do">什么是 do 工作流</a></li>
+          <li><a href="#preparation">准备工作</a></li>
+          <li><a href="#demo">实际操作演示</a></li>
+          <li><a href="#stages">7 个阶段详细说明</a></li>
+          <li><a href="#input-output">每个阶段的输入输出</a></li>
+          <li><a href="#logs">查看执行日志与结果</a></li>
+          <li><a href="#faq">常见新手疑问</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="what-is-do">什么是 do 工作流</h2>
+        <p>do 工作流是 PinableAgents 中最核心也是最推荐的工作流。它的名字来源于"Do it right"的理念：与其快速写出代码再反复修补，不如在动手实现之前充分理解需求、探索代码库、明确架构方案，然后一次性高质量地交付。</p>
+        <p>do 工作流将一个功能开发任务分解为 7 个有序阶段，每个阶段由专门的智能体负责。这种分阶段的设计有几个核心优势：</p>
+        <ul>
+          <li><strong>降低风险</strong>：在实现之前充分理解需求和代码库，避免返工</li>
+          <li><strong>质量保证</strong>：每个阶段都有明确的交付物，可以在早期发现问题</li>
+          <li><strong>可追溯性</strong>：完整的执行日志让你可以回顾每个决策的依据</li>
+          <li><strong>一致性</strong>：标准化的流程确保每次交付的质量基线</li>
+        </ul>
+
+        <p>do 工作流适用于以下场景：</p>
+        <ul>
+          <li>新功能开发（小到一个 API 端点，大到一个完整模块）</li>
+          <li>现有功能的增强或修改</li>
+          <li>需要理解现有代码库后再修改的场景</li>
+          <li>任何需要"做对"而非"做快"的任务</li>
+        </ul>
+
+        <blockquote>
+          <p>如果你不确定应该用哪个工作流，就用 do。它是最通用、最安全的选择。</p>
+        </blockquote>
+
+        <h2 id="preparation">准备工作</h2>
+        <p>在运行第一个 do 工作流之前，请确认以下准备工作已完成：</p>
+
+        <h3>确认模块已启用</h3>
+        <p>do 工作流依赖 <code>do</code> 和 <code>essentials</code> 两个模块。运行以下命令检查模块状态：</p>
+        <pre><code># 查看已安装的模块
+pinable-agents modules list
+
+# 如果模块未安装，执行安装
+pinable-agents modules install do essentials
+
+# 确认工作流可用
+pinable-agents workflows list
+# 应该能看到 "do" 出现在列表中</code></pre>
+
+        <h3>确认 AI 后端可用</h3>
+        <p>do 工作流需要一个可用的 AI 后端来驱动智能体。运行诊断命令确认后端状态：</p>
+        <pre><code># 检查后端状态
+pinable-agents backend status
+
+# 如果使用 Claude 后端，确认 CLI 工具可用
+claude --version
+
+# 如果使用 Codex 后端
+codex --version</code></pre>
+
+        <h3>准备一个 Git 项目</h3>
+        <p>do 工作流需要在一个 Git 仓库中运行。如果你还没有测试项目，可以快速创建一个：</p>
+        <pre><code>mkdir ~/my-first-workflow && cd ~/my-first-workflow
+git init
+cat > main.go << 'EOF'
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, PinableAgents!")
+}
+EOF
+git add . && git commit -m "initial commit"</code></pre>
+
+        <h2 id="demo">实际操作演示</h2>
+        <p>现在让我们用 do 工作流完成一个简单但完整的功能开发任务。我们的目标是：为上面创建的 Go 项目添加一个 HTTP 服务器，提供一个 <code>/health</code> 健康检查端点。</p>
+
+        <h3>启动工作流</h3>
+        <p>在项目目录中运行以下命令：</p>
+        <pre><code>pinable-agents run do \
+  --task "添加一个 HTTP 健康检查端点 /health，返回 JSON 格式的服务状态" \
+  --backend claude \
+  --work-dir ~/my-first-workflow</code></pre>
+
+        <p>或者通过桌面端操作：打开 PinableAgents 桌面端，进入 Workflows 页面，选择"do"工作流，在任务描述框中输入需求，选择工作目录，然后点击"运行"。</p>
+
+        <h3>观察执行过程</h3>
+        <p>工作流启动后，你会看到控制台输出各阶段的执行状态。每个阶段开始时会显示阶段名称和负责的智能体，完成时会显示交付物摘要。整个过程通常需要 3-8 分钟，具体取决于任务复杂度和网络速度。</p>
+        <pre><code>[do] Starting workflow...
+[do] Stage 1/7: Discovery
+  Agent: code-explorer
+  Scanning project structure...
+  Found: 1 Go file, 1 commit
+  ✓ Discovery complete (12s)
+
+[do] Stage 2/7: Exploration
+  Agent: code-explorer
+  Analyzing main.go...
+  Mapping dependencies...
+  ✓ Exploration complete (8s)
+
+[do] Stage 3/7: Clarification
+  Agent: code-architect
+  Generating clarifying questions...
+  Auto-resolving based on context...
+  ✓ Clarification complete (6s)
+...</code></pre>
+
+        <h2 id="stages">7 个阶段详细说明</h2>
+
+        <h3>阶段一：Discovery（发现）</h3>
+        <p>由 <strong>code-explorer</strong> 智能体执行。这个阶段的目标是快速了解项目的整体结构和技术栈。智能体会扫描目录结构、识别编程语言和框架、查看关键配置文件（如 go.mod、package.json 等），并生成一份项目概览报告。</p>
+        <p>这个阶段不会深入阅读代码逻辑，而是建立一个"地图"，让后续阶段知道代码库的布局。对于大型项目，Discovery 阶段还会识别代码库的模块划分和入口点。</p>
+
+        <h3>阶段二：Exploration（探索）</h3>
+        <p>同样由 <strong>code-explorer</strong> 智能体执行。在 Discovery 建立整体地图后，Exploration 会深入到与当前任务相关的代码区域。智能体会阅读相关文件的具体实现，理解数据流和调用关系，标注可能受影响的代码路径。</p>
+        <p>这个阶段的产出是一份详细的代码分析报告，包括：现有代码的关键逻辑、与新功能相关的接口和数据结构、潜在的冲突点。</p>
+
+        <h3>阶段三：Clarification（澄清）</h3>
+        <p>由 <strong>code-architect</strong> 智能体执行。基于前两个阶段的发现，这个阶段会识别需求中的模糊点和隐含假设，生成一组澄清问题。在自动模式下，智能体会根据代码上下文和最佳实践自动回答这些问题；在交互模式下，这些问题会呈现给用户。</p>
+        <p>常见的澄清问题包括：错误处理策略、日志级别、是否需要认证、响应格式细节、性能要求等。</p>
+
+        <h3>阶段四：Architecture（架构）</h3>
+        <p>由 <strong>code-architect</strong> 智能体执行。这是整个工作流中最关键的阶段之一。智能体会根据需求理解和代码分析，设计实现方案。产出包括：需要修改的文件列表、新增的文件和接口、数据流设计、依赖变更。</p>
+        <p>架构方案遵循"最小变更原则"，即在满足需求的前提下，尽量减少对现有代码的改动。这个原则有助于降低引入缺陷的风险。</p>
+
+        <h3>阶段五：Implementation（实现）</h3>
+        <p>由 <strong>develop</strong> 智能体执行。这是实际编写代码的阶段。智能体会严格按照 Architecture 阶段的方案编写代码，包括新增文件、修改现有文件、更新依赖配置等。实现过程中会自动处理代码格式化、import 管理等细节。</p>
+        <p>Implementation 阶段会使用 Git worktree 在独立的工作目录中进行，确保主分支不受影响。所有变更在最终确认前都是隔离的。</p>
+
+        <h3>阶段六：Review（审查）</h3>
+        <p>由 <strong>code-reviewer</strong> 智能体执行。这个阶段对 Implementation 产生的所有代码变更进行审查。审查维度包括：代码正确性、风格一致性、错误处理完整性、安全隐患、性能影响、测试覆盖。</p>
+        <p>如果审查发现需要修改的问题，工作流会自动回到 Implementation 阶段进行修复，然后再次审查，直到所有问题都解决。</p>
+
+        <h3>阶段七：Summary（总结）</h3>
+        <p>由编排引擎自动生成。这个阶段汇总整个工作流的执行结果，包括：所有文件变更的 diff、架构决策的记录、审查通过的确认、建议的后续步骤（如是否需要手动测试特定场景）。</p>
+
+        <h2 id="input-output">每个阶段的输入输出</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>阶段</th>
+              <th>智能体</th>
+              <th>输入</th>
+              <th>输出</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Discovery</td>
+              <td>code-explorer</td>
+              <td>项目目录路径</td>
+              <td>项目结构概览、技术栈识别</td>
+            </tr>
+            <tr>
+              <td>Exploration</td>
+              <td>code-explorer</td>
+              <td>项目概览 + 任务描述</td>
+              <td>相关代码分析报告</td>
+            </tr>
+            <tr>
+              <td>Clarification</td>
+              <td>code-architect</td>
+              <td>代码分析 + 任务描述</td>
+              <td>澄清问题及其答案</td>
+            </tr>
+            <tr>
+              <td>Architecture</td>
+              <td>code-architect</td>
+              <td>完整上下文 + 澄清结果</td>
+              <td>实现方案文档</td>
+            </tr>
+            <tr>
+              <td>Implementation</td>
+              <td>develop</td>
+              <td>实现方案 + 代码库访问</td>
+              <td>代码变更（在 worktree 中）</td>
+            </tr>
+            <tr>
+              <td>Review</td>
+              <td>code-reviewer</td>
+              <td>代码变更 diff</td>
+              <td>审查报告 + 修复建议</td>
+            </tr>
+            <tr>
+              <td>Summary</td>
+              <td>编排引擎</td>
+              <td>所有阶段的产出</td>
+              <td>完整交付报告</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="logs">查看执行日志与结果</h2>
+        <p>每次工作流执行都会生成详细的日志，存储在工作目录下的 <code>.pinable-agents/logs/</code> 目录中。你可以通过以下方式查看：</p>
+
+        <h3>命令行查看</h3>
+        <pre><code># 查看最近一次执行的日志
+pinable-agents logs latest
+
+# 查看特定阶段的详细日志
+pinable-agents logs latest --stage discovery
+
+# 查看所有历史执行记录
+pinable-agents logs list
+
+# 以 JSON 格式导出日志（便于分析）
+pinable-agents logs export --format json --output report.json</code></pre>
+
+        <h3>桌面端查看</h3>
+        <p>在 PinableAgents 桌面端的 Workflows 页面，每次执行完成后会自动显示结果摘要。点击"查看详情"可以展开每个阶段的完整日志，包括智能体的思考过程和中间产物。</p>
+
+        <h3>日志文件结构</h3>
+        <pre><code>.pinable-agents/logs/
+├── 2026-02-25T10-30-00/
+│   ├── workflow.json       # 工作流元数据
+│   ├── discovery.md        # Discovery 阶段产出
+│   ├── exploration.md      # Exploration 阶段产出
+│   ├── clarification.md    # Clarification 阶段产出
+│   ├── architecture.md     # Architecture 阶段方案
+│   ├── implementation.diff # Implementation 阶段代码变更
+│   ├── review.md           # Review 阶段审查报告
+│   └── summary.md          # 完整交付总结
+└── latest -> 2026-02-25T10-30-00/</code></pre>
+
+        <h2 id="faq">常见新手疑问</h2>
+
+        <h3>工作流执行中断了怎么办？</h3>
+        <p>PinableAgents 支持断点续传。如果工作流因网络问题或其他原因中断，你可以使用 <code>pinable-agents resume</code> 命令从中断的阶段继续执行。所有已完成阶段的产出都会保留。</p>
+
+        <h3>我可以跳过某个阶段吗？</h3>
+        <p>在标准模式下不建议跳过任何阶段，因为每个阶段的产出是下一个阶段的输入。但如果你非常确定不需要某个阶段，可以使用 <code>--skip</code> 参数：</p>
+        <pre><code># 跳过 Clarification 阶段（不推荐）
+pinable-agents run do --task "..." --skip clarification</code></pre>
+
+        <h3>工作流修改的代码在哪里？</h3>
+        <p>do 工作流使用 Git worktree 在独立分支中进行代码修改。工作流完成后，你可以查看变更并决定是否合并到主分支：</p>
+        <pre><code># 查看工作流创建的分支
+git branch -a
+
+# 查看变更
+git diff main..pinable/do-latest
+
+# 合并变更
+git merge pinable/do-latest</code></pre>
+
+        <h3>一次只能运行一个工作流吗？</h3>
+        <p>是的，在同一个项目目录中，同一时间只能运行一个工作流实例。这是为了避免并发修改导致的代码冲突。如果你需要同时进行多个任务，建议在不同的项目目录或分支中分别运行。</p>
+
+        <h3>如何选择 AI 后端？</h3>
+        <p>不同后端各有优势。Claude 在代码理解和架构设计方面表现出色，适合 Discovery 到 Architecture 阶段；Codex 在代码生成方面效率高，适合 Implementation 阶段。你可以在 config.json 中为不同的智能体角色配置不同的后端。</p>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="/wiki.html">返回 Wiki</a>
+        <a class="btn btn-outline" href="system-requirements.html">下一篇 →</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

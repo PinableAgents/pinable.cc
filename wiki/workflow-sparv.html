@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents sparv 精确开发工作流详解，五阶段 Specify-Plan-Act-Review-Vault 流程、十项规格门禁、外部记忆 Vault 系统和跨会话上下文持久化。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>sparv 精确开发与外部记忆 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / sparv 精确开发与外部记忆
+        </div>
+        <h1 class="article-title">sparv 精确开发与外部记忆</h1>
+        <div class="article-meta">
+          <span>分类：工作流</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#overview">sparv 工作流概述</a></li>
+          <li><a href="#phase-specify">第一阶段：Specify（精确规格）</a></li>
+          <li><a href="#ten-point-gate">十项规格门禁详解</a></li>
+          <li><a href="#phase-plan">第二阶段：Plan（实施规划）</a></li>
+          <li><a href="#phase-act">第三阶段：Act（执行实现）</a></li>
+          <li><a href="#phase-review">第四阶段：Review（审查验证）</a></li>
+          <li><a href="#phase-vault">第五阶段：Vault（外部记忆持久化）</a></li>
+          <li><a href="#vault-system">Vault 系统深度解析</a></li>
+          <li><a href="#journal">统一日志机制</a></li>
+          <li><a href="#safety-protocols">安全协议：2-Action Saves 与 3-Failure Protocol</a></li>
+          <li><a href="#walkthrough">实战：构建 REST API 端点</a></li>
+          <li><a href="#cross-session">跨会话上下文维持</a></li>
+          <li><a href="#cli-reference">CLI 命令参考</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="overview">sparv 工作流概述</h2>
+        <p><code>sparv</code>（Specify-Plan-Act-Review-Vault）是 PinableAgents 中精确度最高的开发工作流。它的设计目标是"零歧义开发"——在编写第一行代码之前，确保需求规格已经精确到不留任何解释空间。sparv 的独特之处在于其<strong>外部记忆系统（Vault）</strong>，能够将开发过程中积累的知识、决策和上下文持久化存储，使智能体在跨会话、跨任务时能够调取历史上下文，避免重复探索和决策。</p>
+        <p>sparv 特别适合对精确度要求极高的场景：金融系统 API 开发、医疗数据处理管线、安全关键系统的变更等。在这些场景中，一个模糊的需求理解可能导致严重的线上事故，而 sparv 的十项规格门禁机制从源头消除了这种风险。</p>
+
+        <blockquote>
+          <p>sparv 的哲学是"慢即是快"。在 Specify 阶段多花 20% 的时间，能在整个开发周期节省 50% 的返工时间。Vault 系统进一步将这种投资的回报延伸到未来的每一个相关任务。</p>
+        </blockquote>
+
+        <h2 id="phase-specify">第一阶段：Specify（精确规格）</h2>
+        <p>Specify 阶段是 sparv 最核心的阶段，由 <strong>Specification Analyst</strong> 智能体负责。该阶段的目标是将用户的自然语言需求转化为形式化的规格文档，精确到每个字段的类型、每个接口的参数、每个错误码的含义。</p>
+
+        <h3>规格文档结构</h3>
+        <p>Specification Analyst 产出的规格文档遵循固定模板，包含以下部分：</p>
+        <ul>
+          <li><strong>功能概述</strong>：一段话描述功能的业务价值和技术范围</li>
+          <li><strong>API 契约</strong>：每个端点的路径、方法、请求参数、响应格式、错误码</li>
+          <li><strong>数据模型</strong>：每个字段的名称、类型、约束、默认值、索引需求</li>
+          <li><strong>状态机</strong>：如果涉及状态变更，绘制完整的状态转换图</li>
+          <li><strong>验收标准</strong>：可自动化验证的 Given-When-Then 格式测试场景</li>
+          <li><strong>非功能性约束</strong>：响应时间、并发容量、数据保留策略</li>
+        </ul>
+
+        <h2 id="ten-point-gate">十项规格门禁详解</h2>
+        <p>规格文档必须通过十项检查才能进入 Plan 阶段。每项检查为通过/不通过二元判定，所有十项均通过才能继续。</p>
+
+        <table>
+          <thead>
+            <tr><th>序号</th><th>检查项</th><th>判定标准</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>功能边界明确</td><td>规格文档明确列出了"包含"和"不包含"的范围</td></tr>
+            <tr><td>2</td><td>输入参数完整</td><td>每个接口的所有参数都有类型、约束和示例值</td></tr>
+            <tr><td>3</td><td>输出格式定义</td><td>成功和失败的响应格式均有明确定义</td></tr>
+            <tr><td>4</td><td>错误码覆盖</td><td>所有可预见的错误场景都有对应的错误码和描述</td></tr>
+            <tr><td>5</td><td>数据模型完整</td><td>每个字段都有类型、约束、索引和迁移策略</td></tr>
+            <tr><td>6</td><td>状态转换定义</td><td>所有有效的状态转换都有明确的触发条件和副作用</td></tr>
+            <tr><td>7</td><td>安全约束声明</td><td>认证、授权、输入验证和敏感数据处理策略已定义</td></tr>
+            <tr><td>8</td><td>性能基线设定</td><td>关键操作的响应时间和吞吐量有明确的 SLA</td></tr>
+            <tr><td>9</td><td>向后兼容评估</td><td>对现有接口和数据模型的影响已评估并有兼容策略</td></tr>
+            <tr><td>10</td><td>验收场景可执行</td><td>所有验收标准均为 Given-When-Then 格式且可自动化</td></tr>
+          </tbody>
+        </table>
+
+        <pre><code># 十项门禁检查输出示例
+[sparv:specify] 规格门禁检查：
+  [1/10] 功能边界明确    ✓ 通过
+  [2/10] 输入参数完整    ✓ 通过
+  [3/10] 输出格式定义    ✓ 通过
+  [4/10] 错误码覆盖      ✗ 未通过 -> 缺少 429 Too Many Requests 定义
+  [5/10] 数据模型完整    ✓ 通过
+  [6/10] 状态转换定义    ✓ 通过 (无状态变更)
+  [7/10] 安全约束声明    ✓ 通过
+  [8/10] 性能基线设定    ✓ 通过
+  [9/10] 向后兼容评估    ✓ 通过
+  [10/10] 验收场景可执行 ✓ 通过
+  结果: 9/10 通过 -> 门禁未通过，回到 Specify 阶段补充错误码定义</code></pre>
+
+        <h2 id="phase-plan">第二阶段：Plan（实施规划）</h2>
+        <p>Plan 阶段由 <strong>Implementation Planner</strong> 智能体负责，将精确的规格文档转化为具体的实施步骤。与 do 工作流的 Plan 阶段不同，sparv 的规划粒度更细——不仅定义变更哪些文件，还精确到每个函数的签名、每个数据库查询的索引策略。</p>
+
+        <h3>规划产出物</h3>
+        <ul>
+          <li><strong>文件变更清单</strong>：精确到行级别的变更预估</li>
+          <li><strong>函数签名定义</strong>：每个新增或修改函数的完整签名</li>
+          <li><strong>依赖变更</strong>：新增或升级的外部依赖及版本锁定</li>
+          <li><strong>迁移脚本</strong>：数据库变更的正向和回滚脚本</li>
+          <li><strong>测试清单</strong>：与验收场景对应的测试用例列表</li>
+        </ul>
+
+        <h2 id="phase-act">第三阶段：Act（执行实现）</h2>
+        <p>Act 阶段由 <strong>Precise Coder</strong> 智能体负责。与其他工作流中的开发智能体不同，Precise Coder 被严格约束在 Plan 阶段的产出范围内——它不能自行决定添加规划外的功能或改变约定的函数签名。这种约束确保了实现与规格之间的严格一致性。</p>
+
+        <h3>2-Action Saves 机制</h3>
+        <p>Act 阶段内置了 <strong>2-Action Saves</strong> 安全机制。每执行两个编辑操作后，系统自动保存当前状态的快照（通过 Git stash 或独立 commit）。这确保了即使后续操作出错，最多只需要回退两步。该机制对于大型文件变更尤其重要，避免了因单次操作失误导致大量工作丢失。</p>
+
+        <pre><code># 2-Action Saves 日志示例
+[sparv:act] 操作 1: 创建 handlers/orders.go
+[sparv:act] 操作 2: 实现 CreateOrder 函数
+[sparv:act:save] 自动快照 #1 已保存 (2 个操作)
+[sparv:act] 操作 3: 创建 services/order_service.go
+[sparv:act] 操作 4: 实现 ValidateOrder 函数
+[sparv:act:save] 自动快照 #2 已保存 (4 个操作)</code></pre>
+
+        <h2 id="phase-review">第四阶段：Review（审查验证）</h2>
+        <p>Review 阶段由 <strong>Specification Verifier</strong> 智能体负责。它的核心任务不是通常意义上的代码审查，而是<strong>规格一致性验证</strong>——逐条对照 Specify 阶段产出的规格文档，检查实现是否与规格完全一致。</p>
+
+        <h3>验证清单</h3>
+        <ul>
+          <li>每个 API 端点的路径、方法、参数是否与规格一致</li>
+          <li>每个错误码是否在对应场景下正确返回</li>
+          <li>数据模型的字段类型和约束是否与规格匹配</li>
+          <li>所有验收场景对应的测试是否通过</li>
+          <li>性能基线测试是否达标</li>
+        </ul>
+
+        <h2 id="phase-vault">第五阶段：Vault（外部记忆持久化）</h2>
+        <p>Vault 阶段是 sparv 区别于其他所有工作流的独特阶段。由 <strong>Knowledge Curator</strong> 智能体负责，将本次任务中积累的关键知识、决策和上下文提取并持久化到外部记忆系统中。</p>
+
+        <h3>存储内容类别</h3>
+        <table>
+          <thead>
+            <tr><th>类别</th><th>示例</th><th>检索方式</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>架构决策记录（ADR）</td><td>"选择 PostgreSQL 全文搜索而非 Elasticsearch，因为当前数据量不超过 100 万条"</td><td>按项目和模块检索</td></tr>
+            <tr><td>代码模式</td><td>"本项目的中间件遵循 func(next) handler 模式"</td><td>按技术栈和模式类型检索</td></tr>
+            <tr><td>约束与限制</td><td>"用户表的 email 字段有唯一索引，注册时需要处理冲突"</td><td>按数据模型检索</td></tr>
+            <tr><td>问题与解决方案</td><td>"Go 的 json.Decoder 在空 body 时返回 EOF 而非空值"</td><td>按错误类型和技术栈检索</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="vault-system">Vault 系统深度解析</h2>
+        <p>Vault 系统使用本地文件系统存储知识条目，每个条目是一个 JSON 文件，包含元数据（创建时间、关联项目、标签）和内容。条目通过语义索引进行高效检索。</p>
+
+        <pre><code># Vault 存储结构
+~/.pinable-agents/vault/
+  ├── index.json              # 全局索引
+  ├── projects/
+  │   └── my-api/
+  │       ├── adr/            # 架构决策记录
+  │       │   └── 001-search-engine.json
+  │       ├── patterns/       # 代码模式
+  │       │   └── middleware-pattern.json
+  │       └── constraints/    # 约束与限制
+  │           └── user-email-unique.json
+  └── global/
+      └── solutions/          # 跨项目通用方案
+          └── go-empty-body-eof.json</code></pre>
+
+        <h3>检索与注入</h3>
+        <p>在 sparv 工作流启动时，系统自动从 Vault 中检索与当前任务相关的知识条目，并注入到 Specify 阶段的上下文中。这使得智能体能够"记住"之前的决策和发现，避免重复探索已知的模式和约束。</p>
+
+        <h2 id="journal">统一日志机制</h2>
+        <p>sparv 的每次执行都会生成一个统一日志（Journal），记录所有阶段的输入、输出、决策和耗时。Journal 采用追加写入模式，保证数据不丢失。它既是调试和审计的工具，也是 Vault 知识提取的数据源。</p>
+
+        <pre><code># Journal 条目示例
+{
+  "timestamp": "2026-02-25T14:30:00Z",
+  "phase": "specify",
+  "action": "gate_check",
+  "result": "pass",
+  "details": {
+    "checks_passed": 10,
+    "checks_total": 10,
+    "duration_ms": 4520
+  }
+}</code></pre>
+
+        <h2 id="safety-protocols">安全协议：2-Action Saves 与 3-Failure Protocol</h2>
+        <p>sparv 内置两套安全协议，防止执行过程中的意外损失。</p>
+
+        <h3>2-Action Saves</h3>
+        <p>如前文所述，每两个编辑操作后自动创建快照。快照以 Git stash 形式保存，可在 Act 阶段的任何时刻回退到最近的快照点。</p>
+
+        <h3>3-Failure Protocol</h3>
+        <p>当连续三次操作失败时（编译错误、测试失败或门禁不通过），系统自动暂停当前阶段并触发以下流程：</p>
+        <ol>
+          <li>保存当前状态快照</li>
+          <li>生成失败分析报告（包含三次失败的详细信息和可能原因）</li>
+          <li>将失败上下文写入 Journal</li>
+          <li>暂停工作流，等待人工决策（继续、回退或终止）</li>
+        </ol>
+
+        <pre><code>[sparv:act] 操作失败 (1/3): 编译错误 - undefined: OrderStatus
+[sparv:act] 操作失败 (2/3): 编译错误 - undefined: OrderStatus
+[sparv:act] 操作失败 (3/3): 编译错误 - undefined: OrderStatus
+[sparv:3fp] ⚠ 3-Failure Protocol 触发
+[sparv:3fp] 快照已保存: stash@{0}
+[sparv:3fp] 失败分析: OrderStatus 类型在 models/order.go 中未定义，
+            可能原因: Plan 阶段遗漏了类型定义，或文件创建顺序错误
+[sparv:3fp] 工作流已暂停，等待人工决策</code></pre>
+
+        <h2 id="walkthrough">实战：构建 REST API 端点</h2>
+        <p>以下演示使用 sparv 工作流为一个 Go Gin 项目构建订单创建的 REST API 端点。</p>
+
+        <h3>启动工作流</h3>
+        <pre><code>pinable-agents run sparv \
+  --task "实现创建订单 API，支持商品列表、收货地址、优惠券" \
+  --context "Go + Gin + PostgreSQL，已有 products 和 users 表"</code></pre>
+
+        <h3>Specify 产出</h3>
+        <pre><code>POST /api/v1/orders
+Request Body:
+  {
+    "items": [{"product_id": "string", "quantity": "integer(1-99)"}],
+    "address_id": "string(uuid)",
+    "coupon_code": "string|null"
+  }
+Response 201:
+  {"order_id": "string(uuid)", "total": "decimal", "status": "pending"}
+Error Codes:
+  400 - 请求参数格式错误
+  401 - 未认证
+  404 - 商品或地址不存在
+  409 - 库存不足
+  422 - 优惠券无效或已过期</code></pre>
+
+        <h3>Vault 注入</h3>
+        <p>系统从 Vault 中检索到两条相关知识：项目中间件使用 <code>AuthMiddleware</code> 进行 JWT 认证（来自之前的认证任务），以及 PostgreSQL 的事务隔离级别设置为 Read Committed（来自项目约束条目）。这些知识自动注入到 Plan 阶段，避免了重复探索。</p>
+
+        <h2 id="cross-session">跨会话上下文维持</h2>
+        <p>Vault 系统的核心价值在于跨会话上下文维持。当你在新会话中启动 sparv 工作流时，系统会自动加载与当前项目和任务相关的所有 Vault 条目，让智能体仿佛"记得"之前所有的工作上下文。这对于长期维护的项目尤其重要——随着 Vault 中积累的知识越来越丰富，智能体对项目的理解也越来越深入，执行效率持续提升。</p>
+
+        <h2 id="cli-reference">CLI 命令参考</h2>
+        <pre><code># 完整 SPARV 流程
+pinable-agents run sparv --task "任务描述"
+
+# Vault 管理命令
+pinable-agents vault list                  # 列出所有条目
+pinable-agents vault search "关键词"       # 搜索条目
+pinable-agents vault export --format json  # 导出 Vault 数据
+pinable-agents vault import ./backup.json  # 导入 Vault 数据
+pinable-agents vault prune --older-than 6m # 清理过期条目
+
+# Journal 查看
+pinable-agents journal show --last 10      # 查看最近 10 条日志
+pinable-agents journal show --phase specify # 按阶段筛选
+
+# 安全协议配置
+pinable-agents run sparv --task "任务描述" \
+  --save-interval 2 \
+  --failure-threshold 3 \
+  --auto-resume false</code></pre>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="workflow-bmad.html">&larr; bmad 企业级敏捷开发</a>
+        <a class="btn btn-outline" href="workflow-requirements.html">requirements 轻量级流程 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

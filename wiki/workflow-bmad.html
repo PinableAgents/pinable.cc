@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents bmad 企业级敏捷开发工作流，六角色智能体团队、PRD 评分机制、架构评审门禁、Sprint 全流程管理和 Jira/Linear 集成方案。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>bmad 企业级敏捷开发 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / bmad 企业级敏捷开发
+        </div>
+        <h1 class="article-title">bmad 企业级敏捷开发</h1>
+        <div class="article-meta">
+          <span>分类：工作流</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#overview">bmad 工作流概述</a></li>
+          <li><a href="#six-roles">六角色智能体团队</a></li>
+          <li><a href="#prd-scoring">PRD 百分制评分机制</a></li>
+          <li><a href="#architecture-gate">架构评审门禁</a></li>
+          <li><a href="#sprint-planning">Sprint 规划流程</a></li>
+          <li><a href="#walkthrough">实战：电商功能 Sprint 周期</a></li>
+          <li><a href="#role-interaction">角色交互与信息流</a></li>
+          <li><a href="#jira-integration">Jira / Linear 集成</a></li>
+          <li><a href="#cli-reference">CLI 命令参考</a></li>
+          <li><a href="#best-practices">最佳实践</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="overview">bmad 工作流概述</h2>
+        <p><code>bmad</code>（Business-driven Multi-Agent Development）是 PinableAgents 为企业级项目设计的敏捷开发工作流。它模拟了一个完整的 Scrum 团队，由六个专业角色的智能体组成，覆盖从产品需求定义到代码交付审查的全流程。</p>
+        <p>bmad 的核心理念是"用流程保证质量"。在企业环境中，代码质量不仅取决于开发者的个人能力，更取决于团队协作流程的完善程度。bmad 通过标准化的角色分工、量化的评审机制和严格的门禁制度，确保每个交付物都经过充分的需求分析、架构评估、编码实现、质量验证和代码审查。</p>
+        <p>与 <code>do</code> 工作流相比，bmad 更适合涉及多个模块、需要跨团队协作、对质量要求极高的大型任务。它的流程更重，执行时间更长，但产出的可靠性和完整性也显著更高。</p>
+
+        <blockquote>
+          <p>bmad 不是为了让流程变慢，而是为了在复杂项目中避免返工。一个经过完整 bmad 流程的功能，其上线后的缺陷率通常比快速开发低 60% 以上。</p>
+        </blockquote>
+
+        <h2 id="six-roles">六角色智能体团队</h2>
+        <p>bmad 工作流的核心是六个角色分明的智能体，每个角色对应传统 Scrum 团队中的一个关键职位。</p>
+
+        <h3>1. Product Owner（产品负责人）</h3>
+        <p>负责需求的定义、优先级排序和验收标准制定。该智能体分析用户的业务需求描述，产出结构化的 PRD（Product Requirements Document），包含用户故事、验收标准和优先级矩阵。</p>
+        <table>
+          <thead>
+            <tr><th>职责</th><th>输出物</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>需求分析与结构化</td><td>PRD 文档（含用户故事和验收标准）</td></tr>
+            <tr><td>优先级排序</td><td>优先级矩阵（MoSCoW 分类）</td></tr>
+            <tr><td>范围控制</td><td>MVP 范围定义和后续迭代规划</td></tr>
+          </tbody>
+        </table>
+
+        <h3>2. Architect（架构师）</h3>
+        <p>负责技术方案的设计和架构决策。基于 PRD 和现有代码库的分析，产出技术设计文档，包括系统架构图、API 设计、数据模型和技术选型论证。</p>
+
+        <h3>3. Scrum Master（流程管理者）</h3>
+        <p>负责协调各角色之间的信息流转和流程推进。监控各阶段的质量门禁状态，在门禁失败时协调回溯和修复。Scrum Master 不直接产出代码或文档，但确保整个流程的效率和质量。</p>
+
+        <h3>4. Developer（开发者）</h3>
+        <p>负责根据技术设计文档编写实现代码。遵循架构师制定的技术方案和编码规范，在隔离的 Git worktree 中完成开发，确保代码变更可追溯和可回滚。</p>
+
+        <h3>5. QA Engineer（质量工程师）</h3>
+        <p>负责测试策略制定和测试执行。产出测试计划、编写自动化测试、执行回归测试，并生成测试报告。测试覆盖率要求不低于 85%。</p>
+
+        <h3>6. Reviewer（代码审查员）</h3>
+        <p>负责最终的代码质量审查。使用五维评估框架（可维护性、性能、安全性、风格一致性、向后兼容性）对整个交付物进行全面审查，产出审查报告和改进建议。</p>
+
+        <h2 id="prd-scoring">PRD 百分制评分机制</h2>
+        <p>bmad 的一个核心创新是对 PRD 文档实施百分制量化评分。PRD 必须达到 80 分以上才能通过门禁进入架构设计阶段。评分维度如下：</p>
+
+        <table>
+          <thead>
+            <tr><th>评分维度</th><th>分值</th><th>评分标准</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>需求完整性</td><td>20 分</td><td>所有功能点是否有明确描述，无遗漏</td></tr>
+            <tr><td>验收标准明确性</td><td>20 分</td><td>每个用户故事是否有可验证的验收条件</td></tr>
+            <tr><td>边界条件覆盖</td><td>15 分</td><td>异常场景、边界值、权限控制是否考虑周全</td></tr>
+            <tr><td>优先级合理性</td><td>10 分</td><td>MoSCoW 分类是否合理，MVP 范围是否恰当</td></tr>
+            <tr><td>技术可行性</td><td>15 分</td><td>需求是否在现有技术栈和时间约束内可实现</td></tr>
+            <tr><td>非功能性要求</td><td>10 分</td><td>性能、安全、可用性要求是否明确</td></tr>
+            <tr><td>文档规范性</td><td>10 分</td><td>格式标准、术语一致、无歧义表述</td></tr>
+          </tbody>
+        </table>
+
+        <pre><code># PRD 评分输出示例
+[bmad:po] PRD 评分结果：
+  需求完整性:     18/20  ✓ (缺少错误码定义，扣 2 分)
+  验收标准明确性: 20/20  ✓
+  边界条件覆盖:   12/15  ✓ (未覆盖并发注册场景，扣 3 分)
+  优先级合理性:   10/10  ✓
+  技术可行性:     13/15  ✓ (第三方支付 SDK 兼容性待验证，扣 2 分)
+  非功能性要求:    8/10  ✓ (未指定响应时间 SLA，扣 2 分)
+  文档规范性:      9/10  ✓
+  总分: 90/100 -> 通过门禁</code></pre>
+
+        <h2 id="architecture-gate">架构评审门禁</h2>
+        <p>架构设计完成后，需要通过架构评审门禁才能进入开发阶段。评审由 Architect 智能体自评和 Reviewer 智能体交叉评审两轮组成。</p>
+
+        <h3>评审检查清单</h3>
+        <ul>
+          <li><strong>一致性</strong>：技术方案是否与项目现有架构模式一致</li>
+          <li><strong>可扩展性</strong>：设计是否预留了合理的扩展点，但不过度设计</li>
+          <li><strong>依赖管理</strong>：新引入的依赖是否必要，是否有已知的安全漏洞</li>
+          <li><strong>数据模型</strong>：数据库 schema 变更是否向后兼容，迁移脚本是否可逆</li>
+          <li><strong>API 设计</strong>：接口是否遵循 RESTful 规范，版本策略是否合理</li>
+          <li><strong>错误处理</strong>：异常路径是否有明确的处理策略</li>
+        </ul>
+
+        <h2 id="sprint-planning">Sprint 规划流程</h2>
+        <p>bmad 的 Sprint 规划由 Scrum Master 智能体主导，流程包括三个步骤：</p>
+        <ol>
+          <li><strong>Backlog 梳理</strong>：Product Owner 整理和排序待办事项，确定 Sprint 目标</li>
+          <li><strong>容量评估</strong>：根据任务复杂度估算 Story Points，确定 Sprint 容量</li>
+          <li><strong>任务拆解</strong>：将用户故事拆解为可独立完成的开发任务，分配给 Developer 智能体</li>
+        </ol>
+
+        <pre><code># 启动 Sprint 规划
+pinable-agents run bmad --phase sprint-planning \
+  --backlog ./backlog.md \
+  --sprint-capacity 40  # Story Points 上限
+
+# Sprint 规划输出
+[bmad:sm] Sprint #12 规划完成
+  Sprint 目标: 完成商品搜索和购物车核心功能
+  总 Story Points: 38/40
+  用户故事数: 5
+  预计开发任务数: 14</code></pre>
+
+        <h2 id="walkthrough">实战：电商功能 Sprint 周期</h2>
+        <p>以下演示使用 bmad 工作流完成一个电商项目中"商品搜索与筛选"功能的完整 Sprint 周期。</p>
+
+        <h3>Phase 1：需求定义</h3>
+        <pre><code>pinable-agents run bmad \
+  --task "实现商品搜索与筛选功能，支持关键词搜索、分类筛选、价格区间、排序" \
+  --context "项目使用 Go + Gin + PostgreSQL，已有商品表 products"</code></pre>
+        <p>Product Owner 智能体产出 PRD，包含 4 个用户故事：关键词搜索、分类筛选、价格区间过滤、结果排序。每个故事附带 3-5 条验收标准。PRD 评分 92 分，通过门禁。</p>
+
+        <h3>Phase 2：架构设计</h3>
+        <p>Architect 智能体分析现有代码后，设计了搜索服务的技术方案：使用 PostgreSQL 全文搜索而非引入 Elasticsearch（遵循 KISS 原则），新增 <code>handlers/search.go</code> 和 <code>services/search.go</code>，复用现有的分页中间件和响应格式。</p>
+
+        <h3>Phase 3：开发实现</h3>
+        <p>Developer 智能体在 Git worktree 中依次完成搜索服务层、HTTP 处理器、路由注册和数据库索引迁移。每完成一个文件，Scrum Master 检查是否符合架构设计的规定。</p>
+
+        <h3>Phase 4：质量验证</h3>
+        <p>QA Engineer 产出 22 个测试用例，覆盖所有验收标准和边界条件。测试覆盖率 91%，所有测试通过。</p>
+
+        <h3>Phase 5：代码审查</h3>
+        <p>Reviewer 使用五维评估框架审查全部变更，提出两个改进建议（增加搜索关键词的 XSS 过滤、优化分页查询的索引策略），Developer 修复后二次审查通过。</p>
+
+        <h2 id="role-interaction">角色交互与信息流</h2>
+        <p>bmad 的六个角色之间存在严格定义的信息流转规则。每个角色只接收来自其上游角色的产出，并将自己的产出传递给下游角色。Scrum Master 作为中枢，可以与所有角色交互。</p>
+        <pre><code>Product Owner -> Architect -> Developer -> QA Engineer -> Reviewer
+      |               |            |             |             |
+      +----------- Scrum Master（全局协调）-----------+
+
+信息流向：
+  PO 产出 PRD -> Architect 接收 PRD，产出技术设计
+  Architect 产出设计 -> Developer 接收设计，产出代码
+  Developer 产出代码 -> QA 接收代码，产出测试报告
+  QA 产出报告 -> Reviewer 接收全部产出，进行最终审查</code></pre>
+
+        <h2 id="jira-integration">Jira / Linear 集成</h2>
+        <p>bmad 支持与主流项目管理工具的双向集成，将 Sprint 规划和任务状态同步到团队的 Jira 或 Linear 看板。</p>
+
+        <h3>配置集成</h3>
+        <pre><code># 在 config.json 中配置 Jira 集成
+{
+  "integrations": {
+    "jira": {
+      "url": "https://your-team.atlassian.net",
+      "project": "PROJ",
+      "api_token": "${JIRA_API_TOKEN}",
+      "sync_mode": "bidirectional"
+    }
+  }
+}
+
+# 或配置 Linear 集成
+{
+  "integrations": {
+    "linear": {
+      "api_key": "${LINEAR_API_KEY}",
+      "team_id": "TEAM-001",
+      "sync_mode": "push"
+    }
+  }
+}</code></pre>
+
+        <h3>同步内容</h3>
+        <ul>
+          <li><strong>Sprint 创建</strong>：bmad 启动新 Sprint 时，自动在 Jira/Linear 中创建对应的 Sprint</li>
+          <li><strong>任务创建</strong>：每个拆解的开发任务自动创建为 Issue/Task</li>
+          <li><strong>状态同步</strong>：任务在 bmad 中的状态变更实时同步到看板</li>
+          <li><strong>验收报告</strong>：Sprint 完成后的报告自动附加到对应的 Epic</li>
+        </ul>
+
+        <h2 id="cli-reference">CLI 命令参考</h2>
+        <pre><code># 完整 Sprint 流程
+pinable-agents run bmad --task "任务描述"
+
+# 仅执行特定阶段
+pinable-agents run bmad --phase prd --task "任务描述"
+pinable-agents run bmad --phase architecture --prd ./prd.md
+pinable-agents run bmad --phase development --design ./design.md
+
+# 配置 Sprint 参数
+pinable-agents run bmad --task "任务描述" \
+  --sprint-capacity 40 \
+  --sprint-duration 2w \
+  --quality-threshold 80
+
+# 启用集成
+pinable-agents run bmad --task "任务描述" --sync jira</code></pre>
+
+        <h2 id="best-practices">最佳实践</h2>
+        <ul>
+          <li>在 PRD 中尽可能详细地描述验收标准，这直接影响后续所有阶段的质量</li>
+          <li>对于 MVP 版本，主动使用 MoSCoW 分类将非核心需求标记为 "Won't have"</li>
+          <li>架构设计阶段不要引入不必要的复杂性，优先复用项目中已有的模式</li>
+          <li>利用 Jira/Linear 集成保持团队对 AI 辅助开发进度的可见性</li>
+          <li>Sprint 容量不要设置过满，预留 15-20% 的缓冲应对返工和意外情况</li>
+        </ul>
+
+        <blockquote>
+          <p>bmad 工作流最大的价值不是速度，而是可预测性。当你的项目需要向利益相关者保证交付质量和时间线时，bmad 提供的结构化流程和量化评估是最有力的支撑。</p>
+        </blockquote>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="workflow-omo.html">&larr; omo 智能路由编排</a>
+        <a class="btn btn-outline" href="workflow-sparv.html">sparv 精确开发与外部记忆 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

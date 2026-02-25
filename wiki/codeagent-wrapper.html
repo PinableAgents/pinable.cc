@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents codeagent-wrapper 执行引擎深度解析，涵盖 Go 架构、CLI 参数、后端适配器、会话管理和性能基准。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>codeagent-wrapper 执行引擎 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / codeagent-wrapper 执行引擎
+        </div>
+        <h1 class="article-title">codeagent-wrapper 执行引擎</h1>
+        <div class="article-meta">
+          <span>分类：核心</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#architecture">整体架构概述</a></li>
+          <li><a href="#cli-parser">CLI 解析层</a></li>
+          <li><a href="#backend-adapter">后端适配器模式</a></li>
+          <li><a href="#session-manager">会话管理器</a></li>
+          <li><a href="#output-formatter">输出格式化器</a></li>
+          <li><a href="#error-handling">错误处理与重试逻辑</a></li>
+          <li><a href="#build-from-source">从源码构建</a></li>
+          <li><a href="#performance">性能基准测试</a></li>
+          <li><a href="#advanced-config">高级配置选项</a></li>
+          <li><a href="#troubleshooting">故障排查</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="architecture">整体架构概述</h2>
+        <p><code>codeagent-wrapper</code> 是 PinableAgents 的核心执行引擎，使用 Go 语言编写，负责将上层工作流的抽象任务描述转化为对底层 AI 后端的具体调用。它充当工作流编排层与 AI 后端之间的桥梁，提供统一的调用接口、会话持久化、错误恢复和输出格式化能力。</p>
+        <p>架构上，codeagent-wrapper 采用四层分层设计，数据从上到下依次经过：<strong>CLI 解析层</strong>（接收和验证命令行参数）、<strong>后端适配器层</strong>（将通用请求转化为后端特定的 API 调用）、<strong>会话管理层</strong>（维护任务执行状态和上下文）、<strong>输出格式化层</strong>（将后端响应转化为统一的结构化输出）。这种分层设计使得各层可以独立演进和测试。</p>
+        <pre><code>                    +------------------+
+                    |   CLI 解析层      |  &larr; 命令行参数输入
+                    +--------+---------+
+                             |
+                    +--------v---------+
+                    | 后端适配器层      |  &larr; Codex / Claude / Gemini
+                    +--------+---------+
+                             |
+                    +--------v---------+
+                    | 会话管理层        |  &larr; JSON 状态持久化
+                    +--------+---------+
+                             |
+                    +--------v---------+
+                    | 输出格式化层      |  &larr; 结构化输出
+                    +------------------+</code></pre>
+
+        <blockquote>
+          <p>codeagent-wrapper 的设计原则是"薄包装，厚适配"。包装层尽可能轻量，而适配层承担了参数映射、响应规范化、错误转换等重要职责。这确保了新后端的接入成本最低。</p>
+        </blockquote>
+
+        <h2 id="cli-parser">CLI 解析层</h2>
+        <p>CLI 解析层基于 Go 标准库的 <code>flag</code> 包构建，提供了丰富的命令行参数支持。以下是所有支持的 CLI 参数及其说明：</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>类型</th>
+              <th>默认值</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>--backend</code></td>
+              <td>string</td>
+              <td>codex</td>
+              <td>指定 AI 后端，可选值：codex、claude、gemini</td>
+            </tr>
+            <tr>
+              <td><code>--task</code></td>
+              <td>string</td>
+              <td>必填</td>
+              <td>任务描述文本或指向任务描述文件的路径</td>
+            </tr>
+            <tr>
+              <td><code>--files</code></td>
+              <td>string[]</td>
+              <td>空</td>
+              <td>需要关注的文件列表，逗号分隔</td>
+            </tr>
+            <tr>
+              <td><code>--session-id</code></td>
+              <td>string</td>
+              <td>自动生成</td>
+              <td>会话标识符，用于恢复或继续之前的会话</td>
+            </tr>
+            <tr>
+              <td><code>--parallel</code></td>
+              <td>int</td>
+              <td>1</td>
+              <td>并行执行的任务数量上限</td>
+            </tr>
+            <tr>
+              <td><code>--worktree</code></td>
+              <td>bool</td>
+              <td>false</td>
+              <td>是否使用 Git worktree 隔离执行环境</td>
+            </tr>
+            <tr>
+              <td><code>--timeout</code></td>
+              <td>duration</td>
+              <td>10m</td>
+              <td>任务执行超时时间</td>
+            </tr>
+            <tr>
+              <td><code>--output</code></td>
+              <td>string</td>
+              <td>text</td>
+              <td>输出格式：text、json、markdown</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>CLI 解析层在接收到参数后会进行严格的验证。对于必填参数（如 <code>--task</code>），如果缺失会立即报错并输出用法帮助。对于枚举类型参数（如 <code>--backend</code>），会检查值是否在合法范围内。</p>
+        <pre><code># 基本用法
+codeagent-wrapper --backend claude --task "实现用户注册接口"
+
+# 指定文件范围和并行度
+codeagent-wrapper --backend codex --task "为以下文件添加单元测试" \
+  --files "src/user.go,src/order.go,src/payment.go" \
+  --parallel 3
+
+# 使用 worktree 隔离并指定超时
+codeagent-wrapper --backend gemini --task "重构数据库连接池" \
+  --worktree --timeout 20m
+
+# 恢复之前的会话
+codeagent-wrapper --session-id sess_abc123 --task "继续上次的实现"</code></pre>
+
+        <h2 id="backend-adapter">后端适配器模式</h2>
+        <p>后端适配器层是 codeagent-wrapper 的核心设计模式。它定义了一个通用的 <code>Backend</code> 接口，所有 AI 后端适配器都必须实现该接口。这使得新后端的接入只需实现一个接口，无需修改上层代码。</p>
+        <pre><code>// backend.go - 后端适配器接口定义
+package backend
+
+// Backend 定义了所有 AI 后端必须实现的统一接口
+type Backend interface {
+    // Name 返回后端的标识名称
+    Name() string
+
+    // Execute 执行一个任务并返回结果
+    Execute(ctx context.Context, req *Request) (*Response, error)
+
+    // Stream 以流式方式执行任务，通过 channel 返回增量结果
+    Stream(ctx context.Context, req *Request) (&lt;-chan Chunk, error)
+
+    // Validate 验证后端配置是否有效（API 密钥、模型可用性等）
+    Validate() error
+
+    // Capabilities 返回后端支持的能力集合
+    Capabilities() CapabilitySet
+}
+
+// Request 统一请求结构
+type Request struct {
+    Task        string            `json:"task"`
+    Files       []string          `json:"files,omitempty"`
+    Context     string            `json:"context,omitempty"`
+    Parameters  map[string]any    `json:"parameters,omitempty"`
+    SessionID   string            `json:"session_id,omitempty"`
+    MaxTokens   int               `json:"max_tokens,omitempty"`
+}
+
+// Response 统一响应结构
+type Response struct {
+    Content     string            `json:"content"`
+    Files       []FileChange      `json:"files,omitempty"`
+    TokensUsed  TokenUsage        `json:"tokens_used"`
+    Duration    time.Duration     `json:"duration"`
+    Metadata    map[string]any    `json:"metadata,omitempty"`
+}</code></pre>
+
+        <p>目前支持三种后端适配器的实现。<strong>Codex 适配器</strong>通过 OpenAI API 调用 Codex 系列模型，支持函数调用和代码生成的专门优化。<strong>Claude 适配器</strong>对接 Anthropic API，利用 Claude 的长上下文窗口处理大型代码库分析任务。<strong>Gemini 适配器</strong>使用 Google AI API，在多模态处理（如截图分析）方面有独特优势。</p>
+        <p>每个适配器在内部负责将通用的 <code>Request</code> 结构转化为后端特定的 API 请求格式，并将后端响应转化为通用的 <code>Response</code> 结构。这种转化过程包括参数映射（如 temperature、max_tokens 等参数在不同 API 中的名称差异）、系统提示注入、以及响应内容的规范化。</p>
+
+        <h2 id="session-manager">会话管理器</h2>
+        <p>会话管理器负责维护任务执行的状态和上下文，使得长时间运行的任务可以在中断后恢复。每个会话由一个唯一的 <code>SESSION_ID</code> 标识，会话状态以 JSON 格式持久化到本地文件系统。</p>
+        <p>会话的生命周期包括四个状态：<strong>created</strong>（已创建，尚未开始执行）、<strong>running</strong>（执行中）、<strong>paused</strong>（已暂停或中断，可恢复）、<strong>completed</strong>（已完成）。状态转换是单向的，除了 paused 可以回到 running 外，其他转换不可逆。</p>
+        <pre><code>// session.go - 会话状态结构
+type Session struct {
+    ID          string          `json:"id"`
+    Status      SessionStatus   `json:"status"`
+    Backend     string          `json:"backend"`
+    Task        string          `json:"task"`
+    TaskHash    string          `json:"task_hash"`
+    CreatedAt   time.Time       `json:"created_at"`
+    UpdatedAt   time.Time       `json:"updated_at"`
+    Checkpoints []Checkpoint    `json:"checkpoints"`
+    Context     SessionContext  `json:"context"`
+    Metadata    map[string]any  `json:"metadata"`
+}
+
+// Checkpoint 记录执行过程中的检查点
+type Checkpoint struct {
+    Index       int             `json:"index"`
+    Timestamp   time.Time       `json:"timestamp"`
+    Phase       string          `json:"phase"`
+    State       json.RawMessage `json:"state"`
+    FilesChanged []string       `json:"files_changed"`
+}</code></pre>
+        <p>会话文件默认存储在 <code>~/.pinable-agents/sessions/</code> 目录下，文件名格式为 <code>{session_id}.json</code>。每次状态变更都会立即写入磁盘，确保崩溃恢复的数据完整性。</p>
+
+        <h2 id="output-formatter">输出格式化器</h2>
+        <p>输出格式化器将后端响应转化为用户友好的展示格式。支持三种输出模式：<strong>text</strong>（纯文本，适合终端直接查看）、<strong>json</strong>（结构化数据，适合程序化处理）、<strong>markdown</strong>（格式化文档，适合保存为报告）。</p>
+        <p>在 text 模式下，输出格式化器会对代码块进行语法高亮（通过 ANSI 转义码），对文件变更进行 diff 格式展示，并在输出末尾附加执行摘要（耗时、token 用量、文件变更列表）。在 json 模式下，输出完整的 Response 结构体。在 markdown 模式下，生成包含目录、代码块和表格的完整文档。</p>
+        <pre><code># text 输出示例
+codeagent-wrapper --backend claude --task "添加输入验证" --output text
+
+# json 输出示例（适合管道处理）
+codeagent-wrapper --backend codex --task "生成 API 文档" --output json | jq '.files'
+
+# markdown 输出（适合保存报告）
+codeagent-wrapper --backend gemini --task "代码审查" --output markdown > review.md</code></pre>
+
+        <h2 id="error-handling">错误处理与重试逻辑</h2>
+        <p>codeagent-wrapper 实现了分层错误处理机制。错误被分为三个级别：<strong>可重试错误</strong>（网络超时、速率限制、临时服务不可用）、<strong>配置错误</strong>（API 密钥无效、模型不可用）、<strong>致命错误</strong>（磁盘空间不足、权限不足）。对于可重试错误，系统采用指数退避策略自动重试，最多重试三次。</p>
+        <pre><code>// retry.go - 重试策略实现
+func executeWithRetry(ctx context.Context, fn func() error, maxRetries int) error {
+    var lastErr error
+    for attempt := 0; attempt &lt;= maxRetries; attempt++ {
+        if err := fn(); err != nil {
+            if !isRetryable(err) {
+                return fmt.Errorf("non-retryable error: %w", err)
+            }
+            lastErr = err
+            backoff := time.Duration(math.Pow(2, float64(attempt))) * time.Second
+            log.Printf("attempt %d failed, retrying in %v: %v", attempt+1, backoff, err)
+            select {
+            case &lt;-time.After(backoff):
+                continue
+            case &lt;-ctx.Done():
+                return ctx.Err()
+            }
+        }
+        return nil
+    }
+    return fmt.Errorf("max retries exceeded: %w", lastErr)
+}</code></pre>
+
+        <blockquote>
+          <p>当所有重试都失败后，codeagent-wrapper 会在会话状态中记录失败的检查点，使用户可以在问题解决后通过 <code>--session-id</code> 从失败点恢复执行，而不需要从头开始。</p>
+        </blockquote>
+
+        <h2 id="build-from-source">从源码构建</h2>
+        <p>如果你需要定制 codeagent-wrapper 或参与开发，可以从源码构建。构建过程依赖 Go 1.21 及以上版本。</p>
+        <pre><code># 克隆仓库
+git clone https://github.com/PinableLab/codeagent-wrapper.git
+cd codeagent-wrapper
+
+# 安装依赖
+go mod download
+
+# 构建二进制文件
+go build -o bin/codeagent-wrapper ./cmd/wrapper
+
+# 运行测试
+go test ./... -v -race
+
+# 交叉编译（例如 Linux AMD64）
+GOOS=linux GOARCH=amd64 go build -o bin/codeagent-wrapper-linux ./cmd/wrapper
+
+# 安装到 GOPATH
+go install ./cmd/wrapper</code></pre>
+        <p>构建产物是一个单一的静态链接二进制文件，没有外部运行时依赖。二进制文件大小约为 15-20 MB（视目标平台而定）。你可以将二进制文件直接复制到 <code>$PATH</code> 中的任意目录即可使用。</p>
+
+        <h2 id="performance">性能基准测试</h2>
+        <p>以下是在 Apple M2 Pro 芯片、32 GB 内存的 MacBook Pro 上测量的性能基准数据。测试任务为"在一个包含 50 个文件的 Go 项目中为指定的 3 个文件添加单元测试"。</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>指标</th>
+              <th>Codex</th>
+              <th>Claude</th>
+              <th>Gemini</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CLI 启动时间</td>
+              <td>45ms</td>
+              <td>45ms</td>
+              <td>45ms</td>
+            </tr>
+            <tr>
+              <td>请求构建时间</td>
+              <td>12ms</td>
+              <td>15ms</td>
+              <td>11ms</td>
+            </tr>
+            <tr>
+              <td>后端响应时间</td>
+              <td>8.2s</td>
+              <td>6.5s</td>
+              <td>9.1s</td>
+            </tr>
+            <tr>
+              <td>输出格式化时间</td>
+              <td>3ms</td>
+              <td>3ms</td>
+              <td>3ms</td>
+            </tr>
+            <tr>
+              <td>会话持久化时间</td>
+              <td>2ms</td>
+              <td>2ms</td>
+              <td>2ms</td>
+            </tr>
+            <tr>
+              <td>总端到端时间</td>
+              <td>8.3s</td>
+              <td>6.6s</td>
+              <td>9.2s</td>
+            </tr>
+            <tr>
+              <td>内存峰值</td>
+              <td>28MB</td>
+              <td>32MB</td>
+              <td>26MB</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>从数据中可以看出，codeagent-wrapper 本身的开销（CLI 启动 + 请求构建 + 输出格式化 + 会话持久化）不超过 70 毫秒，端到端延迟的绝大部分来自 AI 后端的响应时间。Go 语言的低内存占用和快速启动使得 wrapper 层几乎是"透明"的。</p>
+
+        <h2 id="advanced-config">高级配置选项</h2>
+        <p>除了 CLI 参数外，codeagent-wrapper 还支持通过配置文件进行更细粒度的控制。配置文件路径为 <code>~/.pinable-agents/wrapper-config.json</code>。</p>
+        <pre><code>{
+  "defaults": {
+    "backend": "claude",
+    "timeout": "15m",
+    "output": "text",
+    "max_retries": 3
+  },
+  "backends": {
+    "claude": {
+      "model": "claude-opus-4-6",
+      "max_tokens": 16000,
+      "temperature": 0.3,
+      "system_prompt_append": "请使用中文注释代码"
+    },
+    "codex": {
+      "model": "o3",
+      "max_tokens": 8000,
+      "temperature": 0.2
+    }
+  },
+  "session": {
+    "storage_dir": "~/.pinable-agents/sessions",
+    "auto_cleanup_days": 30,
+    "max_checkpoints": 50
+  },
+  "logging": {
+    "level": "info",
+    "file": "~/.pinable-agents/logs/wrapper.log"
+  }
+}</code></pre>
+
+        <h2 id="troubleshooting">故障排查</h2>
+        <h3>问题：后端连接超时</h3>
+        <p>首先检查网络连接和 API 密钥是否有效。如果确认网络正常，可以增加 <code>--timeout</code> 参数的值。对于大型任务，建议设置 20 分钟以上的超时时间。</p>
+        <h3>问题：会话恢复失败</h3>
+        <p>检查会话文件是否存在且格式正确。可以使用 <code>pinable-agents session inspect &lt;session-id&gt;</code> 命令查看会话状态。如果会话文件损坏，只能重新开始任务。</p>
+        <h3>问题：输出截断</h3>
+        <p>某些后端在长输出时可能截断响应。通过 <code>--backend-max-tokens</code> 参数增大 token 上限，或拆分任务为多个子任务分别执行。</p>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="workflow-comparison.html">&larr; 上一篇</a>
+        <a class="btn btn-outline" href="multi-backend.html">下一篇 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

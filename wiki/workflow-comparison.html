@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents 五大工作流深度对比与选择指南，涵盖 do、omo、bmad、sparv、requirements 工作流的适用场景、团队规模和决策流程。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>工作流选择指南 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / 工作流选择指南
+        </div>
+        <h1 class="article-title">工作流选择指南</h1>
+        <div class="article-meta">
+          <span>分类：工作流</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#overview">五大工作流概览</a></li>
+          <li><a href="#comparison-table">多维度对比表</a></li>
+          <li><a href="#do-workflow">do 工作流详解</a></li>
+          <li><a href="#omo-workflow">omo 工作流详解</a></li>
+          <li><a href="#bmad-workflow">bmad 工作流详解</a></li>
+          <li><a href="#sparv-workflow">sparv 工作流详解</a></li>
+          <li><a href="#requirements-workflow">requirements 工作流详解</a></li>
+          <li><a href="#decision-flowchart">决策流程图</a></li>
+          <li><a href="#scenario-recommendations">场景化推荐方案</a></li>
+          <li><a href="#migration-guide">工作流迁移指南</a></li>
+          <li><a href="#best-practices">最佳实践与注意事项</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="overview">五大工作流概览</h2>
+        <p>PinableAgents 提供五种内置工作流，每种工作流针对不同的开发场景和团队规模进行了优化。理解每种工作流的设计哲学和适用边界，是高效使用 PinableAgents 的关键。工作流并非互相替代的关系，而是互补的工具集，开发者应根据项目的阶段、规模和复杂度灵活选择。</p>
+        <p>五大工作流分别是：<strong>do</strong>（直接交付）、<strong>omo</strong>（信号驱动路由）、<strong>bmad</strong>（企业敏捷）、<strong>sparv</strong>（快速原型）、<strong>requirements</strong>（需求工程）。它们的核心区别在于流程复杂度、参与角色数量以及质量门控的严格程度。选择合适的工作流能显著提升开发效率，而错误的选择则可能引入不必要的流程开销或导致质量缺口。</p>
+
+        <blockquote>
+          <p>工作流的选择不是一次性的决定。随着项目的演进，你可能需要从一种工作流迁移到另一种。PinableAgents 支持平滑的工作流切换，且保留上下文历史。</p>
+        </blockquote>
+
+        <h2 id="comparison-table">多维度对比表</h2>
+        <p>以下表格从团队规模、复杂度、阶段数量、角色数量、质量门控和最佳适用场景六个维度对五种工作流进行对比：</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>维度</th>
+              <th>do</th>
+              <th>omo</th>
+              <th>bmad</th>
+              <th>sparv</th>
+              <th>requirements</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>团队规模</strong></td>
+              <td>1-2 人</td>
+              <td>1-5 人</td>
+              <td>5-20 人</td>
+              <td>1-3 人</td>
+              <td>3-10 人</td>
+            </tr>
+            <tr>
+              <td><strong>复杂度</strong></td>
+              <td>低</td>
+              <td>中-高</td>
+              <td>高</td>
+              <td>低-中</td>
+              <td>中</td>
+            </tr>
+            <tr>
+              <td><strong>阶段数</strong></td>
+              <td>3</td>
+              <td>5-7</td>
+              <td>8-12</td>
+              <td>2-3</td>
+              <td>4-6</td>
+            </tr>
+            <tr>
+              <td><strong>角色数</strong></td>
+              <td>2</td>
+              <td>4</td>
+              <td>7</td>
+              <td>2</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td><strong>质量门控</strong></td>
+              <td>基础审查</td>
+              <td>信号验证</td>
+              <td>多层审查</td>
+              <td>快速验证</td>
+              <td>需求追溯</td>
+            </tr>
+            <tr>
+              <td><strong>最佳场景</strong></td>
+              <td>日常功能开发</td>
+              <td>Bug 调查与重构</td>
+              <td>企业级项目</td>
+              <td>快速原型与验证</td>
+              <td>需求明确的中型任务</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="do-workflow">do 工作流详解</h2>
+        <p><code>do</code> 是 PinableAgents 最基础也最常用的工作流。它遵循"分析-实现-审查"三阶段流程，适合功能边界清晰、复杂度低到中等的日常开发任务。do 工作流只涉及两个核心角色：<strong>实现工程师</strong>（负责代码编写）和<strong>代码审查员</strong>（负责质量把关）。</p>
+        <p>do 工作流的三个阶段如下：首先进行<strong>任务分析</strong>，智能体解析任务描述，识别需要修改的文件和影响范围；然后进入<strong>代码实现</strong>，根据分析结果编写代码，包含错误处理和边界情况；最后执行<strong>代码审查</strong>，检查代码风格、逻辑正确性和潜在问题。</p>
+        <pre><code># 典型的 do 工作流调用
+pinable-agents run do --task "为用户模块添加邮箱验证功能"
+
+# 指定后端和模型
+pinable-agents run do --task "修复分页组件的边界计算" --backend claude --model claude-opus-4-6</code></pre>
+        <p>do 工作流的优势在于启动速度快、流程开销小，通常在 2-5 分钟内即可完成一个中等复杂度的功能实现。但它的局限性也很明显：没有独立的架构设计阶段，不适合需要多模块协调的大型变更。</p>
+
+        <h2 id="omo-workflow">omo 工作流详解</h2>
+        <p><code>omo</code>（Observe-Model-Orient）是一种信号驱动的路由工作流，专为不确定性高的任务设计。与 do 工作流的线性流程不同，omo 工作流首先通过信号收集阶段观察代码库的当前状态，然后基于观察结果动态决定后续的执行路径。</p>
+        <p>omo 工作流包含五到七个阶段，具体取决于信号路由的结果。核心阶段包括：<strong>信号收集</strong>（扫描代码库、运行测试、分析依赖）、<strong>信号分析</strong>（识别问题模式和根因）、<strong>路由决策</strong>（选择修复策略）、<strong>方案实现</strong>（执行选定策略）、<strong>验证回归</strong>（确认修复有效且无副作用）。四个核心角色分别为：探索者、分析师、实现者和验证者。</p>
+        <pre><code># omo 工作流适合 Bug 调查
+pinable-agents run omo --task "调查用户登录间歇性失败的根因"
+
+# 也适合重构任务
+pinable-agents run omo --task "重构订单处理模块，消除循环依赖"</code></pre>
+
+        <blockquote>
+          <p>omo 工作流的信号驱动机制使其能够自适应地调整执行路径。例如，如果信号收集阶段发现问题出在数据库查询而非业务逻辑，工作流会自动路由到数据库优化分支而非代码重构分支。</p>
+        </blockquote>
+
+        <h2 id="bmad-workflow">bmad 工作流详解</h2>
+        <p><code>bmad</code>（Business-Model-Architecture-Delivery）是面向企业级项目的完整敏捷工作流，模拟了一个包含七个角色的 Scrum 团队。它适合需要多人协作、有严格质量要求的大型项目。bmad 工作流的阶段最多可达十二个，涵盖从业务分析到部署监控的完整生命周期。</p>
+        <p>bmad 工作流的核心角色包括：<strong>产品分析师</strong>（需求拆解与优先级排序）、<strong>架构师</strong>（系统设计与技术选型）、<strong>前端工程师</strong>（界面实现）、<strong>后端工程师</strong>（服务端逻辑）、<strong>测试工程师</strong>（测试策略与执行）、<strong>安全审计员</strong>（安全审查）、<strong>发布经理</strong>（部署协调）。</p>
+        <p>bmad 工作流的质量门控是五种工作流中最严格的。每个阶段结束后都会进行检查点验证，只有通过当前阶段的质量门控后才能进入下一阶段。质量门控内容包括：代码覆盖率阈值、安全扫描通过率、性能基准对比、API 兼容性验证等。</p>
+        <pre><code># bmad 工作流的典型用法
+pinable-agents run bmad --task "实现完整的用户权限管理系统，包含 RBAC 模型"
+
+# 配置质量门控阈值
+pinable-agents run bmad --task "重建支付模块" \
+  --gate-coverage 80 \
+  --gate-security strict \
+  --gate-performance baseline</code></pre>
+
+        <h2 id="sparv-workflow">sparv 工作流详解</h2>
+        <p><code>sparv</code>（Sprint-Accelerated Rapid Validation）是为快速原型验证设计的轻量级工作流。它的核心理念是"先验证可行性，再考虑完善性"。sparv 工作流只有两到三个阶段：<strong>快速实现</strong>和<strong>可行性验证</strong>，可选的第三阶段是<strong>迭代优化</strong>。</p>
+        <p>sparv 工作流特别适合以下场景：技术调研阶段需要快速验证某个方案的可行性；产品原型需要在最短时间内产出可演示的功能；对外部 API 或新技术栈的集成进行概念验证。sparv 工作流不追求代码质量的完美，而是追求反馈速度的最快化。</p>
+        <pre><code># sparv 工作流强调速度
+pinable-agents run sparv --task "验证 WebSocket 实时推送方案的可行性"
+
+# 快速原型后可切换到 do 工作流进行完善
+pinable-agents run do --task "基于原型完善 WebSocket 推送功能" --context sparv-session-id</code></pre>
+
+        <h2 id="requirements-workflow">requirements 工作流详解</h2>
+        <p><code>requirements</code> 工作流以需求文档为中心，强调需求到实现的全程追溯。它适合需求已经明确且有文档化需求的中型任务。工作流包含四到六个阶段：<strong>需求解析</strong>（从文档提取可执行的技术需求）、<strong>设计映射</strong>（将需求映射到代码结构）、<strong>实现</strong>（按需求逐项实现）、<strong>需求验证</strong>（逐项确认需求覆盖情况）。</p>
+        <p>requirements 工作流的独特之处在于需求追溯矩阵。每个实现的代码变更都会标记对应的需求编号，最终生成一份完整的追溯报告，清晰展示哪些需求已实现、哪些部分实现、哪些尚未覆盖。三个核心角色包括：需求分析师、实现工程师和验证工程师。</p>
+        <pre><code># 从需求文档启动工作流
+pinable-agents run requirements --task "实现用户管理模块" --spec ./docs/user-management-spec.md
+
+# 查看需求追溯报告
+pinable-agents report traceability --session last</code></pre>
+
+        <h2 id="decision-flowchart">决策流程图</h2>
+        <p>当面对一个新任务时，可以按照以下决策流程选择合适的工作流：</p>
+        <pre><code>开始
+  |
+  v
+任务是否有明确的需求文档？
+  |-- 是 --> 需求文档是否完整且结构化？
+  |           |-- 是 --> 使用 requirements 工作流
+  |           |-- 否 --> 任务复杂度如何？
+  |                       |-- 低 --> 使用 do 工作流
+  |                       |-- 高 --> 使用 omo 工作流
+  |-- 否 --> 任务目标是什么？
+              |-- 快速验证/原型 --> 使用 sparv 工作流
+              |-- Bug 修复/调查 --> 使用 omo 工作流
+              |-- 日常功能开发 --> 团队规模？
+              |                    |-- 1-3 人 --> 使用 do 工作流
+              |                    |-- 4+ 人  --> 使用 bmad 工作流
+              |-- 大型系统变更 --> 使用 bmad 工作流</code></pre>
+
+        <h2 id="scenario-recommendations">场景化推荐方案</h2>
+        <h3>独立开发者</h3>
+        <p>独立开发者的首选是 <code>do</code> 工作流，辅以 <code>sparv</code> 进行技术验证。do 工作流的低开销和快速反馈非常适合个人的开发节奏。当遇到需要深入调查的问题时，临时切换到 <code>omo</code> 工作流。建议的模块组合是 <code>do + essentials</code>。</p>
+
+        <h3>小型团队（2-5 人）</h3>
+        <p>小型团队建议以 <code>do</code> 为主力工作流，<code>omo</code> 处理复杂问题，<code>requirements</code> 处理有明确规格的任务。团队应建立统一的工作流选择标准，避免每个成员使用不同的工作流导致协作摩擦。</p>
+
+        <h3>企业团队（5 人以上）</h3>
+        <p>企业团队应以 <code>bmad</code> 为标准工作流，利用其多角色协作和严格质量门控确保交付质量。对于紧急修复可以降级到 <code>do</code> 工作流，但需要事后补充 bmad 级别的审查。建议配合 CI/CD 流水线集成使用。</p>
+
+        <h3>快速原型阶段</h3>
+        <p>在项目的探索和验证阶段，使用 <code>sparv</code> 工作流快速产出原型。一旦方案验证通过，立即迁移到 <code>do</code> 或 <code>bmad</code> 工作流进行正式实现。sparv 的产出不应直接进入生产环境。</p>
+
+        <h3>Bug 调查场景</h3>
+        <p><code>omo</code> 工作流是 Bug 调查的最佳选择。其信号驱动机制能够系统性地收集线索、分析根因、验证修复方案。对于复杂的跨模块 Bug，omo 的信号路由可以自动将调查范围扩展到相关模块。</p>
+
+        <h2 id="migration-guide">工作流迁移指南</h2>
+        <p>随着项目的发展，你可能需要从一种工作流迁移到另一种。以下是常见的迁移路径和注意事项：</p>
+
+        <h3>从 do 迁移到 bmad</h3>
+        <p>当项目规模增长，do 工作流无法满足多人协作需求时，应迁移到 bmad。迁移步骤包括：安装 bmad 模块、配置角色映射、设定质量门控阈值、进行一次试运行以校准参数。</p>
+        <pre><code># 安装 bmad 模块
+pinable-agents modules install bmad
+
+# 配置质量门控
+pinable-agents config set workflow.bmad.gate.coverage 80
+pinable-agents config set workflow.bmad.gate.security enabled
+
+# 试运行
+pinable-agents run bmad --task "重构用户模块" --dry-run</code></pre>
+
+        <h3>从 sparv 迁移到 do</h3>
+        <p>原型验证完成后，需要将 sparv 的快速实现转化为生产级代码。迁移时的关键是将 sparv 会话的上下文传递给 do 工作流，使 do 工作流能够基于原型代码进行完善而非从零开始。</p>
+
+        <h3>从 requirements 迁移到 bmad</h3>
+        <p>当需求规模超出 requirements 工作流的处理能力时（通常是需求项超过 20 个），应迁移到 bmad 工作流。bmad 的产品分析师角色可以自动导入 requirements 工作流的需求追溯矩阵。</p>
+
+        <h2 id="best-practices">最佳实践与注意事项</h2>
+        <p>在实际使用中，以下几条经验值得参考：第一，不要过度工程化。如果一个简单的功能用 do 工作流就能完成，不必使用 bmad；第二，工作流的选择应该在任务开始前确定，中途切换工作流会导致上下文丢失；第三，定期回顾工作流的使用效果，根据实际数据调整选择策略；第四，团队内部应对工作流选择标准达成共识并文档化。</p>
+
+        <blockquote>
+          <p>工作流选择的核心原则：用最简单的工作流完成任务。复杂的工作流不代表更好的结果，只代表更高的流程成本。只有当简单工作流无法满足质量或协作需求时，才应升级到更复杂的工作流。</p>
+        </blockquote>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="workflow-requirements.html">&larr; 上一篇</a>
+        <a class="btn btn-outline" href="codeagent-wrapper.html">下一篇 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

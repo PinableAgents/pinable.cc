@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents 系统要求与环境准备指南，包括操作系统、硬件、软件依赖和开发工具配置。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>系统要求与环境准备 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / 系统要求与环境准备
+        </div>
+        <h1 class="article-title">系统要求与环境准备</h1>
+        <div class="article-meta">
+          <span>分类：起步</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#os">操作系统要求</a></li>
+          <li><a href="#hardware">硬件建议</a></li>
+          <li><a href="#software">必需软件依赖</a></li>
+          <li><a href="#ai-backends">AI 后端 CLI 工具安装</a></li>
+          <li><a href="#api-keys">API 密钥配置</a></li>
+          <li><a href="#network">网络环境要求</a></li>
+          <li><a href="#dev-tools">开发工具推荐</a></li>
+          <li><a href="#checklist">环境验证清单</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="os">操作系统要求</h2>
+        <p>PinableAgents 目前支持 macOS 和 Windows 两个平台。Linux 版本正在开发中，预计在后续版本中提供支持。以下是各平台的最低要求和推荐配置：</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>平台</th>
+              <th>最低版本</th>
+              <th>推荐版本</th>
+              <th>架构</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>macOS</td>
+              <td>12 Monterey</td>
+              <td>14 Sonoma 或更高</td>
+              <td>Apple Silicon (arm64) / Intel (x86_64)</td>
+            </tr>
+            <tr>
+              <td>Windows</td>
+              <td>10 版本 1903</td>
+              <td>11 22H2 或更高</td>
+              <td>x86_64</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p><strong>macOS 特别说明</strong>：PinableAgents 原生支持 Apple Silicon (M1/M2/M3/M4)，无需 Rosetta 2 转译。在 Apple Silicon 上运行时，编排引擎的启动速度和内存效率显著优于 Intel 平台。如果你使用的是 Intel Mac，系统会自动选择 x86_64 二进制文件。</p>
+        <p><strong>Windows 特别说明</strong>：PinableAgents 在 Windows 上依赖 Windows Terminal 或 PowerShell 7 作为终端环境。传统的命令提示符（cmd.exe）可能无法正确显示 UTF-8 输出和 ANSI 颜色代码。强烈建议安装 Windows Terminal 以获得最佳体验。</p>
+
+        <h2 id="hardware">硬件建议</h2>
+        <p>PinableAgents 本身是一个轻量级的编排工具，核心引擎的资源占用很低。但由于工作流执行过程中需要运行多个 AI 后端 CLI 进程、Git 操作和文件分析，系统对内存和存储有一定要求。</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>资源</th>
+              <th>最低要求</th>
+              <th>推荐配置</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>内存 (RAM)</td>
+              <td>8 GB</td>
+              <td>16 GB 或更高</td>
+              <td>AI 后端 CLI 进程可能占用 2-4 GB</td>
+            </tr>
+            <tr>
+              <td>磁盘空间</td>
+              <td>2 GB 可用</td>
+              <td>10 GB 或更高</td>
+              <td>模块、日志和 worktree 需要空间</td>
+            </tr>
+            <tr>
+              <td>磁盘类型</td>
+              <td>HDD</td>
+              <td>SSD / NVMe</td>
+              <td>SSD 显著提升文件扫描和 Git 操作速度</td>
+            </tr>
+            <tr>
+              <td>CPU</td>
+              <td>双核</td>
+              <td>四核或更高</td>
+              <td>多核有助于并行执行分析任务</td>
+            </tr>
+            <tr>
+              <td>网络</td>
+              <td>稳定的互联网连接</td>
+              <td>低延迟宽带</td>
+              <td>AI API 调用需要可靠的网络</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <blockquote>
+          <p>对于处理大型代码库（超过 10 万行代码）的场景，建议使用 16 GB 以上内存和 SSD 存储。Discovery 和 Exploration 阶段需要扫描大量文件，磁盘 I/O 性能直接影响这些阶段的执行速度。</p>
+        </blockquote>
+
+        <h2 id="software">必需软件依赖</h2>
+        <p>PinableAgents 依赖以下三个核心软件工具。在安装 PinableAgents 之前，请确保这些工具已正确安装并可在终端中访问。</p>
+
+        <h3>Go 1.21+</h3>
+        <p>Go 是 PinableAgents 编排引擎的运行时依赖。即使你的项目不使用 Go 语言，也需要安装它。</p>
+        <pre><code># macOS 安装（推荐使用 Homebrew）
+brew install go
+
+# macOS 手动安装
+# 从 https://go.dev/dl/ 下载 .pkg 安装包
+# 双击安装包，按照向导完成安装
+
+# Windows 安装（推荐使用 winget）
+winget install GoLang.Go
+
+# Windows 手动安装
+# 从 https://go.dev/dl/ 下载 .msi 安装程序
+# 运行安装程序，接受默认配置即可
+
+# 验证安装
+go version
+# 预期输出示例：go version go1.22.1 darwin/arm64</code></pre>
+        <p>Go 安装完成后，确保 <code>GOPATH</code> 和 <code>GOBIN</code> 环境变量正确设置。默认情况下，<code>GOPATH</code> 为 <code>~/go</code>，<code>GOBIN</code> 为 <code>~/go/bin</code>。建议将 <code>$GOBIN</code> 添加到系统 PATH 中。</p>
+
+        <h3>Node.js 18+</h3>
+        <p>Node.js 用于运行桌面端应用、部分模块的脚本执行以及 AI 后端 CLI 工具。推荐使用 LTS 版本。</p>
+        <pre><code># macOS 安装
+brew install node@20
+
+# 或使用 nvm（Node Version Manager）管理多版本
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+nvm install 20
+nvm use 20
+
+# Windows 安装
+winget install OpenJS.NodeJS.LTS
+
+# 或使用 nvm-windows
+# 从 https://github.com/coreybutler/nvm-windows/releases 下载
+nvm install 20
+nvm use 20
+
+# 验证安装
+node --version   # 预期：v20.x.x
+npm --version    # 预期：10.x.x</code></pre>
+
+        <h3>Git 2.30+</h3>
+        <p>Git 是 PinableAgents 工作流的基础依赖。所有工作流都在 Git 仓库中运行，worktree 隔离功能需要 Git 2.30 或更高版本。</p>
+        <pre><code># macOS（通常预装，检查版本）
+git --version
+# 如需更新
+brew install git
+
+# Windows
+winget install Git.Git
+
+# 验证安装
+git --version    # 预期：git version 2.30.0 或更高
+
+# 确认 worktree 功能可用
+git worktree list</code></pre>
+        <p>Git 的配置建议：设置好用户名和邮箱，并开启默认分支名为 <code>main</code>：</p>
+        <pre><code>git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
+git config --global init.defaultBranch main</code></pre>
+
+        <h2 id="ai-backends">AI 后端 CLI 工具安装</h2>
+        <p>PinableAgents 通过统一的接口对接多种 AI 后端。你至少需要安装其中一个后端的 CLI 工具。以下是各后端的安装方法：</p>
+
+        <h3>Codex CLI（OpenAI）</h3>
+        <p>Codex CLI 是 OpenAI 提供的命令行编码工具，适合代码生成和实现阶段的任务。</p>
+        <pre><code># 安装 Codex CLI
+npm install -g @openai/codex
+
+# 验证安装
+codex --version
+
+# 配置 API 密钥
+export OPENAI_API_KEY="sk-your-api-key-here"
+
+# 测试连接
+codex "echo hello"</code></pre>
+
+        <h3>Claude CLI（Anthropic）</h3>
+        <p>Claude CLI（也称为 Claude Code）是 Anthropic 提供的命令行工具，在代码理解、架构设计和代码审查方面表现优异。</p>
+        <pre><code># 安装 Claude CLI
+npm install -g @anthropic-ai/claude-code
+
+# 验证安装
+claude --version
+
+# 配置 API 密钥
+export ANTHROPIC_API_KEY="sk-ant-your-api-key-here"
+
+# 测试连接
+claude "简单描述当前目录结构"</code></pre>
+
+        <h3>Gemini CLI（Google）</h3>
+        <p>Gemini CLI 是 Google 提供的命令行 AI 工具，支持大上下文窗口，适合处理大型代码库的分析任务。</p>
+        <pre><code># 安装 Gemini CLI
+npm install -g @google/gemini-cli
+
+# 验证安装
+gemini --version
+
+# 配置 API 密钥
+export GEMINI_API_KEY="your-api-key-here"
+
+# 测试连接
+gemini "hello"</code></pre>
+
+        <h3>后端对比</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>特性</th>
+              <th>Codex</th>
+              <th>Claude</th>
+              <th>Gemini</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>代码生成</td>
+              <td>优秀</td>
+              <td>优秀</td>
+              <td>良好</td>
+            </tr>
+            <tr>
+              <td>代码理解</td>
+              <td>良好</td>
+              <td>优秀</td>
+              <td>良好</td>
+            </tr>
+            <tr>
+              <td>架构设计</td>
+              <td>良好</td>
+              <td>优秀</td>
+              <td>良好</td>
+            </tr>
+            <tr>
+              <td>上下文窗口</td>
+              <td>中等</td>
+              <td>大</td>
+              <td>超大</td>
+            </tr>
+            <tr>
+              <td>执行速度</td>
+              <td>快</td>
+              <td>中等</td>
+              <td>快</td>
+            </tr>
+            <tr>
+              <td>推荐用途</td>
+              <td>实现阶段</td>
+              <td>全流程</td>
+              <td>大库分析</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="api-keys">API 密钥配置</h2>
+        <p>每个 AI 后端都需要对应的 API 密钥才能正常工作。以下是获取各后端 API 密钥的方法：</p>
+
+        <h3>OpenAI API 密钥</h3>
+        <ol>
+          <li>访问 <code>https://platform.openai.com/api-keys</code></li>
+          <li>登录你的 OpenAI 账户</li>
+          <li>点击"Create new secret key"创建新密钥</li>
+          <li>复制生成的密钥（以 <code>sk-</code> 开头），妥善保存</li>
+        </ol>
+
+        <h3>Anthropic API 密钥</h3>
+        <ol>
+          <li>访问 <code>https://console.anthropic.com/settings/keys</code></li>
+          <li>登录你的 Anthropic 账户</li>
+          <li>点击"Create Key"创建新密钥</li>
+          <li>复制生成的密钥（以 <code>sk-ant-</code> 开头），妥善保存</li>
+        </ol>
+
+        <h3>Google Gemini API 密钥</h3>
+        <ol>
+          <li>访问 <code>https://aistudio.google.com/apikey</code></li>
+          <li>登录你的 Google 账户</li>
+          <li>点击"Create API key"并选择一个 Google Cloud 项目</li>
+          <li>复制生成的密钥，妥善保存</li>
+        </ol>
+
+        <blockquote>
+          <p>安全提示：API 密钥是敏感信息，不要将密钥提交到代码仓库中。建议使用环境变量或密钥管理工具来存储密钥。如果密钥泄露，应立即在对应平台撤销并重新生成。</p>
+        </blockquote>
+
+        <p>密钥配置有两种方式：</p>
+        <pre><code># 方式一：环境变量（推荐）
+export OPENAI_API_KEY="sk-xxxxx"
+export ANTHROPIC_API_KEY="sk-ant-xxxxx"
+export GEMINI_API_KEY="xxxxx"
+
+# 方式二：config.json 配置文件
+# 编辑 ~/.pinable-agents/config.json
+{
+  "backends": {
+    "codex": {
+      "api_key_env": "OPENAI_API_KEY"
+    },
+    "claude": {
+      "api_key_env": "ANTHROPIC_API_KEY"
+    },
+    "gemini": {
+      "api_key_env": "GEMINI_API_KEY"
+    }
+  }
+}</code></pre>
+
+        <h2 id="network">网络环境要求</h2>
+        <p>PinableAgents 的工作流执行依赖网络访问 AI 后端的 API 端点。以下是需要能够访问的域名和端口：</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>后端</th>
+              <th>域名</th>
+              <th>端口</th>
+              <th>协议</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>OpenAI (Codex)</td>
+              <td>api.openai.com</td>
+              <td>443</td>
+              <td>HTTPS</td>
+            </tr>
+            <tr>
+              <td>Anthropic (Claude)</td>
+              <td>api.anthropic.com</td>
+              <td>443</td>
+              <td>HTTPS</td>
+            </tr>
+            <tr>
+              <td>Google (Gemini)</td>
+              <td>generativelanguage.googleapis.com</td>
+              <td>443</td>
+              <td>HTTPS</td>
+            </tr>
+            <tr>
+              <td>PinableAgents 更新</td>
+              <td>registry.pinableagents.com</td>
+              <td>443</td>
+              <td>HTTPS</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>如果你在企业网络环境中使用 PinableAgents，需要确保防火墙允许访问上述域名。对于需要通过代理访问的环境，可以配置 HTTP 代理：</p>
+        <pre><code># 设置 HTTP 代理
+export HTTP_PROXY=http://proxy.company.com:8080
+export HTTPS_PROXY=http://proxy.company.com:8080
+export NO_PROXY=localhost,127.0.0.1
+
+# 或在 config.json 中配置
+{
+  "network": {
+    "proxy": "http://proxy.company.com:8080",
+    "timeout": 60,
+    "retry_count": 3
+  }
+}</code></pre>
+
+        <p>建议在正式使用前进行网络连通性测试：</p>
+        <pre><code># 测试 API 端点连通性
+curl -s -o /dev/null -w "%{http_code}" https://api.openai.com/v1/models
+curl -s -o /dev/null -w "%{http_code}" https://api.anthropic.com/v1/messages</code></pre>
+
+        <h2 id="dev-tools">开发工具推荐</h2>
+        <p>虽然 PinableAgents 不强制要求特定的开发工具，但以下配置可以显著提升使用体验：</p>
+
+        <h3>编辑器：VS Code</h3>
+        <p>VS Code 是最推荐的编辑器，可以方便地查看工作流生成的代码变更和日志文件。建议安装以下扩展：</p>
+        <ul>
+          <li><strong>GitLens</strong>：增强 Git 功能，方便查看 worktree 中的变更</li>
+          <li><strong>Diff Editor</strong>：更好地可视化工作流产生的代码差异</li>
+          <li><strong>YAML / JSON</strong>：编辑配置文件时提供语法高亮和校验</li>
+          <li><strong>Markdown Preview</strong>：查看工作流产出的 Markdown 格式文档</li>
+        </ul>
+
+        <h3>终端配置</h3>
+        <p>PinableAgents 的命令行输出使用 ANSI 颜色代码和 Unicode 字符。确保你的终端支持这些特性：</p>
+        <ul>
+          <li><strong>macOS</strong>：推荐使用 iTerm2 或系统自带终端（Terminal.app），配置 Nerd Font 以正确显示图标</li>
+          <li><strong>Windows</strong>：强烈推荐安装 Windows Terminal，并将默认 Shell 设置为 PowerShell 7</li>
+        </ul>
+        <pre><code># macOS：安装推荐字体
+brew tap homebrew/cask-fonts
+brew install font-jetbrains-mono-nerd-font
+
+# Windows：安装 Windows Terminal
+winget install Microsoft.WindowsTerminal</code></pre>
+
+        <h3>Git GUI 工具</h3>
+        <p>由于 PinableAgents 大量使用 Git worktree 和分支，一个好的 Git GUI 工具可以帮助你直观地管理这些工作区：</p>
+        <ul>
+          <li><strong>Fork</strong>（macOS / Windows）：轻量、快速，对 worktree 支持良好</li>
+          <li><strong>GitKraken</strong>（跨平台）：功能丰富，可视化分支图清晰</li>
+          <li><strong>VS Code 内置 Git</strong>：基本够用，配合 GitLens 扩展更佳</li>
+        </ul>
+
+        <h2 id="checklist">环境验证清单</h2>
+        <p>在完成所有安装和配置后，使用以下清单逐项验证环境是否就绪：</p>
+
+        <pre><code># 1. 操作系统版本
+sw_vers        # macOS
+winver         # Windows
+
+# 2. Go 版本（需要 1.21+）
+go version
+
+# 3. Node.js 版本（需要 18+）
+node --version
+
+# 4. npm 版本
+npm --version
+
+# 5. Git 版本（需要 2.30+）
+git --version
+
+# 6. AI 后端 CLI（至少安装一个）
+codex --version   # 如果使用 Codex
+claude --version  # 如果使用 Claude
+gemini --version  # 如果使用 Gemini
+
+# 7. PinableAgents CLI
+pinable-agents --version
+
+# 8. 环境变量
+echo $CODEAGENT_BACKEND
+echo $CODEAGENT_MODEL
+
+# 9. API 密钥（检查是否已设置，不要打印完整密钥）
+echo ${OPENAI_API_KEY:0:10}...      # 应显示前10个字符
+echo ${ANTHROPIC_API_KEY:0:10}...
+
+# 10. 完整诊断
+pinable-agents doctor</code></pre>
+
+        <p><code>pinable-agents doctor</code> 命令会自动检查以上所有项目，并以清晰的格式显示每项的状态。如果有任何项目未通过，它会给出具体的修复建议。建议在每次更新 PinableAgents 或更换开发环境后运行此命令。</p>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="/wiki.html">返回 Wiki</a>
+        <a class="btn btn-outline" href="workflow-do.html">下一篇 →</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="深入解析 PinableAgents 如何利用 Git Worktree 机制实现任务隔离，确保实验性代码变更不会污染主分支，以及自动回滚与并行工作流策略。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>Git Worktree 隔离 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / Git Worktree 隔离
+        </div>
+        <h1 class="article-title">Git Worktree 隔离</h1>
+        <div class="article-meta">
+          <span>分类：核心</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#what-is-worktree">什么是 Git Worktree</a></li>
+          <li><a href="#why-isolation">为什么需要隔离机制</a></li>
+          <li><a href="#lifecycle">Worktree 生命周期</a></li>
+          <li><a href="#auto-rollback">失败时的自动回滚</a></li>
+          <li><a href="#config-options">配置选项详解</a></li>
+          <li><a href="#parallel-worktrees">并行 Worktree 与并发任务</a></li>
+          <li><a href="#conflict-resolution">合并回主分支时的冲突解决</a></li>
+          <li><a href="#example-db-schema">实战示例：数据库 Schema 变更</a></li>
+          <li><a href="#git-commands">内部使用的 Git 命令</a></li>
+          <li><a href="#best-practices">Worktree 管理最佳实践</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="what-is-worktree">什么是 Git Worktree</h2>
+        <p>Git Worktree 是 Git 2.5 版本引入的一项强大功能，它允许用户在同一个仓库中同时检出多个工作目录。每个 worktree 拥有独立的工作区和暂存区，但共享同一个 <code>.git</code> 对象数据库。这意味着你可以在不切换分支的情况下，同时在多个分支上进行开发工作。</p>
+        <p>传统的 Git 工作流要求开发者在单一工作目录中通过 <code>git checkout</code> 或 <code>git switch</code> 切换分支。这种方式存在明显的局限性：切换分支会导致当前未提交的更改丢失或产生冲突，编辑器中打开的文件需要重新加载，构建缓存可能失效。Worktree 通过创建完全独立的目录结构来解决这些问题。</p>
+        <p>PinableAgents 充分利用了这一机制，将每个智能体任务隔离在独立的 worktree 中执行。这样做的核心优势在于：即使智能体的代码生成出现错误，也不会影响主工作目录中的任何文件。</p>
+
+        <h2 id="why-isolation">为什么需要隔离机制</h2>
+        <p>在 AI 辅助编程的场景中，隔离机制的重要性远超传统开发。智能体生成的代码具有不确定性，一次看似合理的重构可能引入难以察觉的 bug，一次数据库迁移脚本可能破坏现有数据结构。如果这些操作直接在主工作目录中执行，回退代价将非常高昂。</p>
+        <p>PinableAgents 的隔离策略遵循三个核心原则：</p>
+        <ul>
+          <li><strong>零污染原则</strong>：任何智能体的操作都不会修改主工作目录中的任何文件，直到用户明确批准合并。</li>
+          <li><strong>可审查原则</strong>：每个 worktree 中的变更都以标准的 Git diff 形式呈现，用户可以逐行审查每个修改。</li>
+          <li><strong>可回滚原则</strong>：任何阶段都可以一键丢弃 worktree，恢复到任务开始前的状态，没有任何副作用。</li>
+        </ul>
+
+        <blockquote>
+          <p>将智能体视为一个不可完全信任的协作者。它可能写出优秀的代码，也可能犯错。Worktree 隔离确保你始终保有最终决定权。</p>
+        </blockquote>
+
+        <h2 id="lifecycle">Worktree 生命周期</h2>
+        <p>PinableAgents 中的 worktree 遵循严格的四阶段生命周期管理：<strong>创建 → 执行 → 验证 → 合并/丢弃</strong>。每个阶段都有明确的入口条件和出口条件。</p>
+
+        <h3>阶段一：创建（Create）</h3>
+        <p>当用户触发一个工作流任务时，编排引擎首先在配置的基础路径下创建一个新的 worktree。分支命名遵循 <code>pinable/&lt;workflow&gt;/&lt;timestamp&gt;</code> 的格式，确保唯一性和可追溯性。</p>
+        <pre><code># 内部执行的创建流程
+git worktree add ../worktrees/pinable-do-20260225-143022 -b pinable/do/20260225-143022
+cd ../worktrees/pinable-do-20260225-143022</code></pre>
+
+        <h3>阶段二：执行（Execute）</h3>
+        <p>智能体在 worktree 目录中执行所有代码生成和修改操作。此阶段中，智能体可以自由地创建文件、修改代码、运行测试，所有变更都被限制在这个隔离的目录中。编排引擎会实时监控文件变更，并记录到执行日志中。</p>
+
+        <h3>阶段三：验证（Validate）</h3>
+        <p>执行完成后，系统自动运行一系列验证检查。这些检查包括：语法检查（linting）、单元测试、类型检查以及用户自定义的验证脚本。只有当所有检查通过时，才会进入下一阶段。</p>
+
+        <h3>阶段四：合并或丢弃（Merge / Discard）</h3>
+        <p>验证通过后，用户可以选择将变更合并回主分支或丢弃整个 worktree。合并操作使用 <code>git merge --no-ff</code> 策略，确保保留完整的分支历史。丢弃操作则清理 worktree 目录和对应的分支引用。</p>
+
+        <h2 id="auto-rollback">失败时的自动回滚</h2>
+        <p>当验证阶段检测到失败时，PinableAgents 提供两种回滚策略：</p>
+        <table>
+          <thead>
+            <tr>
+              <th>策略</th>
+              <th>行为</th>
+              <th>适用场景</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>auto-discard</code></td>
+              <td>自动删除 worktree 和分支，不保留任何痕迹</td>
+              <td>快速迭代、试探性变更</td>
+            </tr>
+            <tr>
+              <td><code>preserve-on-fail</code></td>
+              <td>保留 worktree 目录但标记为失败状态，供后续调查</td>
+              <td>复杂任务调试、问题分析</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>自动回滚的触发条件包括：测试失败、编译错误、智能体执行超时、以及用户定义的自定义失败条件。回滚操作是原子性的，要么完全回退要么完全不执行，不会留下半完成状态。</p>
+
+        <pre><code># 自动回滚时的内部操作
+git worktree remove ../worktrees/pinable-do-20260225-143022 --force
+git branch -D pinable/do/20260225-143022
+# 日志记录：[ROLLBACK] Task do-20260225-143022 failed validation, worktree removed</code></pre>
+
+        <h2 id="config-options">配置选项详解</h2>
+        <p>Worktree 隔离行为可以通过 <code>config.json</code> 中的 <code>worktree</code> 字段进行细粒度配置。</p>
+
+        <pre><code>{
+  "worktree": {
+    "base_path": "../.pinable-worktrees",
+    "branch_prefix": "pinable",
+    "cleanup_policy": "auto-discard",
+    "max_parallel": 4,
+    "ttl_hours": 48,
+    "preserve_on_fail": true,
+    "merge_strategy": "no-ff",
+    "pre_merge_hooks": ["npm test", "npm run lint"],
+    "post_merge_hooks": ["npm run build"]
+  }
+}</code></pre>
+
+        <table>
+          <thead>
+            <tr>
+              <th>配置项</th>
+              <th>类型</th>
+              <th>默认值</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>base_path</code></td>
+              <td>string</td>
+              <td><code>../.pinable-worktrees</code></td>
+              <td>Worktree 目录的基础路径，相对于项目根目录</td>
+            </tr>
+            <tr>
+              <td><code>branch_prefix</code></td>
+              <td>string</td>
+              <td><code>pinable</code></td>
+              <td>自动创建的分支名前缀</td>
+            </tr>
+            <tr>
+              <td><code>cleanup_policy</code></td>
+              <td>string</td>
+              <td><code>auto-discard</code></td>
+              <td>清理策略：auto-discard 或 preserve-on-fail</td>
+            </tr>
+            <tr>
+              <td><code>max_parallel</code></td>
+              <td>number</td>
+              <td><code>4</code></td>
+              <td>允许同时存在的最大 worktree 数量</td>
+            </tr>
+            <tr>
+              <td><code>ttl_hours</code></td>
+              <td>number</td>
+              <td><code>48</code></td>
+              <td>未操作的 worktree 自动清理时间（小时）</td>
+            </tr>
+            <tr>
+              <td><code>merge_strategy</code></td>
+              <td>string</td>
+              <td><code>no-ff</code></td>
+              <td>合并策略：no-ff（保留分支历史）或 squash（压缩提交）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="parallel-worktrees">并行 Worktree 与并发任务</h2>
+        <p>PinableAgents 支持同时运行多个 worktree，每个处理独立的任务。这在团队协作或复杂项目中尤其有用。例如，一个智能体在 worktree A 中进行前端组件开发，同时另一个智能体在 worktree B 中编写对应的 API 端点。</p>
+        <p>并行 worktree 的管理涉及几个关键问题：</p>
+        <ul>
+          <li><strong>资源限制</strong>：通过 <code>max_parallel</code> 配置项限制同时存在的 worktree 数量，防止磁盘空间耗尽。</li>
+          <li><strong>锁管理</strong>：Git 内部使用锁文件防止对同一分支的并发操作。PinableAgents 在创建 worktree 前会检查锁状态，避免冲突。</li>
+          <li><strong>合并顺序</strong>：当多个 worktree 同时完成时，系统按照任务优先级和完成时间排定合并顺序，避免合并冲突累积。</li>
+        </ul>
+        <pre><code># 查看当前活跃的所有 worktree
+pinable-agents worktree list
+
+# 输出示例：
+# ID                          分支                              状态     创建时间
+# do-20260225-143022          pinable/do/20260225-143022        执行中   14:30
+# omo-20260225-144510         pinable/omo/20260225-144510       验证中   14:45
+# do-20260225-150000          pinable/do/20260225-150000        等待中   15:00</code></pre>
+
+        <h2 id="conflict-resolution">合并回主分支时的冲突解决</h2>
+        <p>当 worktree 中的变更与主分支产生冲突时，PinableAgents 提供三种冲突解决策略：</p>
+        <ol>
+          <li><strong>交互式解决</strong>：系统暂停合并流程，在桌面端展示冲突文件的 diff 视图，由用户手动选择保留哪些变更。这是默认策略。</li>
+          <li><strong>智能体辅助</strong>：将冲突信息交给专门的代码审查智能体，由其分析冲突上下文并提出解决方案。用户审核后确认。</li>
+          <li><strong>自动放弃</strong>：当冲突超过设定阈值（默认 5 个文件）时，自动丢弃 worktree 并通知用户重新发起任务。</li>
+        </ol>
+        <pre><code># 冲突解决的配置
+{
+  "worktree": {
+    "conflict_strategy": "interactive",
+    "conflict_threshold": 5,
+    "allow_agent_resolve": true
+  }
+}</code></pre>
+
+        <h2 id="example-db-schema">实战示例：数据库 Schema 变更</h2>
+        <p>假设你需要让智能体为一个 PostgreSQL 数据库添加新的用户权限表。这是一个高风险操作，因为错误的迁移脚本可能破坏现有数据。以下是使用 worktree 隔离的完整流程：</p>
+        <pre><code># 步骤 1：发起任务，系统自动创建 worktree
+pinable-agents run do --task "创建 user_permissions 表并编写迁移脚本"
+
+# 步骤 2：智能体在隔离的 worktree 中工作
+# - 生成迁移文件 migrations/20260225_add_user_permissions.sql
+# - 修改 models/user.go 添加权限关联
+# - 编写对应的单元测试
+
+# 步骤 3：自动验证阶段
+# - 运行 go build 确认编译通过
+# - 运行 go test ./... 确认测试通过
+# - 执行 sqlc generate 确认 SQL 语法正确
+
+# 步骤 4：用户审查
+pinable-agents worktree diff do-20260225-143022
+# 审查通过后合并
+pinable-agents worktree merge do-20260225-143022</code></pre>
+        <p>如果迁移脚本存在语法错误，验证阶段会自动捕获并触发回滚。整个过程中，你的主分支和数据库保持完全不变。</p>
+
+        <h2 id="git-commands">内部使用的 Git 命令</h2>
+        <p>了解 PinableAgents 在底层使用的 Git 命令有助于排查问题和理解运行机制。以下是核心命令清单：</p>
+        <pre><code># 创建 worktree
+git worktree add &lt;path&gt; -b &lt;branch-name&gt;
+
+# 列出所有 worktree
+git worktree list --porcelain
+
+# 移除 worktree
+git worktree remove &lt;path&gt; [--force]
+
+# 修剪失效的 worktree 引用
+git worktree prune
+
+# 合并 worktree 分支
+git merge --no-ff &lt;branch-name&gt; -m "Merge pinable task: &lt;description&gt;"
+
+# 清理分支引用
+git branch -d &lt;branch-name&gt;</code></pre>
+
+        <blockquote>
+          <p>如果你在使用过程中遇到 worktree 锁定问题，可以运行 <code>git worktree prune</code> 清理失效引用，然后重试。</p>
+        </blockquote>
+
+        <h2 id="best-practices">Worktree 管理最佳实践</h2>
+        <p>经过大量实际项目验证，以下是 worktree 隔离的推荐实践：</p>
+        <ul>
+          <li><strong>设置合理的 TTL</strong>：对于快速迭代项目，建议将 <code>ttl_hours</code> 设为 24 小时。对于大型项目，可以延长到 72 小时。过长的 TTL 会浪费磁盘空间。</li>
+          <li><strong>使用 squash 合并策略</strong>：对于小型变更，使用 <code>squash</code> 策略可以保持主分支提交历史的整洁。对于大型特性开发，使用 <code>no-ff</code> 保留完整的开发历程。</li>
+          <li><strong>定期运行 prune</strong>：每周运行 <code>pinable-agents worktree prune</code> 清理失效的 worktree 引用和孤立的分支。</li>
+          <li><strong>监控磁盘空间</strong>：每个 worktree 是主仓库的完整工作副本。对于大型仓库，注意 <code>max_parallel</code> 的设置，避免磁盘空间耗尽。</li>
+          <li><strong>将 worktree 目录加入 .gitignore</strong>：在 <code>.gitignore</code> 中添加 <code>.pinable-worktrees/</code>，防止 worktree 目录被意外提交。</li>
+          <li><strong>使用 pre_merge_hooks</strong>：配置合并前的验证钩子，确保合并到主分支的代码始终通过完整的质量检查。</li>
+        </ul>
+        <p>遵循这些实践，你可以在享受 AI 辅助编程便利性的同时，确保代码库的安全性和完整性。Worktree 隔离是 PinableAgents 安全执行哲学的基石。</p>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="session-management.html">&larr; 会话管理</a>
+        <a class="btn btn-outline" href="desktop-overview.html">pinable-desktop 完全指南 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

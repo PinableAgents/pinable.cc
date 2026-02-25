@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents - 多智能体开发工作流系统，统一编排与多后端执行，让复杂研发任务可控、可复用、可追踪。">
+  <meta name="keywords" content="PinableAgents,多智能体,AI开发,工作流,Claude Code,Codex,Gemini">
+  <meta name="author" content="PinableLab">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pinable.cc/">
+  <meta property="og:title" content="PinableAgents - 多智能体开发工作流系统">
+  <meta property="og:description" content="统一编排与多后端执行，让复杂研发任务可控、可复用、可追踪。">
+  <meta property="og:image" content="https://pinable.cc/assets/images/logo.svg">
+
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://pinable.cc/">
+  <meta property="twitter:title" content="PinableAgents - 多智能体开发工作流系统">
+  <meta property="twitter:description" content="统一编排与多后端执行，让复杂研发任务可控、可复用、可追踪。">
+
+  <link rel="icon" type="image/svg+xml" href="assets/images/logo.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/site.css">
+
+  <title>PinableAgents - 多智能体开发工作流系统</title>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "PinableAgents",
+    "operatingSystem": "macOS, Windows",
+    "applicationCategory": "DeveloperApplication",
+    "description": "多智能体开发工作流系统，统一编排与多后端执行。",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <img src="assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </div>
+      <nav class="nav" aria-label="主导航">
+        <a href="#overview">概览</a>
+        <a href="#points">功能要点</a>
+        <a href="#workflows">工作流</a>
+        <a href="#modules">模块与场景</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="#architecture">核心架构</a>
+        <a href="#download">下载</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="overview">
+    <div class="container hero-grid">
+      <div>
+        <h1>PinableAgents<br>多智能体开发工作流系统</h1>
+        <p class="subtitle">统一编排、多后端执行、可复用流程，让复杂研发任务更可控。适用于功能开发、排障、企业级协作与持续迭代。</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#download">立即下载</a>
+          <a class="btn btn-outline" href="#points">查看功能</a>
+        </div>
+      </div>
+      <div class="hero-panel">
+        <div class="panel-title">系统速览</div>
+        <div class="panel-list">
+          <div class="panel-item">
+            <div class="panel-icon">7x</div>
+            <div>
+              <h3>do 工作流</h3>
+              <p>7 阶段功能交付流程，覆盖需求、设计、实现、评审与复盘。</p>
+            </div>
+          </div>
+          <div class="panel-item">
+            <div class="panel-icon">AI</div>
+            <div>
+              <h3>多后端执行</h3>
+              <p>兼容 Codex / Claude / Gemini，统一命令与参数体验。</p>
+            </div>
+          </div>
+          <div class="panel-item">
+            <div class="panel-icon">CLI</div>
+            <div>
+              <h3>桌面端管理</h3>
+              <p>pinable-desktop 一键安装模块、编辑配置、跟踪执行进度。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="points">
+    <div class="container">
+      <h2 class="section-title">功能要点</h2>
+      <p class="section-desc">从编排到执行、从配置到复盘，PinableAgents 把 AI 开发工作流整理成可落地的标准动作。</p>
+      <div class="points">
+        <div class="point">
+          <h4>统一编排：Claude Code + codeagent-wrapper</h4>
+          <p>编排者负责计划与上下文收集，执行层负责代码修改、测试执行与会话恢复。</p>
+        </div>
+        <div class="point">
+          <h4>模块化工作流</h4>
+          <p>do、omo、bmad、sparv、requirements 等模块覆盖功能开发、排障与企业级协作。</p>
+        </div>
+        <div class="point">
+          <h4>多后端 AI 支持</h4>
+          <p>兼容 Codex、Claude、Gemini，统一参数与输出格式。</p>
+        </div>
+        <div class="point">
+          <h4>桌面端安装与管理</h4>
+          <p>pinable-desktop 提供模块安装、配置编辑、执行监控与日志入口。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="workflows">
+    <div class="container">
+      <h2 class="section-title">工作流家族</h2>
+      <p class="section-desc">不同场景调用不同工作流，形成可重复的协作节奏。</p>
+      <div class="cards">
+        <div class="card">
+          <h4>do（推荐）</h4>
+          <p>7 阶段功能开发，强制澄清 + 评审闭环，适合常规功能交付。</p>
+        </div>
+        <div class="card">
+          <h4>omo</h4>
+          <p>风险信号驱动路由，适合未知定位的 bug 或跨模块重构。</p>
+        </div>
+        <div class="card">
+          <h4>bmad</h4>
+          <p>企业级敏捷协作，包含产品、架构、开发、测试多角色。</p>
+        </div>
+        <div class="card">
+          <h4>sparv / requirements</h4>
+          <p>轻量化流程，适合快速原型与需求到代码的快速闭环。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="modules">
+    <div class="container">
+      <h2 class="section-title">模块与场景</h2>
+      <p class="section-desc">模块组合让你快速匹配业务场景，并保留团队的执行习惯。</p>
+      <div class="cards">
+        <div class="card">
+          <h4>功能交付</h4>
+          <p>do + essentials，适合日常需求开发、测试与文档。</p>
+        </div>
+        <div class="card">
+          <h4>Bug 修复</h4>
+          <p>omo + develop，先定位后修复，保证上下文完整。</p>
+        </div>
+        <div class="card">
+          <h4>企业协作</h4>
+          <p>bmad + sparv，适合大型项目的需求与架构审查。</p>
+        </div>
+        <div class="card">
+          <h4>内容生产</h4>
+          <p>webchat + memorys，适合内容团队的公众号文章流程。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="wiki">
+    <div class="container">
+      <h2 class="section-title">Wiki 文档中心</h2>
+      <p class="section-desc">整理工作流、模块配置与最佳实践，帮助团队快速上手并建立统一执行标准。</p>
+      <div class="wiki-grid">
+        <a class="wiki-card" href="/wiki.html#wiki-start">
+          <span class="wiki-tag">起步</span>
+          <h4>快速开始</h4>
+          <p>安装桌面端、启用模块、首次运行 do 工作流的完整步骤。</p>
+          <span class="wiki-meta">更新：2026-02-10</span>
+        </a>
+        <a class="wiki-card" href="/wiki.html#wiki-workflows">
+          <span class="wiki-tag">工作流</span>
+          <h4>工作流对比</h4>
+          <p>do / omo / bmad / sparv 的场景选择与协作建议。</p>
+          <span class="wiki-meta">更新：2026-02-10</span>
+        </a>
+        <a class="wiki-card" href="/wiki.html#wiki-config">
+          <span class="wiki-tag">配置</span>
+          <h4>模块与配置</h4>
+          <p>config.json 开关说明、模块组合推荐与冲突策略。</p>
+          <span class="wiki-meta">更新：2026-02-10</span>
+        </a>
+        <a class="wiki-card" href="/wiki.html#wiki-backends">
+          <span class="wiki-tag">执行</span>
+          <h4>多后端执行</h4>
+          <p>Codex / Claude / Gemini 的参数规范与会话恢复。</p>
+          <span class="wiki-meta">更新：2026-02-10</span>
+        </a>
+        <a class="wiki-card" href="/wiki.html#wiki-desktop">
+          <span class="wiki-tag">桌面端</span>
+          <h4>pinable-desktop</h4>
+          <p>模块安装、配置编辑与执行监控的操作指引。</p>
+          <span class="wiki-meta">更新：2026-02-10</span>
+        </a>
+        <a class="wiki-card" href="/wiki.html#wiki-troubleshooting">
+          <span class="wiki-tag">排错</span>
+          <h4>常见问题</h4>
+          <p>安装失败、后端 CLI 缺失、权限提示的处理方法。</p>
+          <span class="wiki-meta">更新：2026-02-10</span>
+        </a>
+      </div>
+      <div class="wiki-actions">
+        <a class="btn btn-outline" href="/wiki.html">进入 Wiki</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="architecture">
+    <div class="container">
+      <h2 class="section-title">核心架构</h2>
+      <p class="section-desc">编排与执行分层，确保每一步都可追溯、可复用。</p>
+      <div class="arch-grid">
+        <div class="arch-block">
+          <h4>编排层：Claude Code</h4>
+          <p>负责规划、上下文收集、验证，输出结构化任务给执行层。</p>
+        </div>
+        <div class="arch-block">
+          <h4>执行层：codeagent-wrapper</h4>
+          <p>统一 CLI，连接 Codex/Claude/Gemini，支持会话恢复与并行。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="download">
+    <div class="container">
+      <div class="download">
+        <h3>下载 PinableAgents</h3>
+        <p>安装桌面端后即可选择模块、配置后端并执行工作流。</p>
+        <div class="download-actions">
+          <a class="btn btn-primary" href="assets/downloads/PinableAgents-mac.dmg" download>macOS 下载</a>
+          <a class="btn btn-outline" href="assets/downloads/PinableAgents-win.exe" download>Windows 下载</a>
+        </div>
+        <p>其他平台或企业版需求，请联系：wowniuwowniu@gmail.com</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div>© 2026 PinableAgents · PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+      <div class="footer-social">
+        <a href="https://twitter.com/PinableLab" target="_blank">Twitter</a>
+        <a href="https://youtube.com/@PinableLab" target="_blank">YouTube</a>
+        <a href="https://instagram.com/pinablelab" target="_blank">Instagram</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

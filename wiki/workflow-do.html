@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents do 工作流完全指南，详解七阶段功能交付流程：澄清、探索、规划、实现、测试、审查、总结，附完整用户认证功能开发实战示例。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>do 工作流完全指南 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / do 工作流完全指南
+        </div>
+        <h1 class="article-title">do 工作流完全指南</h1>
+        <div class="article-meta">
+          <span>分类：工作流</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#overview">do 工作流概述</a></li>
+          <li><a href="#phase-clarify">第一阶段：Clarify（澄清需求）</a></li>
+          <li><a href="#phase-explore">第二阶段：Explore（探索代码库）</a></li>
+          <li><a href="#phase-plan">第三阶段：Plan（制定方案）</a></li>
+          <li><a href="#phase-implement">第四阶段：Implement（编码实现）</a></li>
+          <li><a href="#phase-test">第五阶段：Test（自动化测试）</a></li>
+          <li><a href="#phase-review">第六阶段：Review（代码审查）</a></li>
+          <li><a href="#phase-summary">第七阶段：Summary（交付总结）</a></li>
+          <li><a href="#walkthrough">实战演练：用户认证功能</a></li>
+          <li><a href="#quality-gates">质量门禁机制</a></li>
+          <li><a href="#when-to-use">何时选择 do 工作流</a></li>
+          <li><a href="#cli-reference">CLI 命令参考</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="overview">do 工作流概述</h2>
+        <p><code>do</code> 工作流是 PinableAgents 平台中最核心、最常用的工作流，专为功能交付场景设计。它将一个完整的开发任务拆解为七个有序阶段：<strong>澄清（Clarify）、探索（Explore）、规划（Plan）、实现（Implement）、测试（Test）、审查（Review）、总结（Summary）</strong>。每个阶段由特定的智能体负责，各阶段之间通过严格的质量门禁（Quality Gate）连接，确保只有满足标准的产出才能进入下一阶段。</p>
+        <p>这种线性但有回退能力的设计哲学源于软件工程的最佳实践。与传统的瀑布模型不同，do 工作流在每个阶段都内置了验证和回溯机制——如果测试阶段发现实现缺陷，系统会自动回退到实现阶段修复后重新推进，而不是将问题带入后续阶段。这种"快速失败、快速修复"的策略显著提升了最终交付物的质量。</p>
+
+        <blockquote>
+          <p>do 工作流的设计理念是"把简单的事情做对"。它不追求复杂的编排逻辑，而是通过严格的阶段划分和质量门禁确保每一步都扎实可靠。对于 80% 的日常开发任务，do 是最佳选择。</p>
+        </blockquote>
+
+        <h2 id="phase-clarify">第一阶段：Clarify（澄清需求）</h2>
+        <p>澄清阶段是整个工作流的起点，由 <strong>Requirements Analyst</strong> 智能体负责。该阶段的核心目标是将用户的自然语言描述转化为结构化的、可执行的需求规格。</p>
+
+        <h3>阶段目标</h3>
+        <p>消除需求中的歧义，识别隐含假设，产出明确的功能规格文档。智能体会主动向用户提问以澄清不确定的点，而不是自行猜测。</p>
+
+        <h3>输入与输出</h3>
+        <table>
+          <thead>
+            <tr><th>项目</th><th>内容</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>输入</td><td>用户的任务描述（自然语言），项目上下文（<code>.pinable/context.md</code>）</td></tr>
+            <tr><td>输出</td><td>结构化需求文档，包含功能点列表、验收标准、边界条件、非功能性要求</td></tr>
+          </tbody>
+        </table>
+
+        <h3>示例提示词</h3>
+        <pre><code># 直接使用命令行指定任务
+codeagent --backend codex --task "为用户管理模块添加 JWT 认证功能"
+
+# 或通过交互式模式进入
+pinable-agents run do
+# 系统提示：请描述你的开发任务
+# 输入：添加 JWT 认证功能，支持注册、登录、令牌刷新</code></pre>
+
+        <h3>质量门禁</h3>
+        <p>澄清阶段的质量门禁要求：所有功能点都有明确的验收标准；不存在"TBD"或待确认的条目；边界条件至少覆盖三种异常场景。如果门禁不通过，系统会再次向用户发起提问。</p>
+
+        <h2 id="phase-explore">第二阶段：Explore（探索代码库）</h2>
+        <p>探索阶段由 <strong>Code Explorer</strong> 智能体负责，目标是深入理解当前代码库的结构、依赖关系和现有模式，为后续的规划和实现提供充分的上下文信息。</p>
+
+        <h3>阶段目标</h3>
+        <p>映射与需求相关的代码区域，识别可复用的组件和模式，发现潜在的冲突点和技术约束。</p>
+
+        <h3>输入与输出</h3>
+        <table>
+          <thead>
+            <tr><th>项目</th><th>内容</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>输入</td><td>结构化需求文档，代码库文件树，已有的架构文档</td></tr>
+            <tr><td>输出</td><td>代码地图（涉及的文件和模块列表）、依赖关系图、复用建议、技术约束报告</td></tr>
+          </tbody>
+        </table>
+
+        <h3>探索策略</h3>
+        <p>Code Explorer 采用并行搜索策略，同时从多个维度分析代码库：文件结构扫描、依赖图谱构建、模式识别（如现有的认证中间件、数据库迁移脚本、路由定义规范等）。搜索遵循"5-8 次工具调用"的预算限制，在信息收集的广度和效率之间取得平衡。</p>
+
+        <h2 id="phase-plan">第三阶段：Plan（制定方案）</h2>
+        <p>规划阶段由 <strong>Architect</strong> 智能体负责。这是 do 工作流中最关键的阶段之一——一个好的实现方案能够大幅降低后续阶段的返工概率。</p>
+
+        <h3>阶段目标</h3>
+        <p>基于需求和代码探索的结果，制定详细的实现方案。方案包括：文件变更列表、API 设计、数据模型、组件结构和实现步骤。</p>
+
+        <h3>输入与输出</h3>
+        <table>
+          <thead>
+            <tr><th>项目</th><th>内容</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>输入</td><td>结构化需求、代码地图、技术约束报告</td></tr>
+            <tr><td>输出</td><td>实现方案文档，包含具体的文件路径、函数签名、API 端点定义、数据库变更脚本</td></tr>
+          </tbody>
+        </table>
+
+        <h3>示例方案片段</h3>
+        <pre><code>## 实现方案：JWT 认证
+### 文件变更清单
+1. [新建] src/middleware/auth.go      - JWT 中间件
+2. [新建] src/handlers/auth.go        - 认证处理器
+3. [修改] src/routes/api.go           - 新增认证路由
+4. [新建] src/models/user.go          - 用户数据模型
+5. [新建] migrations/004_users.sql    - 用户表迁移
+### API 设计
+POST /api/v1/auth/register  - 用户注册
+POST /api/v1/auth/login     - 用户登录
+POST /api/v1/auth/refresh   - 刷新令牌</code></pre>
+
+        <h2 id="phase-implement">第四阶段：Implement（编码实现）</h2>
+        <p>实现阶段由 <strong>Implementation Engineer</strong> 智能体负责，将方案转化为可运行的代码。该智能体遵循项目现有的编码风格和模式，确保新代码与现有代码库保持一致。</p>
+
+        <h3>阶段目标</h3>
+        <p>按照实现方案逐步编写代码，确保每个文件变更都有清晰的注释说明意图，错误处理覆盖所有已知的异常路径。</p>
+
+        <h3>编码规范</h3>
+        <p>Implementation Engineer 在编码时严格遵循以下规范：函数保持单一职责；嵌套层级不超过三层；变量命名优先可读性而非简洁性；仅在意图不明显时添加注释；复用项目中已有的模式和工具函数。</p>
+
+        <pre><code>// src/middleware/auth.go - JWT 认证中间件示例
+func AuthMiddleware(secretKey string) gin.HandlerFunc {
+    return func(c *gin.Context) {
+        token := extractBearerToken(c.GetHeader("Authorization"))
+        if token == "" {
+            c.AbortWithStatusJSON(401, gin.H{"error": "missing token"})
+            return
+        }
+
+        claims, err := validateJWT(token, secretKey)
+        if err != nil {
+            c.AbortWithStatusJSON(401, gin.H{"error": "invalid token"})
+            return
+        }
+
+        c.Set("userID", claims.UserID)
+        c.Next()
+    }
+}</code></pre>
+
+        <h2 id="phase-test">第五阶段：Test（自动化测试）</h2>
+        <p>测试阶段由 <strong>QA Engineer</strong> 智能体负责。测试策略是需求驱动的，而非实现驱动的——每个需求点至少对应一个测试用例，每个边界条件都必须被覆盖。</p>
+
+        <h3>测试覆盖要求</h3>
+        <ul>
+          <li><strong>快乐路径</strong>：所有正常用例，如成功注册、成功登录、成功刷新令牌</li>
+          <li><strong>边界情况</strong>：空输入、超长字段、特殊字符、重复注册</li>
+          <li><strong>错误处理</strong>：无效令牌、过期令牌、格式错误的请求体、数据库连接失败</li>
+          <li><strong>状态转换</strong>：令牌从有效到过期、用户从未验证到已验证</li>
+        </ul>
+
+        <pre><code># 运行测试并查看覆盖率
+codeagent --backend codex --task "为 auth 模块编写完整测试"
+
+# 手动验证测试结果
+go test ./src/middleware/... -cover -v
+go test ./src/handlers/... -cover -v</code></pre>
+
+        <h2 id="phase-review">第六阶段：Review（代码审查）</h2>
+        <p>审查阶段由 <strong>Code Reviewer</strong> 智能体负责，使用五维评估框架对实现进行全面审查。</p>
+
+        <h3>五维评估框架</h3>
+        <table>
+          <thead>
+            <tr><th>维度</th><th>审查重点</th><th>通过标准</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>可维护性</td><td>代码结构、命名规范、注释质量</td><td>新团队成员能在 15 分钟内理解模块用途</td></tr>
+            <tr><td>性能</td><td>算法复杂度、数据库查询效率、内存使用</td><td>无明显的 N+1 查询或内存泄漏风险</td></tr>
+            <tr><td>安全性</td><td>输入验证、SQL 注入防护、敏感信息处理</td><td>通过 OWASP Top 10 检查清单</td></tr>
+            <tr><td>风格一致性</td><td>与项目现有风格的匹配度</td><td>无风格偏离警告</td></tr>
+            <tr><td>向后兼容</td><td>API 契约、数据库 schema 变更</td><td>不破坏现有功能和接口</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="phase-summary">第七阶段：Summary（交付总结）</h2>
+        <p>总结阶段自动生成交付报告，内容包含：变更的文件清单及行数统计、新增 API 端点及使用说明、测试覆盖率报告、已知的限制和后续改进建议。该报告既是给开发者的交付物，也是项目知识库的一部分。</p>
+
+        <h2 id="walkthrough">实战演练：用户认证功能</h2>
+        <p>以下是使用 do 工作流开发用户认证功能的完整过程演示。</p>
+
+        <h3>启动工作流</h3>
+        <pre><code># 初始化工作流
+codeagent --backend codex --task "implement auth"
+
+# 或使用更详细的描述
+pinable-agents run do \
+  --task "为现有的 Go Gin API 项目添加 JWT 认证功能" \
+  --context "项目使用 PostgreSQL，已有 users 表基础结构"</code></pre>
+
+        <h3>工作流自动推进过程</h3>
+        <p>系统在 Clarify 阶段识别出三个核心功能点（注册、登录、刷新）和两个非功能性要求（令牌有效期可配置、密码使用 bcrypt 加密）。Explore 阶段发现项目已有 <code>middleware/logger.go</code> 作为中间件模板，<code>models/base.go</code> 定义了数据模型基类。Plan 阶段据此制定了复用现有模式的方案。Implement 阶段在 Git worktree 中完成编码，产出六个文件变更。Test 阶段生成了 18 个测试用例，覆盖率达到 92%。Review 阶段通过了五维评估。最终 Summary 阶段生成了完整的交付报告。</p>
+
+        <h2 id="quality-gates">质量门禁机制</h2>
+        <p>每个阶段之间的质量门禁是 do 工作流可靠性的核心保障。门禁失败时，系统会自动回退到前一阶段并携带失败原因，由对应的智能体修复后重新提交。每个阶段最多允许三次回退尝试，超过后工作流暂停并请求人工介入。</p>
+
+        <blockquote>
+          <p>质量门禁不是为了增加流程成本，而是为了减少返工成本。一个在 Plan 阶段发现的设计缺陷，修复成本远低于在 Review 阶段才发现的同样问题。</p>
+        </blockquote>
+
+        <h2 id="when-to-use">何时选择 do 工作流</h2>
+        <p>do 工作流最适合以下场景：需求明确的功能开发任务；涉及 1-5 个文件变更的中等规模任务；有明确验收标准的任务。如果你面对的是需求不明确的探索性任务，考虑使用 <code>omo</code> 工作流；如果是大型跨模块重构，考虑使用 <code>bmad</code> 工作流；如果是快速原型验证，考虑使用 <code>requirements</code> 工作流。</p>
+
+        <h2 id="cli-reference">CLI 命令参考</h2>
+        <pre><code># 基本用法
+pinable-agents run do --task "任务描述"
+
+# 指定后端和模型
+pinable-agents run do --task "任务描述" \
+  --backend claude --model claude-opus-4-6
+
+# 从文件读取任务描述
+pinable-agents run do --task-file ./task.md
+
+# 跳过特定阶段（高级用法，需要已有产出）
+pinable-agents run do --task "任务描述" --skip-phases clarify,explore
+
+# 指定工作目录
+pinable-agents run do --task "任务描述" --workdir ./my-project
+
+# 启用详细日志
+PINABLE_LOG_LEVEL=debug pinable-agents run do --task "任务描述"</code></pre>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="system-requirements.html">&larr; 系统需求</a>
+        <a class="btn btn-outline" href="workflow-omo.html">omo 智能路由编排 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

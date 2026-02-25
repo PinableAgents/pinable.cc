@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents 技能系统详解，涵盖技能自动检测、内置技能目录、自定义技能开发、技能优先级与组合等进阶内容。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>技能系统 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / 技能系统
+        </div>
+        <h1 class="article-title">技能系统</h1>
+        <div class="article-meta">
+          <span>分类：进阶</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#auto-detection">技能自动检测机制</a></li>
+          <li><a href="#injection-budget">技能注入预算与 16KB 限制</a></li>
+          <li><a href="#builtin-catalog">内置技能目录</a></li>
+          <li><a href="#definition-format">技能定义格式</a></li>
+          <li><a href="#custom-development">自定义技能开发工作流</a></li>
+          <li><a href="#priority-resolution">技能优先级与冲突解决</a></li>
+          <li><a href="#composition">技能组合与链式调用</a></li>
+          <li><a href="#performance">技能加载的性能影响</a></li>
+          <li><a href="#examples">实战示例</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="auto-detection">技能自动检测机制</h2>
+        <p>PinableAgents 的技能系统采用基于项目技术栈的自动检测机制。当你在一个项目目录中启动工作流时，系统会扫描项目根目录下的标志性文件，自动匹配并加载对应的技能集合。这一过程在工作流初始化阶段完成，无需用户手动配置。</p>
+        <p>自动检测的核心逻辑遵循"文件签名匹配"策略。系统维护了一张签名映射表，将特定文件映射到对应的技能集。以下是主要的检测规则：</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>签名文件</th>
+              <th>检测到的技术栈</th>
+              <th>加载的技能集</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>package.json</code></td>
+              <td>Node.js / JavaScript</td>
+              <td>node-skills, npm-scripts, jest-testing</td>
+            </tr>
+            <tr>
+              <td><code>go.mod</code></td>
+              <td>Go</td>
+              <td>go-skills, go-test, go-build</td>
+            </tr>
+            <tr>
+              <td><code>pyproject.toml</code> / <code>requirements.txt</code></td>
+              <td>Python</td>
+              <td>python-skills, pytest, pip-manage</td>
+            </tr>
+            <tr>
+              <td><code>Cargo.toml</code></td>
+              <td>Rust</td>
+              <td>rust-skills, cargo-test, cargo-build</td>
+            </tr>
+            <tr>
+              <td><code>pom.xml</code> / <code>build.gradle</code></td>
+              <td>Java</td>
+              <td>java-skills, maven-build, junit-test</td>
+            </tr>
+            <tr>
+              <td><code>Dockerfile</code></td>
+              <td>容器化</td>
+              <td>docker-skills, container-debug</td>
+            </tr>
+            <tr>
+              <td><code>.github/workflows/</code></td>
+              <td>GitHub Actions</td>
+              <td>ci-skills, workflow-debug</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>当项目包含多个签名文件时（例如一个全栈项目同时存在 <code>package.json</code> 和 <code>go.mod</code>），系统会加载所有匹配的技能集。你可以通过配置文件手动排除不需要的技能集，避免上下文窗口的浪费。</p>
+        <pre><code># 查看当前项目检测到的技能集
+pinable-agents skills detect
+
+# 输出示例：
+# Detected signatures:
+#   package.json  -> node-skills, npm-scripts, jest-testing
+#   go.mod        -> go-skills, go-test, go-build
+#   Dockerfile    -> docker-skills, container-debug
+# Total skills: 8 | Estimated budget: 12.3 KB</code></pre>
+
+        <h2 id="injection-budget">技能注入预算与 16KB 限制</h2>
+        <p>技能系统采用严格的注入预算管理机制。每次工作流执行时，所有加载的技能描述（包括触发模式、提示词模板和工具定义）的总大小不得超过 <strong>16KB</strong>。这一限制是经过大量实验确定的最佳平衡点，既保证了智能体获得足够的上下文信息，又避免了过长的提示词导致模型性能下降。</p>
+        <p>预算分配遵循优先级排序：核心技能优先分配预算，剩余空间由辅助技能共享。当总预算超出限制时，系统会自动裁剪低优先级技能的描述，或完全跳过最低优先级的技能。</p>
+
+        <blockquote>
+          <p>建议将自定义技能的描述控制在 2KB 以内。过长的技能描述不仅浪费预算，还会降低智能体对关键指令的注意力。简洁而精确的描述是高效技能设计的关键。</p>
+        </blockquote>
+
+        <pre><code># 检查当前技能预算使用情况
+pinable-agents skills budget
+
+# 输出示例：
+# Skill Budget Report
+# ──────────────────────────────
+# Total budget:    16,384 bytes
+# Used:           12,288 bytes (75%)
+# Remaining:       4,096 bytes
+# ──────────────────────────────
+# Top consumers:
+#   go-skills      3,840 bytes (23.4%)
+#   node-skills    3,072 bytes (18.7%)
+#   docker-skills  2,560 bytes (15.6%)</code></pre>
+
+        <h2 id="builtin-catalog">内置技能目录</h2>
+        <p>PinableAgents 内置了一套丰富的通用技能，覆盖软件开发的各个环节。以下是完整的内置技能目录：</p>
+
+        <h3>代码操作类</h3>
+        <ul>
+          <li><strong>code</strong> - 通用代码编写技能，包含代码生成、修改和删除操作的最佳实践指导</li>
+          <li><strong>refactor</strong> - 代码重构技能，支持提取函数、重命名变量、消除重复代码等常见重构模式</li>
+          <li><strong>optimize</strong> - 性能优化技能，提供算法优化、内存管理和并发优化的策略指导</li>
+          <li><strong>bugfix</strong> - 缺陷修复技能，包含根因分析方法论和最小化修改原则</li>
+        </ul>
+
+        <h3>质量保障类</h3>
+        <ul>
+          <li><strong>review</strong> - 代码审查技能，按照安全性、可维护性、性能、风格四个维度进行系统化审查</li>
+          <li><strong>test</strong> - 测试编写技能，支持单元测试、集成测试和端到端测试的生成</li>
+          <li><strong>debug</strong> - 调试技能，提供系统化的问题定位和日志分析方法</li>
+        </ul>
+
+        <h3>工程协作类</h3>
+        <ul>
+          <li><strong>commit</strong> - Git 提交技能，生成符合 Conventional Commits 规范的提交信息</li>
+          <li><strong>docs</strong> - 文档编写技能，支持 API 文档、README 和内联注释的生成</li>
+          <li><strong>ask</strong> - 问答技能，针对代码库进行上下文感知的问答交互</li>
+          <li><strong>enhance-prompt</strong> - 提示词增强技能，将模糊的任务描述转化为结构化的精确指令</li>
+        </ul>
+
+        <h2 id="definition-format">技能定义格式</h2>
+        <p>每个技能由一个 YAML 文件定义，存放在模块的 <code>skills/</code> 目录下。YAML 文件的结构遵循统一的 Schema，包含元数据、触发模式、提示词模板和工具声明。</p>
+
+        <pre><code># skills/database-migration.yaml
+name: database-migration
+version: 1.0.0
+description: 数据库迁移脚本生成与执行技能
+category: database
+priority: 50
+
+triggers:
+  - pattern: "migration|migrate|数据库迁移|schema change"
+    confidence: 0.8
+  - pattern: "alter table|add column|create table"
+    confidence: 0.6
+  - files:
+    - "migrations/"
+    - "db/migrate/"
+    - "alembic/"
+
+prompt: |
+  你是一个数据库迁移专家。在生成迁移脚本时，请遵循以下原则：
+  1. 每个迁移文件必须包含 up 和 down 两个方向
+  2. 避免在生产环境中使用破坏性操作（DROP COLUMN、DROP TABLE）
+  3. 大表的 schema 变更必须考虑在线 DDL 策略
+  4. 迁移文件命名格式：{timestamp}_{description}.sql
+
+tools:
+  - name: execute_sql
+    description: 在目标数据库上执行 SQL 语句
+    parameters:
+      database: string
+      query: string
+      dry_run: boolean
+  - name: generate_migration
+    description: 生成迁移脚本文件
+    parameters:
+      name: string
+      up_sql: string
+      down_sql: string
+
+constraints:
+  max_budget: 2048
+  requires: ["code", "review"]</code></pre>
+
+        <p>关键字段说明：</p>
+        <ul>
+          <li><strong>triggers</strong> - 定义技能的激活条件，支持文本模式匹配和文件路径匹配，每条触发规则有一个置信度分数</li>
+          <li><strong>prompt</strong> - 注入到智能体系统提示词中的指导文本，是技能的核心内容</li>
+          <li><strong>tools</strong> - 技能声明的可用工具列表，智能体在执行时可以调用这些工具</li>
+          <li><strong>constraints</strong> - 技能的约束条件，包括最大预算占用和依赖的其他技能</li>
+        </ul>
+
+        <h2 id="custom-development">自定义技能开发工作流</h2>
+        <p>开发自定义技能的推荐工作流包含以下步骤：</p>
+        <ol>
+          <li><strong>需求定义</strong> - 明确技能要解决的问题域和预期行为。用 2-3 句话描述技能的核心职责。</li>
+          <li><strong>创建技能文件</strong> - 在项目的 <code>.pinable-agents/skills/</code> 目录下创建 YAML 文件。</li>
+          <li><strong>编写触发模式</strong> - 定义在什么条件下激活该技能。建议覆盖中英文关键词。</li>
+          <li><strong>撰写提示词</strong> - 编写清晰、简洁的指导文本。避免冗长的背景说明，聚焦于行为规则。</li>
+          <li><strong>声明工具</strong> - 如果技能需要特殊工具，在 tools 段声明。</li>
+          <li><strong>测试验证</strong> - 使用 <code>pinable-agents skills test</code> 命令验证技能的触发和执行。</li>
+        </ol>
+
+        <pre><code># 使用脚手架命令快速创建技能模板
+pinable-agents skills create my-custom-skill
+
+# 测试技能的触发匹配
+pinable-agents skills test my-custom-skill --input "请帮我执行数据库迁移"
+
+# 验证技能文件的格式正确性
+pinable-agents skills validate .pinable-agents/skills/my-custom-skill.yaml</code></pre>
+
+        <h2 id="priority-resolution">技能优先级与冲突解决</h2>
+        <p>当多个技能同时被触发时，系统需要决定它们的执行顺序和资源分配。PinableAgents 使用一个基于优先级分数的解决机制。每个技能有一个 0-100 的优先级值，数值越高优先级越高。</p>
+        <p>冲突解决遵循以下规则：</p>
+        <ol>
+          <li><strong>显式优先级</strong> - 优先级分数高的技能优先获得预算分配</li>
+          <li><strong>触发置信度</strong> - 在优先级相同时，触发置信度更高的技能优先</li>
+          <li><strong>特异性原则</strong> - 针对特定技术栈的技能优先于通用技能（例如 <code>jest-testing</code> 优先于 <code>test</code>）</li>
+          <li><strong>用户覆盖</strong> - 用户可以在配置文件中强制指定技能的优先级或完全禁用某个技能</li>
+        </ol>
+
+        <pre><code># .pinable-agents/config.json 中的技能优先级覆盖
+{
+  "skills": {
+    "overrides": {
+      "my-custom-skill": { "priority": 90 },
+      "docker-skills": { "enabled": false }
+    },
+    "exclusive_groups": [
+      ["jest-testing", "vitest-testing", "mocha-testing"]
+    ]
+  }
+}</code></pre>
+
+        <p><code>exclusive_groups</code> 定义了互斥的技能组。同一组中只有优先级最高的技能会被加载，避免功能重叠的技能同时占用预算。</p>
+
+        <h2 id="composition">技能组合与链式调用</h2>
+        <p>技能组合允许将多个原子技能串联为一个复合工作单元。这对于需要多步骤协作的场景非常有用。例如，一个"安全修复"流程可能需要依次调用 <code>debug</code>（定位问题）、<code>bugfix</code>（修复代码）、<code>test</code>（编写测试）和 <code>review</code>（审查结果）。</p>
+
+        <pre><code># skills/security-fix.yaml
+name: security-fix
+description: 安全漏洞修复组合技能
+category: security
+priority: 95
+
+composition:
+  chain:
+    - skill: debug
+      context: "聚焦于安全漏洞的定位，检查输入验证、权限控制和数据泄露"
+    - skill: bugfix
+      context: "应用最小化修复原则，不引入新的攻击面"
+    - skill: test
+      context: "编写针对安全场景的测试用例，包括恶意输入和边界值"
+    - skill: review
+      context: "按照 OWASP Top 10 清单进行安全审查"
+  fallback: "如果任何步骤失败，回滚所有变更并报告失败原因"</code></pre>
+
+        <h2 id="performance">技能加载的性能影响</h2>
+        <p>技能加载对工作流启动时间和执行效率有直接影响。根据基准测试数据，技能检测和加载过程通常在 50-200ms 内完成，对整体工作流的时间影响可忽略不计。但是，过多的技能会增加系统提示词的长度，间接影响模型的推理速度和质量。</p>
+        <p>性能优化建议：</p>
+        <ul>
+          <li>将常用技能的优先级设高，确保它们在预算耗尽前被加载</li>
+          <li>定期审查项目的技能列表，移除不再需要的自定义技能</li>
+          <li>对于大型单一代码库项目，使用 <code>skills.include</code> 配置项显式指定需要的技能，而非依赖自动检测</li>
+          <li>利用 <code>pinable-agents skills budget</code> 命令监控预算使用情况</li>
+        </ul>
+
+        <h2 id="examples">实战示例</h2>
+        <h3>示例一：创建数据库迁移技能</h3>
+        <p>假设你的团队频繁进行数据库 schema 变更，希望标准化迁移脚本的生成流程。</p>
+        <pre><code># 1. 创建技能文件
+pinable-agents skills create database-migration
+
+# 2. 编辑 .pinable-agents/skills/database-migration.yaml
+#    添加触发模式、提示词和工具（参考上文的定义格式示例）
+
+# 3. 测试触发匹配
+pinable-agents skills test database-migration \
+  --input "添加用户表的 email 字段并创建索引"
+
+# 4. 在工作流中使用
+pinable-agents run do \
+  --task "为 users 表添加 email varchar(255) 字段，创建唯一索引" \
+  --skills database-migration</code></pre>
+
+        <h3>示例二：创建部署技能</h3>
+        <p>针对 Kubernetes 部署场景，创建一个自动化部署技能：</p>
+        <pre><code># skills/k8s-deploy.yaml
+name: k8s-deploy
+version: 1.0.0
+description: Kubernetes 部署自动化技能
+category: devops
+priority: 70
+
+triggers:
+  - pattern: "deploy|部署|rollout|发布"
+    confidence: 0.7
+  - files:
+    - "k8s/"
+    - "helm/"
+    - "manifests/"
+
+prompt: |
+  你是 Kubernetes 部署专家。执行部署操作时遵循以下原则：
+  1. 始终使用滚动更新策略，设置合理的 maxSurge 和 maxUnavailable
+  2. 部署前检查资源配额和节点容量
+  3. 配置健康检查探针（liveness 和 readiness）
+  4. 保留至少 3 个历史版本以便快速回滚
+
+tools:
+  - name: kubectl_apply
+    description: 应用 Kubernetes 配置
+    parameters:
+      manifest_path: string
+      namespace: string
+      dry_run: boolean</code></pre>
+
+        <blockquote>
+          <p>技能系统的设计哲学是"约定优于配置"。对于大多数项目，自动检测机制已经足够。只有在默认行为不满足需求时，才需要开发自定义技能。保持技能库精简是长期维护的关键。</p>
+        </blockquote>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="custom-agents.html">&larr; 自定义智能体</a>
+        <a class="btn btn-outline" href="quality-gates.html">质量门控 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents 质量门控体系详解，涵盖 BMAD PRD 评分、架构评审、SPARV 规格门控、代码审查清单和 CI/CD 集成。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>质量门控 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / 质量门控
+        </div>
+        <h1 class="article-title">质量门控</h1>
+        <div class="article-meta">
+          <span>分类：进阶</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#overview">质量门控体系概述</a></li>
+          <li><a href="#bmad-prd">BMAD PRD 评分标准</a></li>
+          <li><a href="#architecture-review">架构评审评分标准</a></li>
+          <li><a href="#sparv">SPARV 10 项规格门控</a></li>
+          <li><a href="#code-review">代码审查质量清单</a></li>
+          <li><a href="#test-coverage">测试覆盖率要求</a></li>
+          <li><a href="#auto-vs-manual">自动化检查与人工评审</a></li>
+          <li><a href="#custom-thresholds">自定义质量阈值</a></li>
+          <li><a href="#dashboard">质量指标仪表盘</a></li>
+          <li><a href="#remediation-example">实战：质量门控失败与修复</a></li>
+          <li><a href="#cicd-integration">CI/CD 流水线集成</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="overview">质量门控体系概述</h2>
+        <p>PinableAgents 的质量门控是一套多维度的质量保障体系，贯穿从需求定义到代码交付的整个工作流。每个关键阶段都设有质量检查点（Gate），只有通过检查的交付物才能进入下一阶段。这一机制确保了最终产出的可靠性和一致性。</p>
+        <p>质量门控体系包含三个层级：</p>
+        <ul>
+          <li><strong>文档层</strong> - 对需求文档（PRD）和架构设计文档进行结构化评分</li>
+          <li><strong>规格层</strong> - 通过 SPARV 标准验证实现规格的完整性和精确性</li>
+          <li><strong>代码层</strong> - 对代码实现进行多维度的质量审查</li>
+        </ul>
+        <p>门控的核心理念是"左移质量"，即在开发流程的早期阶段发现和修复问题，而非在代码提交后才进行补救。统计数据表明，需求阶段发现的缺陷修复成本仅为代码阶段的十分之一。</p>
+
+        <blockquote>
+          <p>质量门控不是阻碍开发效率的障碍，而是防止技术债务累积的保险机制。通过合理配置阈值，你可以在速度和质量之间找到适合团队的平衡点。</p>
+        </blockquote>
+
+        <h2 id="bmad-prd">BMAD PRD 评分标准</h2>
+        <p>在 BMAD 工作流中，产品经理智能体生成的 PRD 文档需要通过一个 100 分制的评分门控。评分由 10 个维度组成，每个维度满分 10 分。只有总分达到配置的阈值（默认 70 分）才能通过门控。</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>维度</th>
+              <th>满分</th>
+              <th>评分标准</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>完整性（Completeness）</td>
+              <td>10</td>
+              <td>所有必要章节是否齐全，包括背景、目标、用户故事、验收标准</td>
+            </tr>
+            <tr>
+              <td>清晰度（Clarity）</td>
+              <td>10</td>
+              <td>描述是否无歧义，术语是否统一定义，是否避免了模糊措辞</td>
+            </tr>
+            <tr>
+              <td>可测试性（Testability）</td>
+              <td>10</td>
+              <td>每个需求是否可验证，验收标准是否具体可量化</td>
+            </tr>
+            <tr>
+              <td>一致性（Consistency）</td>
+              <td>10</td>
+              <td>需求之间是否存在矛盾，优先级是否合理</td>
+            </tr>
+            <tr>
+              <td>可行性（Feasibility）</td>
+              <td>10</td>
+              <td>技术可行性是否经过评估，是否考虑了现有架构约束</td>
+            </tr>
+            <tr>
+              <td>范围界定（Scope）</td>
+              <td>10</td>
+              <td>范围是否明确，是否有清晰的"不做"列表</td>
+            </tr>
+            <tr>
+              <td>用户视角（User Focus）</td>
+              <td>10</td>
+              <td>是否从用户角度描述需求，用户故事是否遵循 INVEST 原则</td>
+            </tr>
+            <tr>
+              <td>非功能需求（NFR）</td>
+              <td>10</td>
+              <td>性能、安全、可用性、可维护性等非功能需求是否覆盖</td>
+            </tr>
+            <tr>
+              <td>依赖标注（Dependencies）</td>
+              <td>10</td>
+              <td>外部依赖、前置条件和风险是否明确标注</td>
+            </tr>
+            <tr>
+              <td>交付标准（Delivery Criteria）</td>
+              <td>10</td>
+              <td>上线标准、监控指标和回滚计划是否定义</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <pre><code># 手动触发 PRD 评分
+pinable-agents gate prd-score --file docs/prd-user-auth.md
+
+# 输出示例：
+# PRD Scoring Report: docs/prd-user-auth.md
+# ──────────────────────────────────────────
+# Completeness:       8/10
+# Clarity:            9/10
+# Testability:        7/10
+# Consistency:        9/10
+# Feasibility:        8/10
+# Scope:              6/10  ← 需要改进
+# User Focus:         8/10
+# NFR:                5/10  ← 需要改进
+# Dependencies:       7/10
+# Delivery Criteria:  6/10  ← 需要改进
+# ──────────────────────────────────────────
+# Total: 73/100 | Threshold: 70 | Status: PASSED</code></pre>
+
+        <h2 id="architecture-review">架构评审评分标准</h2>
+        <p>架构设计文档同样采用 100 分制的评审机制。架构评审关注系统设计的合理性、可扩展性和技术选型的准确性。评分维度包括：</p>
+        <ol>
+          <li><strong>系统分解（15 分）</strong> - 模块划分是否合理，职责是否单一，边界是否清晰</li>
+          <li><strong>接口设计（15 分）</strong> - API 契约是否完整，版本策略是否明确，错误处理是否规范</li>
+          <li><strong>数据模型（15 分）</strong> - 数据结构是否满足查询需求，索引策略是否合理</li>
+          <li><strong>可扩展性（10 分）</strong> - 是否为未来变更预留了扩展点，但避免过度设计</li>
+          <li><strong>安全设计（10 分）</strong> - 认证授权方案是否完备，数据加密和传输安全是否考虑</li>
+          <li><strong>容错设计（10 分）</strong> - 故障恢复策略、降级方案和超时处理是否定义</li>
+          <li><strong>性能预估（10 分）</strong> - 关键路径的延迟预估、吞吐量设计和瓶颈分析</li>
+          <li><strong>技术选型（10 分）</strong> - 工具和框架的选择是否有依据，是否考虑了团队熟悉度</li>
+          <li><strong>依赖管理（5 分）</strong> - 第三方依赖的版本锁定和更新策略</li>
+        </ol>
+
+        <h2 id="sparv">SPARV 10 项规格门控</h2>
+        <p>SPARV（Specification, Precision, Accuracy, Relevance, Validation）是 PinableAgents 用于验证实现规格的 10 项检查标准。每一项为通过/不通过的二元判定，要求全部 10 项通过才能放行。</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>序号</th>
+              <th>检查项</th>
+              <th>描述</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>需求追溯</td><td>每个实现单元都能追溯到具体的需求条目</td></tr>
+            <tr><td>2</td><td>接口一致</td><td>实际实现的接口与设计文档定义完全一致</td></tr>
+            <tr><td>3</td><td>错误处理</td><td>所有已知错误路径都有明确的处理逻辑</td></tr>
+            <tr><td>4</td><td>边界覆盖</td><td>输入参数的边界值和极端情况都有处理</td></tr>
+            <tr><td>5</td><td>安全合规</td><td>敏感数据处理符合安全规范，无硬编码密钥</td></tr>
+            <tr><td>6</td><td>性能基线</td><td>关键路径的响应时间在设定基线以内</td></tr>
+            <tr><td>7</td><td>日志规范</td><td>关键操作有适当级别的日志记录，不泄露敏感信息</td></tr>
+            <tr><td>8</td><td>配置外置</td><td>环境相关的值通过配置或环境变量注入，不硬编码</td></tr>
+            <tr><td>9</td><td>向后兼容</td><td>变更不破坏现有公开接口的行为契约</td></tr>
+            <tr><td>10</td><td>文档同步</td><td>代码变更对应的文档已同步更新</td></tr>
+          </tbody>
+        </table>
+
+        <pre><code># 运行 SPARV 门控检查
+pinable-agents gate sparv --scope src/auth/
+
+# 输出示例：
+# SPARV Gate Check: src/auth/
+# [PASS] 1. 需求追溯 - 所有函数均有对应 story ID 注释
+# [PASS] 2. 接口一致 - 3 个 API 端点与设计文档匹配
+# [FAIL] 3. 错误处理 - handleTokenRefresh() 缺少网络超时处理
+# [PASS] 4. 边界覆盖 - 输入验证覆盖所有声明的约束
+# ...
+# Result: 9/10 PASSED | Status: BLOCKED</code></pre>
+
+        <h2 id="code-review">代码审查质量清单</h2>
+        <p>代码审查门控使用结构化的清单来确保审查的全面性和一致性。审查者（无论是智能体还是人工）需要逐项确认以下检查点：</p>
+        <h3>功能正确性</h3>
+        <ul>
+          <li>实现是否完整满足需求描述</li>
+          <li>边界条件和异常路径是否正确处理</li>
+          <li>业务逻辑是否与验收标准对齐</li>
+        </ul>
+        <h3>代码质量</h3>
+        <ul>
+          <li>命名是否清晰表达意图</li>
+          <li>函数长度是否合理（建议不超过 40 行）</li>
+          <li>嵌套层级是否在 3 级以内</li>
+          <li>是否存在重复代码可以提取</li>
+        </ul>
+        <h3>安全性</h3>
+        <ul>
+          <li>用户输入是否经过验证和消毒</li>
+          <li>是否存在 SQL 注入、XSS 等常见漏洞</li>
+          <li>敏感数据是否加密存储和传输</li>
+        </ul>
+
+        <h2 id="test-coverage">测试覆盖率要求</h2>
+        <p>不同工作流对测试覆盖率有不同的要求：</p>
+        <table>
+          <thead>
+            <tr>
+              <th>工作流</th>
+              <th>行覆盖率</th>
+              <th>分支覆盖率</th>
+              <th>关键路径覆盖</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>essentials</td><td>60%</td><td>50%</td><td>必须</td></tr>
+            <tr><td>do</td><td>70%</td><td>60%</td><td>必须</td></tr>
+            <tr><td>omo</td><td>75%</td><td>65%</td><td>必须</td></tr>
+            <tr><td>bmad</td><td>80%</td><td>70%</td><td>必须</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="auto-vs-manual">自动化检查与人工评审</h2>
+        <p>质量门控分为自动化检查和人工评审两类。自动化检查由系统在工作流执行过程中自动触发，包括格式验证、静态分析、测试运行和覆盖率统计。人工评审则由团队成员或高级智能体在关键节点手动执行，聚焦于自动化工具难以覆盖的领域，如设计合理性、业务逻辑正确性和用户体验评估。</p>
+        <p>建议的分工策略：</p>
+        <ul>
+          <li><strong>自动化</strong> - 格式检查、lint 规则、类型检查、测试运行、覆盖率统计、安全扫描</li>
+          <li><strong>人工/高级智能体</strong> - 架构评审、PRD 评分、业务逻辑验证、性能设计评估</li>
+        </ul>
+
+        <h2 id="custom-thresholds">自定义质量阈值</h2>
+        <p>所有质量门控的阈值都可以通过配置文件调整。这让团队可以根据项目阶段和成熟度灵活设定标准。</p>
+        <pre><code>{
+  "quality_gates": {
+    "prd_score_threshold": 70,
+    "architecture_score_threshold": 65,
+    "sparv_required_pass": 10,
+    "code_review": {
+      "max_function_length": 40,
+      "max_nesting_depth": 3,
+      "require_error_handling": true
+    },
+    "test_coverage": {
+      "line_coverage_min": 70,
+      "branch_coverage_min": 60
+    },
+    "strict_mode": false
+  }
+}</code></pre>
+        <p>将 <code>strict_mode</code> 设为 <code>true</code> 时，任何门控失败都会立即中断工作流。设为 <code>false</code> 时，系统会生成警告但继续执行，适合项目初期逐步引入质量标准的场景。</p>
+
+        <h2 id="dashboard">质量指标仪表盘</h2>
+        <p>PinableAgents 桌面端提供了质量指标仪表盘，实时展示项目的质量趋势。仪表盘包含以下模块：</p>
+        <ul>
+          <li><strong>门控通过率</strong> - 过去 30 天内各门控的通过率趋势图</li>
+          <li><strong>评分分布</strong> - PRD 和架构评审的分数分布直方图</li>
+          <li><strong>常见失败项</strong> - 最频繁触发的门控失败项排名</li>
+          <li><strong>修复时间</strong> - 从门控失败到修复通过的平均时间</li>
+        </ul>
+
+        <h2 id="remediation-example">实战：质量门控失败与修复</h2>
+        <p>以下是一个完整的门控失败与修复流程示例。假设团队正在开发用户认证功能，PRD 评分门控未通过：</p>
+        <pre><code># 1. 工作流在 PRD 评分阶段阻塞
+# pinable-agents run bmad --task "实现用户 OAuth2 认证"
+# [GATE BLOCKED] PRD Score: 62/100 (threshold: 70)
+# Failed dimensions: NFR (4/10), Scope (5/10), Delivery Criteria (3/10)
+
+# 2. 查看详细的评分报告
+pinable-agents gate report --latest
+
+# 3. 根据报告修复 PRD
+# - NFR: 补充性能要求（登录响应 < 500ms）和安全要求（密码哈希算法）
+# - Scope: 添加"不做"列表（本期不支持 SAML、不支持多因素认证）
+# - Delivery Criteria: 定义上线标准和监控告警规则
+
+# 4. 重新提交评分
+pinable-agents gate prd-score --file docs/prd-user-auth-v2.md
+# [GATE PASSED] PRD Score: 81/100
+
+# 5. 工作流继续执行</code></pre>
+
+        <h2 id="cicd-integration">CI/CD 流水线集成</h2>
+        <p>质量门控可以集成到 CI/CD 流水线中，作为合并请求的必要检查项。</p>
+        <pre><code># .github/workflows/quality-gate.yml
+name: Quality Gate
+on: [pull_request]
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PinableAgents CLI
+        run: npm install -g @pinable/agents-cli
+      - name: Run SPARV Gate
+        run: pinable-agents gate sparv --scope src/ --ci
+      - name: Run Code Review Gate
+        run: pinable-agents gate review --diff origin/main...HEAD --ci
+      - name: Check Test Coverage
+        run: pinable-agents gate coverage --threshold 70 --ci</code></pre>
+
+        <blockquote>
+          <p>质量门控的最终目标不是追求完美的分数，而是建立团队对质量的共识和持续改进的习惯。从低阈值开始，随着团队成熟度的提升逐步提高标准，才是可持续的质量策略。</p>
+        </blockquote>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="skill-system.html">&larr; 技能系统</a>
+        <a class="btn btn-outline" href="best-practices-team.html">团队协作最佳实践 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents config.json 完整参考指南，涵盖所有顶层配置字段、模块配置、后端设置、工作流默认值、执行参数、日志配置以及多环境管理策略。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>config.json 完整指南 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / config.json 完整指南
+        </div>
+        <h1 class="article-title">config.json 完整指南</h1>
+        <div class="article-meta">
+          <span>分类：配置</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#file-structure">文件结构总览</a></li>
+          <li><a href="#module-config">模块配置段</a></li>
+          <li><a href="#backend-config">后端配置段</a></li>
+          <li><a href="#workflow-defaults">工作流默认值</a></li>
+          <li><a href="#execution-settings">执行参数设置</a></li>
+          <li><a href="#logging-config">日志配置</a></li>
+          <li><a href="#env-specific">多环境配置策略</a></li>
+          <li><a href="#validation">配置验证与 Schema</a></li>
+          <li><a href="#migration">配置版本迁移</a></li>
+          <li><a href="#examples">不同团队规模的示例配置</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="file-structure">文件结构总览</h2>
+        <p><code>config.json</code> 是 PinableAgents 的核心配置文件，位于工作目录（默认 <code>~/.pinable-agents/</code>）的根路径下。它以 JSON 格式存储，包含系统运行所需的所有配置参数。文件结构由以下顶层字段组成：</p>
+        <pre><code>{
+  "version": "2.0",
+  "modules": { ... },
+  "backends": { ... },
+  "workflow_defaults": { ... },
+  "execution": { ... },
+  "logging": { ... },
+  "worktree": { ... },
+  "proxy": { ... },
+  "update": { ... },
+  "ui": { ... }
+}</code></pre>
+        <p>每个顶层字段控制系统的一个方面。<code>version</code> 字段标识配置文件的格式版本，系统在读取配置时会根据此字段决定是否需要执行迁移。以下各节将逐一深入介绍每个配置段的完整选项。</p>
+
+        <blockquote>
+          <p>编辑 <code>config.json</code> 前建议先备份。你可以通过桌面端的 Config 页面编辑，它内置了 Schema 验证和实时错误提示，比手动编辑 JSON 更安全。</p>
+        </blockquote>
+
+        <h2 id="module-config">模块配置段</h2>
+        <p><code>modules</code> 配置段控制已安装模块的启用状态和模块特定的配置参数。</p>
+        <pre><code>{
+  "modules": {
+    "enabled": ["do", "essentials", "omo", "memorys"],
+    "disabled": ["bmad"],
+    "settings": {
+      "do": {
+        "default_phases": ["analyze", "implement", "review"],
+        "skip_review_for_minor": true,
+        "auto_commit": false
+      },
+      "omo": {
+        "signal_threshold": 0.7,
+        "max_reroute_depth": 3,
+        "fallback_workflow": "do"
+      },
+      "memorys": {
+        "storage_backend": "local",
+        "max_entries": 1000,
+        "ttl_days": 90,
+        "index_on_save": true
+      }
+    }
+  }
+}</code></pre>
+
+        <table>
+          <thead>
+            <tr>
+              <th>字段</th>
+              <th>类型</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>enabled</code></td>
+              <td>string[]</td>
+              <td>已启用的模块列表，按加载顺序排列</td>
+            </tr>
+            <tr>
+              <td><code>disabled</code></td>
+              <td>string[]</td>
+              <td>已安装但明确禁用的模块</td>
+            </tr>
+            <tr>
+              <td><code>settings</code></td>
+              <td>object</td>
+              <td>模块特定的配置，键名为模块名称</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>模块的加载顺序由 <code>enabled</code> 数组的顺序决定。如果模块 A 依赖模块 B，那么 B 必须在 A 之前出现。系统在启动时会验证加载顺序并在依赖不满足时报告错误。</p>
+        <p>每个模块的 <code>settings</code> 对象结构由模块自身的 <code>config-schema.json</code> 定义。你可以在桌面端的 Config 页面中获得该模块支持的所有配置项及其说明。</p>
+
+        <h2 id="backend-config">后端配置段</h2>
+        <p><code>backends</code> 配置段定义了所有 AI 后端的连接参数和模型偏好。</p>
+        <pre><code>{
+  "backends": {
+    "default": "claude",
+    "providers": {
+      "claude": {
+        "api_key_env": "ANTHROPIC_API_KEY",
+        "model": "claude-opus-4-6",
+        "temperature": 0.4,
+        "max_tokens": 8192,
+        "top_p": 0.95,
+        "endpoint": "https://api.anthropic.com",
+        "timeout_seconds": 120,
+        "retry_count": 3,
+        "retry_delay_ms": 1000
+      },
+      "codex": {
+        "api_key_env": "OPENAI_API_KEY",
+        "model": "o3",
+        "temperature": 0.2,
+        "max_tokens": 16384,
+        "endpoint": "https://api.openai.com/v1",
+        "timeout_seconds": 180,
+        "retry_count": 2,
+        "retry_delay_ms": 2000
+      },
+      "gemini": {
+        "api_key_env": "GEMINI_API_KEY",
+        "model": "gemini-2.5-pro",
+        "temperature": 0.3,
+        "max_tokens": 8192,
+        "endpoint": "https://generativelanguage.googleapis.com",
+        "timeout_seconds": 150,
+        "retry_count": 3,
+        "retry_delay_ms": 1500
+      }
+    }
+  }
+}</code></pre>
+
+        <p>关于模型参数的详细说明：</p>
+        <ul>
+          <li><strong>temperature</strong>（0.0 ~ 2.0）：控制输出的随机性。值越低，输出越确定和保守；值越高，输出越多样和创造性。代码生成建议使用 0.2 ~ 0.4，创意任务可以使用 0.7 ~ 1.0。</li>
+          <li><strong>max_tokens</strong>：单次请求的最大输出 token 数。需要根据任务复杂度和模型上下文窗口大小设置。过小会导致输出被截断，过大会增加响应时间和成本。</li>
+          <li><strong>top_p</strong>（0.0 ~ 1.0）：核采样参数，与 temperature 配合控制输出多样性。通常建议只调整 temperature 或 top_p 之一，而非同时调整两者。</li>
+        </ul>
+
+        <blockquote>
+          <p>API 密钥不应直接写入 config.json。使用 <code>api_key_env</code> 字段指定环境变量名，系统在运行时从环境变量中读取密钥，避免密钥泄露风险。</p>
+        </blockquote>
+
+        <h2 id="workflow-defaults">工作流默认值</h2>
+        <p><code>workflow_defaults</code> 配置段定义工作流执行的默认行为，可以被具体任务的参数覆盖。</p>
+        <pre><code>{
+  "workflow_defaults": {
+    "default_workflow": "do",
+    "phase_overrides": {
+      "analyze": {
+        "backend": "claude",
+        "model": "claude-opus-4-6",
+        "temperature": 0.3
+      },
+      "implement": {
+        "backend": "codex",
+        "model": "o3",
+        "temperature": 0.2
+      },
+      "review": {
+        "backend": "claude",
+        "model": "claude-opus-4-6",
+        "temperature": 0.1
+      }
+    },
+    "auto_merge": false,
+    "require_review": true,
+    "validation_commands": [
+      "npm test",
+      "npm run lint",
+      "npm run type-check"
+    ]
+  }
+}</code></pre>
+
+        <p><code>phase_overrides</code> 是一个强大的功能，它允许你为工作流的不同阶段指定不同的 AI 后端和参数。例如，需求分析阶段可能需要更强的推理能力（使用 Claude），而代码实现阶段可能需要更大的上下文窗口（使用 Codex）。</p>
+        <p><code>validation_commands</code> 定义了在工作流完成后自动执行的验证命令。这些命令按顺序执行，任何一个失败都会阻止自动合并，确保合并到主分支的代码始终通过质量检查。</p>
+
+        <h2 id="execution-settings">执行参数设置</h2>
+        <p><code>execution</code> 配置段控制任务执行的并发性、超时和重试策略。</p>
+        <pre><code>{
+  "execution": {
+    "parallel_workers": 2,
+    "task_timeout_seconds": 600,
+    "phase_timeout_seconds": 300,
+    "retry_policy": {
+      "max_retries": 2,
+      "retry_on": ["timeout", "rate_limit", "server_error"],
+      "backoff": "exponential",
+      "initial_delay_ms": 1000,
+      "max_delay_ms": 30000
+    },
+    "resource_limits": {
+      "max_file_size_mb": 10,
+      "max_files_per_task": 50,
+      "max_diff_lines": 5000
+    }
+  }
+}</code></pre>
+
+        <table>
+          <thead>
+            <tr>
+              <th>配置项</th>
+              <th>默认值</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>parallel_workers</code></td>
+              <td><code>2</code></td>
+              <td>同时执行的最大任务数。受限于 CPU 和 API 配额。</td>
+            </tr>
+            <tr>
+              <td><code>task_timeout_seconds</code></td>
+              <td><code>600</code></td>
+              <td>整个任务的最大执行时间（10 分钟）</td>
+            </tr>
+            <tr>
+              <td><code>phase_timeout_seconds</code></td>
+              <td><code>300</code></td>
+              <td>单个阶段的最大执行时间（5 分钟）</td>
+            </tr>
+            <tr>
+              <td><code>retry_policy.max_retries</code></td>
+              <td><code>2</code></td>
+              <td>失败后的最大重试次数</td>
+            </tr>
+            <tr>
+              <td><code>retry_policy.backoff</code></td>
+              <td><code>exponential</code></td>
+              <td>重试间隔策略：exponential（指数）或 linear（线性）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>重试策略中的 <code>retry_on</code> 字段定义了哪些类型的错误会触发自动重试。<code>timeout</code> 表示请求超时，<code>rate_limit</code> 表示 API 速率限制（HTTP 429），<code>server_error</code> 表示服务端错误（HTTP 5xx）。对于业务逻辑错误（如生成的代码无法编译），不会触发重试，而是直接标记为失败。</p>
+
+        <h2 id="logging-config">日志配置</h2>
+        <p><code>logging</code> 配置段控制系统日志的输出行为。</p>
+        <pre><code>{
+  "logging": {
+    "level": "info",
+    "output": "file",
+    "file_path": "~/.pinable-agents/logs/pinable.log",
+    "rotation": {
+      "max_size_mb": 50,
+      "max_files": 10,
+      "compress": true
+    },
+    "format": "json",
+    "include_timestamp": true,
+    "include_caller": false,
+    "modules": {
+      "worktree": "debug",
+      "backend": "warn",
+      "execution": "info"
+    }
+  }
+}</code></pre>
+
+        <p>日志级别从低到高依次为：<code>debug</code>、<code>info</code>、<code>warn</code>、<code>error</code>。设置某个级别后，只有该级别及以上的日志才会被记录。<code>modules</code> 字段允许为不同的子系统设置独立的日志级别，便于针对性调试。</p>
+        <p>日志轮转配置确保日志文件不会无限增长。当单个日志文件超过 <code>max_size_mb</code> 大小时，系统会自动创建新的日志文件并压缩旧文件。<code>max_files</code> 控制保留的最大日志文件数量，超出时删除最旧的文件。</p>
+        <p>输出格式支持 <code>json</code>（结构化日志，便于日志分析工具解析）和 <code>text</code>（人类可读格式，便于直接阅读）。生产环境建议使用 <code>json</code>，开发环境建议使用 <code>text</code>。</p>
+
+        <h2 id="env-specific">多环境配置策略</h2>
+        <p>PinableAgents 支持多环境配置，允许针对开发（dev）、预发布（staging）和生产（prod）环境使用不同的配置参数。</p>
+        <p>多环境配置通过文件命名约定实现。系统按以下优先级加载配置文件：</p>
+        <ol>
+          <li><code>config.local.json</code> — 本地开发覆盖，不应提交到版本控制</li>
+          <li><code>config.{env}.json</code> — 环境特定配置（如 <code>config.staging.json</code>）</li>
+          <li><code>config.json</code> — 基础配置，包含所有环境共享的默认值</li>
+        </ol>
+        <p>配置合并使用深度合并（deep merge）策略，高优先级文件中的字段覆盖低优先级文件中的同名字段。这意味着你只需要在环境特定配置中写入与基础配置不同的部分。</p>
+        <pre><code>// config.json (基础配置)
+{
+  "backends": {
+    "default": "claude",
+    "providers": {
+      "claude": { "model": "claude-opus-4-6", "temperature": 0.4 }
+    }
+  },
+  "logging": { "level": "info" }
+}
+
+// config.staging.json (预发布环境覆盖)
+{
+  "backends": {
+    "providers": {
+      "claude": { "temperature": 0.2 }
+    }
+  },
+  "logging": { "level": "debug" }
+}
+
+// 合并结果：model 保持 claude-opus-4-6，temperature 变为 0.2，level 变为 debug</code></pre>
+
+        <p>通过 <code>PINABLE_ENV</code> 环境变量指定当前环境：</p>
+        <pre><code># 使用预发布配置
+export PINABLE_ENV=staging
+pinable-agents run do --task "..."
+
+# 使用生产配置
+export PINABLE_ENV=prod
+pinable-agents run do --task "..."</code></pre>
+
+        <h2 id="validation">配置验证与 Schema</h2>
+        <p>PinableAgents 使用 JSON Schema 对 <code>config.json</code> 进行严格验证。每次系统启动或配置文件被修改时，都会自动执行 Schema 验证。验证检查包括：</p>
+        <ul>
+          <li><strong>类型检查</strong>：确保每个字段的值类型正确（如 <code>parallel_workers</code> 必须是正整数）。</li>
+          <li><strong>枚举检查</strong>：确保枚举字段的值在允许范围内（如 <code>level</code> 必须是 debug/info/warn/error 之一）。</li>
+          <li><strong>范围检查</strong>：确保数值字段在合理范围内（如 <code>temperature</code> 必须在 0.0 到 2.0 之间）。</li>
+          <li><strong>必填检查</strong>：确保所有必填字段已提供。</li>
+          <li><strong>引用检查</strong>：确保 <code>default_workflow</code> 引用的工作流在已启用的模块中存在。</li>
+        </ul>
+        <pre><code># 手动验证配置文件
+pinable-agents config validate
+
+# 输出示例（验证通过）：
+# config.json 验证通过 (schema v2.0)
+
+# 输出示例（验证失败）：
+# 错误 [backends.providers.claude.temperature]: 值 2.5 超出范围 [0.0, 2.0]
+# 错误 [execution.parallel_workers]: 期望正整数，实际为 -1
+# 共发现 2 个错误</code></pre>
+
+        <h2 id="migration">配置版本迁移</h2>
+        <p>随着 PinableAgents 版本的演进，<code>config.json</code> 的结构可能发生变化。系统通过 <code>version</code> 字段识别配置格式版本，并在检测到旧版本配置时自动执行迁移。</p>
+        <p>迁移是自动且非破坏性的。系统在迁移前会自动创建备份文件（命名为 <code>config.json.backup.{timestamp}</code>），确保可以随时恢复。迁移过程中新增的字段会使用合理的默认值，已有的配置值保持不变。</p>
+        <pre><code># 手动触发配置迁移
+pinable-agents config migrate
+
+# 查看迁移历史
+pinable-agents config migrate --history
+
+# 回滚到备份
+pinable-agents config restore --from config.json.backup.20260225</code></pre>
+
+        <h2 id="examples">不同团队规模的示例配置</h2>
+        <h3>个人开发者</h3>
+        <p>专注于简洁和快速迭代，使用单一后端，最少的模块配置。</p>
+        <pre><code>{
+  "version": "2.0",
+  "modules": {
+    "enabled": ["do", "essentials"],
+    "settings": {
+      "do": { "auto_commit": true, "skip_review_for_minor": true }
+    }
+  },
+  "backends": {
+    "default": "claude",
+    "providers": {
+      "claude": {
+        "api_key_env": "ANTHROPIC_API_KEY",
+        "model": "claude-opus-4-6",
+        "temperature": 0.3,
+        "max_tokens": 8192
+      }
+    }
+  },
+  "execution": { "parallel_workers": 1, "task_timeout_seconds": 300 },
+  "logging": { "level": "warn", "output": "file" }
+}</code></pre>
+
+        <h3>小型团队（3-8 人）</h3>
+        <p>启用更多工作流模块，强制代码审查，使用多后端以平衡成本和性能。</p>
+        <pre><code>{
+  "version": "2.0",
+  "modules": {
+    "enabled": ["do", "omo", "essentials", "develop", "memorys"],
+    "settings": {
+      "do": { "auto_commit": false, "skip_review_for_minor": false }
+    }
+  },
+  "backends": {
+    "default": "claude",
+    "providers": {
+      "claude": {
+        "api_key_env": "ANTHROPIC_API_KEY",
+        "model": "claude-opus-4-6",
+        "temperature": 0.4,
+        "max_tokens": 8192
+      },
+      "codex": {
+        "api_key_env": "OPENAI_API_KEY",
+        "model": "o3",
+        "temperature": 0.2,
+        "max_tokens": 16384
+      }
+    }
+  },
+  "workflow_defaults": {
+    "require_review": true,
+    "validation_commands": ["npm test", "npm run lint"]
+  },
+  "execution": { "parallel_workers": 3, "task_timeout_seconds": 600 },
+  "logging": { "level": "info", "format": "json" }
+}</code></pre>
+
+        <h3>企业团队（8 人以上）</h3>
+        <p>完整的模块栈，严格的审查流程，企业级日志和审计配置。</p>
+        <pre><code>{
+  "version": "2.0",
+  "modules": {
+    "enabled": ["do", "omo", "bmad", "essentials", "develop",
+                "requirements", "memorys"],
+    "settings": {
+      "bmad": { "sprint_duration_days": 14, "require_acceptance": true }
+    }
+  },
+  "backends": {
+    "default": "claude",
+    "providers": {
+      "claude": { "api_key_env": "ANTHROPIC_API_KEY", "model": "claude-opus-4-6" },
+      "codex": { "api_key_env": "OPENAI_API_KEY", "model": "o3" },
+      "gemini": { "api_key_env": "GEMINI_API_KEY", "model": "gemini-2.5-pro" }
+    }
+  },
+  "workflow_defaults": {
+    "require_review": true,
+    "auto_merge": false
+  },
+  "execution": { "parallel_workers": 6, "task_timeout_seconds": 900 },
+  "logging": {
+    "level": "info",
+    "format": "json",
+    "rotation": { "max_size_mb": 100, "max_files": 30, "compress": true }
+  }
+}</code></pre>
+
+        <blockquote>
+          <p>无论团队规模如何，都建议将 <code>config.json</code>（去除敏感信息后）纳入版本控制，作为团队配置的单一真相来源。使用 <code>config.local.json</code> 存放个人的 API 密钥环境变量等敏感配置，并将其添加到 <code>.gitignore</code>。</p>
+        </blockquote>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="desktop-modules.html">&larr; 模块管理</a>
+        <a class="btn btn-outline" href="custom-agents.html">自定义智能体 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

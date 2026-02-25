@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents 多后端 AI 执行深度指南，涵盖 Codex、Claude、Gemini 后端的能力对比、配置方法、参数映射和最佳实践。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>多后端 AI 执行 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / 多后端 AI 执行
+        </div>
+        <h1 class="article-title">多后端 AI 执行</h1>
+        <div class="article-meta">
+          <span>分类：核心</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#overview">多后端架构概述</a></li>
+          <li><a href="#codex-backend">Codex 后端详解</a></li>
+          <li><a href="#claude-backend">Claude 后端详解</a></li>
+          <li><a href="#gemini-backend">Gemini 后端详解</a></li>
+          <li><a href="#capability-comparison">能力对比矩阵</a></li>
+          <li><a href="#config">配置与认证</a></li>
+          <li><a href="#parameter-mapping">统一参数映射</a></li>
+          <li><a href="#fallback-chain">回退链配置</a></li>
+          <li><a href="#response-normalization">响应格式规范化</a></li>
+          <li><a href="#benchmarks">性能与成本基准</a></li>
+          <li><a href="#best-practices">按任务类型选择后端</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="overview">多后端架构概述</h2>
+        <p>PinableAgents 的核心设计理念之一是后端无关性。通过统一的适配器接口，系统能够在不修改工作流逻辑的前提下，将任务分发到不同的 AI 后端执行。这种设计不仅避免了对单一供应商的依赖，还允许用户根据任务特点、成本预算和延迟要求选择最合适的后端。</p>
+        <p>多后端架构的运作原理是：工作流编排层生成标准化的任务请求，codeagent-wrapper 的适配器层将请求翻译为目标后端的原生 API 格式，执行后将后端响应翻译回标准化的结果格式。整个过程对上层工作流完全透明。这意味着同一个工作流定义可以在不同的后端上运行，无需任何修改。</p>
+        <p>目前 PinableAgents 支持三种主流 AI 后端：OpenAI 的 Codex 系列（包括 o3 和 o4-mini 模型）、Anthropic 的 Claude 系列（包括 Claude Opus 和 Sonnet 模型）、以及 Google 的 Gemini 系列。每种后端都有其独特的优势领域和局限性，下面逐一详解。</p>
+
+        <h2 id="codex-backend">Codex 后端详解</h2>
+        <h3>核心能力与模型</h3>
+        <p>Codex 后端通过 OpenAI API 访问，是 PinableAgents 的默认后端。Codex 系列模型在代码生成任务上经过专门优化，特别擅长将自然语言描述转化为可执行代码。其核心优势在于函数调用（Function Calling）能力和结构化输出支持。</p>
+        <p>Codex 后端支持的主要模型包括 <code>o3</code>（旗舰模型，综合能力最强）和 <code>o4-mini</code>（轻量模型，速度更快、成本更低）。对于大多数代码生成和修改任务，o3 是推荐的选择；对于简单的格式化、命名优化等低复杂度任务，o4-mini 可以在保持足够质量的同时大幅降低成本。</p>
+        <h3>上下文窗口与性能</h3>
+        <p>Codex 后端的上下文窗口为 128K tokens，支持流式输出，首 token 延迟约 200-400 毫秒。在函数调用模式下，Codex 能够直接生成文件变更操作（创建、修改、删除），codeagent-wrapper 会解析这些操作并应用到工作目录。</p>
+
+        <blockquote>
+          <p>使用 Codex 后端时，建议将 temperature 设置为 0.2 以下以获得更稳定的代码生成结果。较高的 temperature 适合创意性任务（如命名建议、文档撰写），但不适合精确的代码实现。</p>
+        </blockquote>
+
+        <h2 id="claude-backend">Claude 后端详解</h2>
+        <h3>核心优势与特性</h3>
+        <p>Claude 后端通过 Anthropic API 访问，最大的优势是超长上下文窗口（最高 200K tokens）和出色的指令遵循能力。Claude 模型在理解复杂需求、分析大型代码库、以及生成详细文档方面表现尤为突出。</p>
+        <h3>模型选择建议</h3>
+        <p>Claude 后端支持的主要模型包括 <code>claude-opus-4-6</code>（旗舰模型，推理能力最强）和 <code>claude-sonnet-4-6</code>（平衡模型，速度与质量兼顾）。对于需要深度推理的任务（如架构设计、Bug 根因分析、复杂重构），Opus 是首选；对于日常的代码生成和修改任务，Sonnet 在效率和成本方面更具优势。</p>
+        <p>Claude 后端在 PinableAgents 中有一个独特的优势：它的长上下文能力允许在单次请求中传入更多的代码文件上下文。这在处理跨多个文件的变更时特别有用，因为模型可以同时"看到"所有相关文件，从而做出更准确的修改决策。codeagent-wrapper 的 Claude 适配器会自动计算上下文 token 数量，在不超出限制的前提下尽可能多地包含相关文件。</p>
+
+        <h2 id="gemini-backend">Gemini 后端详解</h2>
+        <h3>多模态与成本优势</h3>
+        <p>Gemini 后端通过 Google AI API 访问，其独特优势在于多模态能力和与 Google 生态的集成。Gemini 模型不仅能处理文本和代码，还能分析截图、设计稿和流程图，这在前端开发和 UI 还原场景中非常有用。</p>
+        <h3>模型与上下文窗口</h3>
+        <p>Gemini 后端支持的主要模型包括 <code>gemini-2.5-pro</code>（旗舰模型，多模态能力最强）和 <code>gemini-2.5-flash</code>（快速模型，延迟最低）。对于涉及视觉元素的任务（如根据设计稿实现页面、分析 UI 截图中的问题），Gemini Pro 是最佳选择；对于纯代码任务，Flash 模型提供了极具竞争力的速度优势。</p>
+        <p>Gemini 后端的上下文窗口同样达到了百万级别的 tokens，但在实际使用中，PinableAgents 建议将单次请求的上下文控制在合理范围内以保证响应质量和速度。codeagent-wrapper 的 Gemini 适配器实现了智能的上下文裁剪策略，会根据任务类型自动决定包含哪些文件。</p>
+
+        <h2 id="capability-comparison">能力对比矩阵</h2>
+        <p>以下表格对三种后端的核心能力进行对比，帮助你在不同场景下做出选择：</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>能力维度</th>
+              <th>Codex</th>
+              <th>Claude</th>
+              <th>Gemini</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>上下文窗口</strong></td>
+              <td>128K tokens</td>
+              <td>200K tokens</td>
+              <td>1M+ tokens</td>
+            </tr>
+            <tr>
+              <td><strong>代码生成质量</strong></td>
+              <td>优秀</td>
+              <td>优秀</td>
+              <td>良好</td>
+            </tr>
+            <tr>
+              <td><strong>指令遵循</strong></td>
+              <td>良好</td>
+              <td>优秀</td>
+              <td>良好</td>
+            </tr>
+            <tr>
+              <td><strong>多模态</strong></td>
+              <td>有限</td>
+              <td>文本+图像</td>
+              <td>全面</td>
+            </tr>
+            <tr>
+              <td><strong>函数调用</strong></td>
+              <td>原生支持</td>
+              <td>工具使用</td>
+              <td>原生支持</td>
+            </tr>
+            <tr>
+              <td><strong>流式输出</strong></td>
+              <td>支持</td>
+              <td>支持</td>
+              <td>支持</td>
+            </tr>
+            <tr>
+              <td><strong>中文能力</strong></td>
+              <td>良好</td>
+              <td>优秀</td>
+              <td>良好</td>
+            </tr>
+            <tr>
+              <td><strong>首 token 延迟</strong></td>
+              <td>200-400ms</td>
+              <td>300-600ms</td>
+              <td>150-350ms</td>
+            </tr>
+            <tr>
+              <td><strong>成本效率</strong></td>
+              <td>中等</td>
+              <td>较高</td>
+              <td>较低</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="config">配置与认证</h2>
+        <p>多后端配置统一在 <code>~/.pinable-agents/config.json</code> 文件中管理。每个后端需要独立的 API 密钥和可选的模型参数配置。以下是一个完整的多后端配置示例：</p>
+        <pre><code>{
+  "backends": {
+    "codex": {
+      "api_key_env": "OPENAI_API_KEY",
+      "model": "o3",
+      "base_url": "https://api.openai.com/v1",
+      "max_tokens": 8000,
+      "temperature": 0.2,
+      "timeout": "10m"
+    },
+    "claude": {
+      "api_key_env": "ANTHROPIC_API_KEY",
+      "model": "claude-opus-4-6",
+      "base_url": "https://api.anthropic.com",
+      "max_tokens": 16000,
+      "temperature": 0.3,
+      "timeout": "15m"
+    },
+    "gemini": {
+      "api_key_env": "GEMINI_API_KEY",
+      "model": "gemini-2.5-pro",
+      "base_url": "https://generativelanguage.googleapis.com/v1",
+      "max_tokens": 12000,
+      "temperature": 0.25,
+      "timeout": "12m"
+    }
+  },
+  "default_backend": "claude"
+}</code></pre>
+        <p>注意 <code>api_key_env</code> 字段指定的是环境变量名而非密钥本身。这种设计避免了在配置文件中硬编码敏感信息。PinableAgents 在启动时会从环境变量中读取实际的 API 密钥。如果你使用的是自定义的 API 端点（如企业内部部署或镜像服务），可以通过 <code>base_url</code> 字段修改。</p>
+
+        <h2 id="parameter-mapping">统一参数映射</h2>
+        <p>不同的 AI 后端使用不同的参数命名和语义。codeagent-wrapper 的适配器层负责将 PinableAgents 的统一参数映射到各后端的原生参数。以下是关键参数的映射关系：</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>PinableAgents 参数</th>
+              <th>Codex 映射</th>
+              <th>Claude 映射</th>
+              <th>Gemini 映射</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>max_tokens</code></td>
+              <td>max_completion_tokens</td>
+              <td>max_tokens</td>
+              <td>maxOutputTokens</td>
+            </tr>
+            <tr>
+              <td><code>temperature</code></td>
+              <td>temperature</td>
+              <td>temperature</td>
+              <td>temperature</td>
+            </tr>
+            <tr>
+              <td><code>system_prompt</code></td>
+              <td>system (message role)</td>
+              <td>system</td>
+              <td>systemInstruction</td>
+            </tr>
+            <tr>
+              <td><code>stop_sequences</code></td>
+              <td>stop</td>
+              <td>stop_sequences</td>
+              <td>stopSequences</td>
+            </tr>
+            <tr>
+              <td><code>top_p</code></td>
+              <td>top_p</td>
+              <td>top_p</td>
+              <td>topP</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>这种映射在适配器内部自动完成，用户无需关心不同后端的参数差异。只需使用 PinableAgents 的统一参数名即可。</p>
+
+        <h2 id="fallback-chain">回退链配置</h2>
+        <p>回退链是多后端架构的重要可靠性机制。当主后端不可用（API 错误、速率限制、服务宕机）时，系统会自动切换到回退后端继续执行任务。回退链的配置顺序决定了切换优先级。</p>
+        <pre><code>{
+  "fallback_chain": ["claude", "codex", "gemini"],
+  "fallback_policy": {
+    "trigger_on": ["rate_limit", "server_error", "timeout"],
+    "max_fallbacks": 2,
+    "preserve_context": true,
+    "log_fallback_events": true
+  }
+}</code></pre>
+        <p>上述配置表示：首选 Claude 后端，如果 Claude 不可用则回退到 Codex，最后回退到 Gemini。回退触发条件包括速率限制、服务端错误和超时。最多允许两次回退（即尝试三个后端）。<code>preserve_context</code> 选项确保回退时将之前的会话上下文传递给新后端，保持任务执行的连续性。</p>
+
+        <blockquote>
+          <p>回退链的设计应考虑成本因素。如果你的默认后端是成本较低的模型，回退到高成本模型可能导致意外的费用增加。建议在回退链配置中设置每日成本上限。</p>
+        </blockquote>
+
+        <h2 id="response-normalization">响应格式规范化</h2>
+        <p>不同后端返回的响应格式差异很大。codeagent-wrapper 的响应规范化层负责将各后端的原始响应转化为统一的内部格式。规范化过程包括以下几个步骤：</p>
+        <p>第一步，<strong>内容提取</strong>：从后端响应中提取实际的文本内容。Codex 的响应在 <code>choices[0].message.content</code>，Claude 的响应在 <code>content[0].text</code>，Gemini 的响应在 <code>candidates[0].content.parts[0].text</code>。适配器会将它们统一映射到 <code>Response.Content</code> 字段。</p>
+        <p>第二步，<strong>文件变更解析</strong>：如果后端在响应中包含了文件修改操作（通过函数调用或特定格式的文本标记），规范化层会将其解析为统一的 <code>FileChange</code> 结构，包含文件路径、操作类型（创建/修改/删除）和变更内容。</p>
+        <p>第三步，<strong>Token 用量统一</strong>：不同后端的 token 计数方式不同，规范化层会将各后端报告的 token 用量转化为统一的格式，包括输入 tokens、输出 tokens 和总计 tokens。</p>
+
+        <h2 id="benchmarks">性能与成本基准</h2>
+        <p>以下基准测试使用三种典型任务类型进行对比。测试时间为 2026 年 2 月，价格基于各后端的当前公开定价。</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>任务类型</th>
+              <th>指标</th>
+              <th>Codex (o3)</th>
+              <th>Claude (Opus)</th>
+              <th>Gemini (Pro)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="3"><strong>函数实现</strong></td>
+              <td>速度</td>
+              <td>6.2s</td>
+              <td>5.8s</td>
+              <td>7.1s</td>
+            </tr>
+            <tr>
+              <td>准确率</td>
+              <td>92%</td>
+              <td>94%</td>
+              <td>88%</td>
+            </tr>
+            <tr>
+              <td>成本</td>
+              <td>$0.08</td>
+              <td>$0.12</td>
+              <td>$0.05</td>
+            </tr>
+            <tr>
+              <td rowspan="3"><strong>Bug 修复</strong></td>
+              <td>速度</td>
+              <td>8.5s</td>
+              <td>7.2s</td>
+              <td>9.3s</td>
+            </tr>
+            <tr>
+              <td>准确率</td>
+              <td>85%</td>
+              <td>91%</td>
+              <td>82%</td>
+            </tr>
+            <tr>
+              <td>成本</td>
+              <td>$0.11</td>
+              <td>$0.16</td>
+              <td>$0.07</td>
+            </tr>
+            <tr>
+              <td rowspan="3"><strong>代码审查</strong></td>
+              <td>速度</td>
+              <td>5.1s</td>
+              <td>4.8s</td>
+              <td>5.5s</td>
+            </tr>
+            <tr>
+              <td>全面性</td>
+              <td>良好</td>
+              <td>优秀</td>
+              <td>良好</td>
+            </tr>
+            <tr>
+              <td>成本</td>
+              <td>$0.06</td>
+              <td>$0.09</td>
+              <td>$0.04</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="best-practices">按任务类型选择后端</h2>
+        <p>基于上述性能和成本数据，以下是按任务类型选择后端的推荐策略：</p>
+        <p><strong>代码生成与功能实现</strong>：推荐 Claude 后端。Claude 在理解复杂需求和生成高质量代码方面表现最佳，特别是涉及多文件协调修改的场景。如果预算敏感，Codex 是性价比更高的替代选择。</p>
+        <p><strong>Bug 调查与修复</strong>：强烈推荐 Claude 后端。Bug 修复需要深度推理和全局代码理解，Claude 的长上下文窗口和推理能力在此场景中优势明显。</p>
+        <p><strong>代码审查与文档生成</strong>：Claude 和 Codex 均可胜任。Claude 的审查意见更全面细致，Codex 更注重代码风格和最佳实践。对于中文文档生成，Claude 是首选。</p>
+        <p><strong>快速原型与验证</strong>：推荐 Gemini Flash 后端。极低的延迟和成本适合快速迭代的原型阶段。质量要求不高时，Gemini Flash 的性价比优势非常突出。</p>
+        <p><strong>UI 还原与前端开发</strong>：推荐 Gemini Pro 后端。其多模态能力允许直接分析设计稿截图并生成对应的前端代码，这是其他后端无法做到的独特优势。</p>
+
+        <pre><code># 根据任务类型自动选择后端的配置
+{
+  "auto_backend_selection": {
+    "enabled": true,
+    "rules": [
+      {"task_pattern": ".*UI.*|.*前端.*|.*设计稿.*", "backend": "gemini"},
+      {"task_pattern": ".*Bug.*|.*修复.*|.*调查.*", "backend": "claude"},
+      {"task_pattern": ".*原型.*|.*验证.*|.*PoC.*", "backend": "gemini"},
+      {"task_pattern": ".*", "backend": "claude"}
+    ]
+  }
+}</code></pre>
+
+        <blockquote>
+          <p>自动后端选择功能通过正则匹配任务描述来决定使用哪个后端。匹配规则按顺序执行，第一个匹配的规则生效。建议将最具体的规则放在前面，通配规则放在最后作为兜底。</p>
+        </blockquote>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="codeagent-wrapper.html">&larr; 上一篇</a>
+        <a class="btn btn-outline" href="parallel-execution.html">下一篇 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

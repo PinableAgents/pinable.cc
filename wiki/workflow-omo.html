@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents omo 智能路由编排详解，信号驱动的动态路由机制、EHRB 模式、风险信号检测算法和复杂 Bug 调查实战。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>omo 智能路由编排 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / omo 智能路由编排
+        </div>
+        <h1 class="article-title">omo 智能路由编排</h1>
+        <div class="article-meta">
+          <span>分类：工作流</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#overview">omo 工作流概述</a></li>
+          <li><a href="#signal-detection">风险信号检测机制</a></li>
+          <li><a href="#routing-algorithm">路由决策算法</a></li>
+          <li><a href="#decision-tree">决策树详解</a></li>
+          <li><a href="#agent-pool">智能体池与能力矩阵</a></li>
+          <li><a href="#ehrb-pattern">EHRB 模式详解</a></li>
+          <li><a href="#walkthrough">实战：调试竞态条件</a></li>
+          <li><a href="#cross-module">跨模块重构路由</a></li>
+          <li><a href="#cli-reference">CLI 命令参考</a></li>
+          <li><a href="#comparison">与 do 工作流的对比</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="overview">omo 工作流概述</h2>
+        <p><code>omo</code>（Orchestrated Multi-objective Optimization）是 PinableAgents 中最具智能化特征的工作流。与 <code>do</code> 工作流的线性七阶段流程不同，omo 采用<strong>信号驱动的动态路由</strong>机制——它不预设固定的执行路径，而是根据任务的实时分析结果，动态决定调用哪些智能体、以何种顺序执行。</p>
+        <p>omo 的核心设计思想是"面对不确定性，让系统自己找到最优路径"。在 Bug 调查、复杂重构、性能优化等不确定性较高的场景中，开发者往往无法在任务开始时就确定最佳的解决路径。omo 通过持续收集和分析任务执行过程中的信号，动态调整编排策略，模拟了经验丰富的技术 Leader 在面对复杂问题时的决策过程。</p>
+
+        <blockquote>
+          <p>omo 的价值在于处理那些"你不知道不知道什么"的任务。当需求明确时用 do，当问题模糊时用 omo。</p>
+        </blockquote>
+
+        <h2 id="signal-detection">风险信号检测机制</h2>
+        <p>omo 的路由决策基于三类核心风险信号的实时检测。每类信号都有量化的评分体系，综合得分决定了任务的复杂度等级和对应的路由策略。</p>
+
+        <h3>复杂度信号（Complexity Signals）</h3>
+        <p>衡量任务本身的技术复杂度。系统通过分析任务描述、涉及的代码量和技术栈来计算复杂度得分。</p>
+        <table>
+          <thead>
+            <tr><th>信号指标</th><th>检测方式</th><th>权重</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>涉及文件数</td><td>代码库搜索匹配</td><td>0.25</td></tr>
+            <tr><td>跨语言/框架</td><td>文件扩展名和导入分析</td><td>0.20</td></tr>
+            <tr><td>算法复杂度</td><td>任务描述关键词识别</td><td>0.20</td></tr>
+            <tr><td>并发/异步涉入</td><td>goroutine/async/channel 模式匹配</td><td>0.20</td></tr>
+            <tr><td>外部依赖数量</td><td>go.mod/package.json 分析</td><td>0.15</td></tr>
+          </tbody>
+        </table>
+
+        <h3>跨模块影响信号（Cross-module Impact Signals）</h3>
+        <p>评估任务变更对其他模块的影响范围。高跨模块影响意味着变更可能引发级联效应，需要更审慎的路由策略。</p>
+        <ul>
+          <li><strong>调用链深度</strong>：变更点在调用链中的位置，越底层影响越大</li>
+          <li><strong>共享状态</strong>：是否涉及全局变量、共享缓存、公共数据库表</li>
+          <li><strong>接口变更</strong>：是否修改了公开的 API 契约或内部接口定义</li>
+          <li><strong>配置耦合</strong>：是否涉及影响多个模块行为的配置项</li>
+        </ul>
+
+        <h3>数据完整性信号（Data Integrity Signals）</h3>
+        <p>检测任务是否涉及数据模型变更、数据库迁移或数据转换逻辑。数据相关的变更通常不可逆，需要最高级别的审慎处理。</p>
+
+        <h2 id="routing-algorithm">路由决策算法</h2>
+        <p>omo 的路由引擎基于加权信号评分进行决策。每个信号类别的得分范围是 0-100，综合得分通过加权平均计算：</p>
+        <pre><code>综合得分 = 复杂度得分 * 0.4 + 跨模块影响 * 0.35 + 数据完整性 * 0.25
+
+路由策略映射：
+  得分 0-30   -> 轻量路由（Light Route）
+  得分 31-60  -> 标准路由（Standard Route）
+  得分 61-85  -> 深度路由（Deep Route）
+  得分 86-100 -> 完全路由（Full Route）</code></pre>
+
+        <p>每种路由策略对应不同的智能体组合和执行流程。轻量路由可能只调用一个修复智能体直接解决问题，而完全路由则会调用探索、假设生成、多路径验证等多个智能体协作完成。</p>
+
+        <h2 id="decision-tree">决策树详解</h2>
+        <p>以下是 omo 路由引擎的决策树结构，以文本形式呈现。每个决策节点根据信号评分选择分支路径。</p>
+
+        <pre><code>任务输入
+  |
+  +-- [信号采集] 分析任务描述和代码库
+  |
+  +-- 综合得分 <= 30?
+  |     |
+  |     YES -> 轻量路由
+  |     |       +-- 调用 quick-fix 智能体
+  |     |       +-- 直接实现并验证
+  |     |       +-- 完成
+  |     |
+  |     NO -> 综合得分 <= 60?
+  |           |
+  |           YES -> 标准路由
+  |           |       +-- 调用 code-explorer
+  |           |       +-- 调用 bugfix 或 refactor 智能体
+  |           |       +-- 运行验证套件
+  |           |       +-- 完成
+  |           |
+  |           NO -> 综合得分 <= 85?
+  |                 |
+  |                 YES -> 深度路由
+  |                 |       +-- 调用 code-explorer（深度模式）
+  |                 |       +-- 启用 EHRB 循环
+  |                 |       +-- 调用 hypothesis-generator
+  |                 |       +-- 多路径并行验证
+  |                 |       +-- 调用 integration-tester
+  |                 |       +-- 完成
+  |                 |
+  |                 NO -> 完全路由
+  |                         +-- 调用 code-explorer（全量扫描）
+  |                         +-- 启用 EHRB 循环（最大深度）
+  |                         +-- 调用 architect（重新评估架构）
+  |                         +-- 多路径并行验证 + 回归测试
+  |                         +-- 调用 security-reviewer
+  |                         +-- 人工审查检查点
+  |                         +-- 完成</code></pre>
+
+        <h2 id="agent-pool">智能体池与能力矩阵</h2>
+        <p>omo 工作流可以调用的智能体池包含以下成员，每个智能体有明确的能力边界和调用条件。</p>
+        <table>
+          <thead>
+            <tr><th>智能体</th><th>核心能力</th><th>触发条件</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>code-explorer</td><td>代码库结构分析、依赖追踪、调用链映射</td><td>所有路由策略</td></tr>
+            <tr><td>quick-fix</td><td>小范围单文件修复</td><td>轻量路由</td></tr>
+            <tr><td>bugfix</td><td>Bug 定位和修复，含根因分析</td><td>标准及以上路由</td></tr>
+            <tr><td>refactor</td><td>代码重构，保持行为不变</td><td>标准及以上路由</td></tr>
+            <tr><td>debug</td><td>运行时调试，日志分析，断点追踪</td><td>深度及以上路由</td></tr>
+            <tr><td>hypothesis-generator</td><td>生成问题假设并设计验证实验</td><td>深度及以上路由</td></tr>
+            <tr><td>architect</td><td>架构级评估和重构方案设计</td><td>完全路由</td></tr>
+            <tr><td>security-reviewer</td><td>安全漏洞检测和修复建议</td><td>完全路由</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="ehrb-pattern">EHRB 模式详解</h2>
+        <p>EHRB（Explore-Hypothesize-Repair-Backtrack）是 omo 在深度和完全路由中使用的核心问题解决模式。它模拟了资深工程师调试复杂问题时的思维过程。</p>
+
+        <h3>Explore（探索）</h3>
+        <p>在已有信息的基础上，深入探索问题的具体表现和上下文。这一步不是泛泛的代码浏览，而是带有明确目标的定向探索——根据已知的症状和线索，聚焦在最可能的问题区域。</p>
+
+        <h3>Hypothesize（假设）</h3>
+        <p>基于探索结果生成问题根因的假设列表。每个假设都附带置信度评分和可验证的预测。例如："假设竞态条件发生在 goroutine A 和 B 对共享 map 的并发读写（置信度 75%），预测：加入 -race 标志后可重现"。</p>
+
+        <h3>Repair（修复）</h3>
+        <p>针对最高置信度的假设实施修复方案。修复在隔离的 Git worktree 中进行，不影响主代码库。修复完成后自动运行验证测试。</p>
+
+        <h3>Backtrack（回溯）</h3>
+        <p>如果修复未能通过验证，系统回溯到 Hypothesize 阶段，排除已证伪的假设，重新评估剩余假设的置信度，并可能基于新发现生成新的假设。这个循环最多执行五次，超过后请求人工介入。</p>
+
+        <pre><code># EHRB 循环的日志输出示例
+[omo:ehrb] 循环 1/5
+[omo:ehrb:explore] 分析 goroutine dump...检测到 2 处潜在数据竞争
+[omo:ehrb:hypothesize] 假设 1: sync.Map 未正确初始化 (置信度: 80%)
+[omo:ehrb:hypothesize] 假设 2: channel 关闭后仍有写入 (置信度: 45%)
+[omo:ehrb:repair] 实施假设 1 的修复方案...
+[omo:ehrb:repair] 运行验证: go test -race ./...
+[omo:ehrb:repair] 验证通过! 竞态条件已解决</code></pre>
+
+        <h2 id="walkthrough">实战：调试竞态条件</h2>
+        <p>以下演示使用 omo 工作流调试一个 Go 项目中的竞态条件问题。</p>
+
+        <h3>问题描述</h3>
+        <p>项目在高并发场景下偶发 panic，错误信息为 <code>concurrent map writes</code>。问题在本地环境难以稳定复现，仅在 CI 的 -race 检测中触发。</p>
+
+        <h3>启动 omo 工作流</h3>
+        <pre><code># 使用 omo 调查并修复竞态条件
+pinable-agents run omo \
+  --task "修复高并发场景下 concurrent map writes panic" \
+  --context "CI 日志显示 data race 在 cache/store.go:47"
+
+# 或通过 codeagent CLI 直接调用
+codeagent --backend claude --workflow omo \
+  --task "fix concurrent map writes in cache module"</code></pre>
+
+        <h3>路由过程</h3>
+        <p>omo 的信号检测引擎分析后得出：复杂度得分 72（并发问题触发高权重），跨模块影响 55（cache 模块被多处调用），数据完整性 40。综合得分 58.35，进入标准路由。然而由于检测到"并发"关键信号，路由引擎将其提升至深度路由，启用 EHRB 循环。这种信号触发的路由提升是 omo 的核心智能特征之一。</p>
+
+        <h2 id="cross-module">跨模块重构路由</h2>
+        <p>当 omo 检测到任务涉及跨模块重构时，会激活特殊的重构路由策略。该策略的核心是"变更隔离"——将大范围的重构拆解为多个可独立验证的小变更，每个小变更都在独立的 Git worktree 中完成，通过测试后才合入主分支。</p>
+        <p>重构路由的典型流程是：首先调用 architect 智能体评估重构范围和风险；然后将重构拆解为有序的变更步骤；每个步骤由 refactor 智能体执行并由 integration-tester 验证；最后由 code-reviewer 进行全量审查。</p>
+
+        <h2 id="cli-reference">CLI 命令参考</h2>
+        <pre><code># 基本用法
+pinable-agents run omo --task "任务描述"
+
+# 指定最大 EHRB 循环次数
+pinable-agents run omo --task "任务描述" --max-ehrb-cycles 3
+
+# 强制使用特定路由策略
+pinable-agents run omo --task "任务描述" --route deep
+
+# 输出路由决策详情（不执行）
+pinable-agents run omo --task "任务描述" --dry-run
+
+# 附加上下文信息
+pinable-agents run omo --task "任务描述" \
+  --context-file ./error-log.txt \
+  --context "仅在 Linux CI 环境复现"</code></pre>
+
+        <h2 id="comparison">与 do 工作流的对比</h2>
+        <table>
+          <thead>
+            <tr><th>维度</th><th>do 工作流</th><th>omo 工作流</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>执行路径</td><td>线性七阶段</td><td>信号驱动动态路由</td></tr>
+            <tr><td>适用场景</td><td>需求明确的功能开发</td><td>Bug 调查、复杂重构、性能优化</td></tr>
+            <tr><td>不确定性容忍</td><td>低（需要明确需求）</td><td>高（可以从模糊问题开始）</td></tr>
+            <tr><td>智能体数量</td><td>固定 7 个</td><td>动态 2-8 个</td></tr>
+            <tr><td>执行时间</td><td>可预测</td><td>取决于问题复杂度</td></tr>
+            <tr><td>回溯机制</td><td>阶段间回退</td><td>EHRB 循环回溯</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="workflow-do.html">&larr; do 工作流完全指南</a>
+        <a class="btn btn-outline" href="workflow-bmad.html">bmad 企业级敏捷开发 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

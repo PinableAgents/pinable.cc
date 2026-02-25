@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="pinable-desktop 桌面端应用完全指南，涵盖 Wails 架构、8 大核心页面详解、IPC 通信模式、键盘快捷键以及系统托盘集成。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>pinable-desktop 完全指南 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / pinable-desktop 完全指南
+        </div>
+        <h1 class="article-title">pinable-desktop 完全指南</h1>
+        <div class="article-meta">
+          <span>分类：桌面端</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#architecture">应用架构概览</a></li>
+          <li><a href="#page-modules">Modules 页面：模块管理中心</a></li>
+          <li><a href="#page-provider">Provider 页面：AI 后端配置</a></li>
+          <li><a href="#page-workflows">Workflows 页面：工作流执行仪表盘</a></li>
+          <li><a href="#page-skills">Skills 页面：技能自动检测</a></li>
+          <li><a href="#page-config">Config 页面：JSON 配置编辑器</a></li>
+          <li><a href="#page-logs">Logs 页面：执行历史记录</a></li>
+          <li><a href="#page-conversations">Conversations 页面：会话浏览器</a></li>
+          <li><a href="#page-terminal">Terminal 页面：嵌入式终端</a></li>
+          <li><a href="#ipc">IPC 通信机制</a></li>
+          <li><a href="#shortcuts">键盘快捷键</a></li>
+          <li><a href="#system-tray">系统托盘集成</a></li>
+          <li><a href="#auto-update">自动更新机制</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="architecture">应用架构概览</h2>
+        <p>pinable-desktop 是 PinableAgents 的图形化桌面客户端，基于 <strong>Wails</strong> 框架构建。Wails 是一个轻量级的桌面应用框架，它将 Go 作为后端语言，React 作为前端渲染层，通过系统原生的 WebView 组件呈现界面，避免了 Electron 带来的巨大资源开销。</p>
+        <p>整体架构分为三层：</p>
+        <ul>
+          <li><strong>Go 后端层</strong>：负责核心业务逻辑，包括模块管理、工作流编排、文件系统操作、Git 命令执行以及与 AI 后端的 API 通信。Go 层通过 Wails 的绑定机制将服务方法暴露给前端。</li>
+          <li><strong>React 前端层</strong>：使用 React 18 + TypeScript 构建，配合 Tailwind CSS 实现响应式界面。前端通过 Wails 提供的 <code>window.go</code> 命名空间调用后端方法。</li>
+          <li><strong>IPC 桥接层</strong>：Wails 运行时在 Go 和 JavaScript 之间建立双向通信通道，支持方法调用和事件推送两种模式。</li>
+        </ul>
+        <pre><code>┌─────────────────────────────────────────┐
+│            React Frontend               │
+│  ┌─────────┐ ┌──────────┐ ┌──────────┐ │
+│  │ Modules  │ │ Workflows│ │ Terminal │ │
+│  └────┬─────┘ └────┬─────┘ └────┬─────┘ │
+│       │             │            │       │
+│  ─────┴─────────────┴────────────┴───── │
+│           Wails IPC Bridge              │
+│  ───────────────────────────────────── │
+│       │             │            │       │
+│  ┌────┴─────┐ ┌────┴─────┐ ┌────┴────┐ │
+│  │ModuleSvc │ │FlowSvc   │ │ShellSvc │ │
+│  └──────────┘ └──────────┘ └─────────┘ │
+│            Go Backend                   │
+└─────────────────────────────────────────┘</code></pre>
+
+        <h2 id="page-modules">Modules 页面：模块管理中心</h2>
+        <p>Modules 页面是 pinable-desktop 的首要入口，展示所有已安装和可用的模块。页面顶部是搜索栏和筛选器，支持按名称、分类和状态过滤模块。主体区域以卡片网格形式展示每个模块，每张卡片包含模块图标、名称、版本号、简要描述和状态指示器。</p>
+        <p>核心功能包括：</p>
+        <ul>
+          <li><strong>一键安装</strong>：点击模块卡片上的"安装"按钮，后台自动下载、验证完整性、注册到系统并激活。进度条实时显示下载和安装进度。</li>
+          <li><strong>模块详情</strong>：点击卡片展开详情面板，显示完整的模块描述、依赖关系、变更日志和配置选项。</li>
+          <li><strong>批量操作</strong>：支持多选模块进行批量启用、禁用或卸载操作。</li>
+          <li><strong>更新提示</strong>：当已安装模块有新版本可用时，卡片右上角会显示更新徽章。</li>
+        </ul>
+
+        <h2 id="page-provider">Provider 页面：AI 后端配置</h2>
+        <p>Provider 页面用于管理 AI 后端的连接配置。PinableAgents 支持多种 AI 后端，包括 OpenAI Codex、Anthropic Claude 和 Google Gemini。每个后端以独立的配置卡片呈现。</p>
+        <p>每张 Provider 卡片包含以下配置项：</p>
+        <table>
+          <thead>
+            <tr>
+              <th>配置项</th>
+              <th>说明</th>
+              <th>示例值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>API 密钥</td>
+              <td>后端的身份验证密钥，以密文形式存储</td>
+              <td><code>sk-ant-***</code></td>
+            </tr>
+            <tr>
+              <td>默认模型</td>
+              <td>该后端使用的默认模型版本</td>
+              <td><code>claude-opus-4-6</code></td>
+            </tr>
+            <tr>
+              <td>API 端点</td>
+              <td>自定义 API 地址，适用于私有部署或代理</td>
+              <td><code>https://api.anthropic.com</code></td>
+            </tr>
+            <tr>
+              <td>请求超时</td>
+              <td>单次 API 请求的超时时间（秒）</td>
+              <td><code>120</code></td>
+            </tr>
+            <tr>
+              <td>重试次数</td>
+              <td>请求失败时的自动重试次数</td>
+              <td><code>3</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>页面底部提供"连接测试"按钮，点击后系统向后端发送一个轻量级请求以验证 API 密钥和网络连通性。测试结果以绿色（成功）或红色（失败）标记显示，失败时附带详细的错误信息。</p>
+
+        <h2 id="page-workflows">Workflows 页面：工作流执行仪表盘</h2>
+        <p>Workflows 页面是日常操作的核心界面。左侧是工作流选择面板，列出所有可用的工作流（如 do、omo、bmad 等），每个工作流旁边显示其包含的阶段数量和预估执行时间。</p>
+        <p>选择工作流后，右侧主区域显示任务输入表单和执行控制台。任务输入支持富文本编辑，可以粘贴需求文档、代码片段和参考链接。点击"执行"后，页面切换为实时执行视图，以时间轴形式展示每个阶段的执行进度：</p>
+        <ul>
+          <li><strong>阶段指示器</strong>：每个阶段显示为一个圆形节点，颜色表示状态（灰色等待、蓝色执行中、绿色完成、红色失败）。</li>
+          <li><strong>实时日志</strong>：下方的日志面板实时流式输出当前阶段的智能体思考过程和操作记录。</li>
+          <li><strong>文件变更预览</strong>：右侧面板实时显示智能体修改的文件列表和 diff 预览。</li>
+          <li><strong>中断控制</strong>：随时可以暂停或终止正在执行的工作流。暂停后可以查看中间状态并决定是否继续。</li>
+        </ul>
+
+        <h2 id="page-skills">Skills 页面：技能自动检测</h2>
+        <p>Skills 页面展示系统自动检测到的开发环境能力。PinableAgents 在启动时和每次打开项目时，会自动扫描系统环境，识别可用的工具链和技能。</p>
+        <p>检测的技能分为三类：</p>
+        <ol>
+          <li><strong>语言运行时</strong>：Go、Node.js、Python、Rust、Java 等编程语言的安装状态和版本。</li>
+          <li><strong>开发工具</strong>：Git、Docker、kubectl、terraform 等工具的可用性。</li>
+          <li><strong>框架检测</strong>：基于项目文件自动识别使用的框架（React、Vue、Next.js、Gin 等）。</li>
+        </ol>
+        <p>每个检测到的技能显示为一个状态卡片，包含版本号、安装路径和健康状态。智能体在执行任务时会参考这些技能信息来选择合适的工具和命令。</p>
+
+        <h2 id="page-config">Config 页面：JSON 配置编辑器</h2>
+        <p>Config 页面提供了一个功能完整的 JSON 编辑器，用于编辑 <code>config.json</code> 配置文件。编辑器基于 Monaco Editor（VS Code 的核心编辑器组件）构建，支持语法高亮、自动补全、错误检测和代码折叠。</p>
+        <p>编辑器的左侧显示完整的 JSON 内容，右侧是一个可视化的表单视图，两者保持双向同步。你可以选择自己习惯的编辑方式。配置项的自动补全基于内置的 JSON Schema，确保你输入的每个字段和值都是合法的。</p>
+        <p>页面顶部的工具栏提供以下操作：保存配置、重置为默认值、导入配置文件、导出当前配置。保存前会自动执行 Schema 验证，如果配置存在错误，会以红色波浪线标记具体位置并给出修复建议。</p>
+
+        <h2 id="page-logs">Logs 页面：执行历史记录</h2>
+        <p>Logs 页面记录了所有工作流执行的完整历史。每条记录包含执行时间、工作流名称、任务描述、执行状态、耗时和变更文件数。支持按时间范围、状态和工作流类型进行筛选。</p>
+        <p>点击任一记录可以展开完整的执行详情，包括每个阶段的输入输出、智能体的推理过程、文件变更的完整 diff 以及测试执行结果。这些日志对于审计追踪和问题排查非常有价值。</p>
+        <pre><code>// 日志记录的数据结构
+{
+  "id": "exec-20260225-143022",
+  "workflow": "do",
+  "task": "添加用户权限管理模块",
+  "status": "completed",
+  "started_at": "2026-02-25T14:30:22Z",
+  "completed_at": "2026-02-25T14:35:47Z",
+  "duration_ms": 325000,
+  "phases": [
+    { "name": "analyze", "status": "completed", "duration_ms": 45000 },
+    { "name": "implement", "status": "completed", "duration_ms": 210000 },
+    { "name": "review", "status": "completed", "duration_ms": 70000 }
+  ],
+  "files_changed": 7,
+  "worktree": "pinable/do/20260225-143022"
+}</code></pre>
+
+        <h2 id="page-conversations">Conversations 页面：会话浏览器</h2>
+        <p>Conversations 页面展示与 AI 后端的所有对话历史。与 Logs 页面不同，Conversations 聚焦于消息级别的交互细节。你可以查看每次交互中发送给智能体的完整提示词、系统消息和智能体的响应内容。</p>
+        <p>会话浏览器支持全文搜索，方便你快速找到特定的对话内容。每个会话可以导出为 Markdown 格式，便于归档或分享。会话列表按时间倒序排列，最近的对话显示在最上方。</p>
+        <p>对于调试目的，你可以在 Conversations 中查看完整的 token 使用统计，包括输入 token 数、输出 token 数和总费用估算。这有助于优化提示词长度和控制 API 使用成本。</p>
+
+        <h2 id="page-terminal">Terminal 页面：嵌入式终端</h2>
+        <p>Terminal 页面内嵌了一个功能完整的终端模拟器，基于 xterm.js 实现。你无需离开 pinable-desktop 即可执行任意 shell 命令。终端自动继承当前项目的工作目录和环境变量配置。</p>
+        <p>Terminal 页面的特殊功能包括：</p>
+        <ul>
+          <li><strong>命令补全</strong>：针对 PinableAgents CLI 命令提供智能补全建议。</li>
+          <li><strong>多标签页</strong>：支持同时打开多个终端标签页，每个标签页运行独立的 shell 会话。</li>
+          <li><strong>输出捕获</strong>：命令输出可以一键复制或发送到工作流的任务输入中。</li>
+          <li><strong>快捷执行</strong>：从 Logs 或 Workflows 页面可以直接跳转到 Terminal 执行相关命令。</li>
+        </ul>
+
+        <h2 id="ipc">IPC 通信机制</h2>
+        <p>pinable-desktop 的前后端通过 Wails 的 IPC（进程间通信）机制进行交互。Wails 在构建时自动为 Go 后端暴露的方法生成 TypeScript 绑定代码，前端通过这些绑定以类型安全的方式调用后端服务。</p>
+        <pre><code>// Go 后端定义服务方法
+type ModuleService struct {}
+
+func (s *ModuleService) ListModules() ([]Module, error) {
+    return registry.GetAll()
+}
+
+func (s *ModuleService) InstallModule(name string) error {
+    return registry.Install(name)
+}
+
+// React 前端调用（自动生成的绑定）
+import { ListModules, InstallModule } from '../wailsjs/go/main/ModuleService';
+
+const modules = await ListModules();
+await InstallModule('do');</code></pre>
+        <p>除了方法调用外，Wails 还支持事件驱动通信。Go 后端可以通过 <code>runtime.EventsEmit</code> 向前端推送实时事件，前端通过 <code>runtime.EventsOn</code> 注册监听器。这种机制用于工作流执行进度的实时推送、日志流式输出等场景。</p>
+
+        <h2 id="shortcuts">键盘快捷键</h2>
+        <p>pinable-desktop 提供了丰富的键盘快捷键以提高操作效率。</p>
+        <table>
+          <thead>
+            <tr>
+              <th>快捷键</th>
+              <th>macOS</th>
+              <th>Windows</th>
+              <th>功能</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>页面切换</td>
+              <td><code>Cmd+1~8</code></td>
+              <td><code>Ctrl+1~8</code></td>
+              <td>切换到对应的页面标签</td>
+            </tr>
+            <tr>
+              <td>全局搜索</td>
+              <td><code>Cmd+K</code></td>
+              <td><code>Ctrl+K</code></td>
+              <td>打开命令面板，快速执行操作</td>
+            </tr>
+            <tr>
+              <td>新建任务</td>
+              <td><code>Cmd+N</code></td>
+              <td><code>Ctrl+N</code></td>
+              <td>在 Workflows 页面创建新任务</td>
+            </tr>
+            <tr>
+              <td>保存配置</td>
+              <td><code>Cmd+S</code></td>
+              <td><code>Ctrl+S</code></td>
+              <td>在 Config 页面保存当前配置</td>
+            </tr>
+            <tr>
+              <td>新建终端</td>
+              <td><code>Cmd+T</code></td>
+              <td><code>Ctrl+T</code></td>
+              <td>在 Terminal 页面打开新标签</td>
+            </tr>
+            <tr>
+              <td>切换终端</td>
+              <td><code>Cmd+Tab</code></td>
+              <td><code>Ctrl+Tab</code></td>
+              <td>在终端标签页之间切换</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <blockquote>
+          <p>按 <code>Cmd+K</code>（macOS）或 <code>Ctrl+K</code>（Windows）打开命令面板，输入关键词即可快速访问任何功能。命令面板支持模糊匹配。</p>
+        </blockquote>
+
+        <h2 id="system-tray">系统托盘集成</h2>
+        <p>pinable-desktop 支持最小化到系统托盘运行。关闭主窗口后，应用继续在后台运行，托盘图标提供快捷菜单：</p>
+        <ul>
+          <li><strong>显示/隐藏窗口</strong>：双击托盘图标切换主窗口可见性。</li>
+          <li><strong>执行状态</strong>：托盘图标根据当前是否有运行中的任务变化颜色（绿色空闲、蓝色执行中、红色有错误）。</li>
+          <li><strong>快速操作</strong>：右键菜单提供"新建任务""打开日志""退出应用"等快捷选项。</li>
+          <li><strong>通知推送</strong>：当后台任务完成或失败时，系统会弹出原生通知提示用户。</li>
+        </ul>
+
+        <h2 id="auto-update">自动更新机制</h2>
+        <p>pinable-desktop 内置了自动更新功能。每次启动时以及每隔 24 小时，应用会向更新服务器检查是否有新版本可用。更新检查是非阻塞的，不会影响正常使用。</p>
+        <p>当检测到新版本时，应用会在界面顶部显示一个更新提示条，包含版本号和主要变更摘要。用户可以选择立即更新或稍后提醒。点击立即更新后，应用会在后台下载更新包，下载完成后提示重启以完成安装。</p>
+        <p>更新过程采用差量更新策略，只下载变化的文件部分，大幅减少下载量。所有更新包都经过数字签名验证，确保来源的可信性和完整性。</p>
+        <pre><code>// 更新配置（config.json）
+{
+  "update": {
+    "auto_check": true,
+    "check_interval_hours": 24,
+    "channel": "stable",
+    "allow_prerelease": false
+  }
+}</code></pre>
+        <p>更新通道分为 <code>stable</code>（稳定版）和 <code>beta</code>（测试版）。默认使用 stable 通道，如果你希望提前体验新功能，可以切换到 beta 通道，但需要承受潜在的稳定性风险。</p>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="worktree-isolation.html">&larr; Git Worktree 隔离</a>
+        <a class="btn btn-outline" href="desktop-modules.html">模块管理 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

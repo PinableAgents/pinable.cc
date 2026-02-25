@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents 常见问题与排错指南，涵盖安装、后端、执行、配置四类问题的诊断与解决方案，以及 FAQ 和社区支持渠道。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>常见问题与排错 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / 常见问题与排错
+        </div>
+        <h1 class="article-title">常见问题与排错</h1>
+        <div class="article-meta">
+          <span>分类：运维</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#installation-issues">安装类问题</a></li>
+          <li><a href="#backend-issues">后端类问题</a></li>
+          <li><a href="#execution-issues">执行类问题</a></li>
+          <li><a href="#configuration-issues">配置类问题</a></li>
+          <li><a href="#diagnostic-commands">诊断命令参考</a></li>
+          <li><a href="#log-analysis">日志文件位置与分析</a></li>
+          <li><a href="#diagnostic-report">生成诊断报告</a></li>
+          <li><a href="#community-support">社区支持渠道</a></li>
+          <li><a href="#faq">FAQ 常见问答</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="installation-issues">安装类问题</h2>
+        <p>安装类问题通常发生在首次部署 PinableAgents 时，涉及下载、权限和环境变量配置。以下是最常见的安装问题及其解决方案。</p>
+
+        <h3>问题：下载安装包失败</h3>
+        <p><strong>症状：</strong>下载过程中断、下载速度极慢或下载的文件损坏（MD5 不匹配）。</p>
+        <p><strong>原因：</strong>网络连接不稳定、CDN 节点问题或代理配置错误。</p>
+        <p><strong>解决步骤：</strong></p>
+        <ol>
+          <li>检查网络连接是否正常，尝试 <code>ping releases.pinable.dev</code></li>
+          <li>使用浏览器直接下载，或者使用支持断点续传的下载工具</li>
+          <li>如果使用代理，确认代理配置正确：<code>echo $HTTP_PROXY</code></li>
+          <li>尝试从备用镜像下载</li>
+        </ol>
+        <pre><code># 使用 curl 下载并验证文件完整性
+curl -L -o PinableAgents-mac.dmg \
+  https://releases.pinable.dev/latest/PinableAgents-mac.dmg
+
+# 验证 SHA256 校验值
+shasum -a 256 PinableAgents-mac.dmg
+# 与官网公布的校验值对比</code></pre>
+        <p><strong>预防措施：</strong>始终从官方网站或 GitHub Releases 页面下载，避免使用第三方来源。下载完成后验证校验值。</p>
+
+        <h3>问题：安装后权限不足</h3>
+        <p><strong>症状：</strong>运行 <code>pinable-agents</code> 命令时提示 <code>Permission denied</code>。</p>
+        <p><strong>原因：</strong>CLI 可执行文件缺少执行权限，或安装目录权限配置不正确。</p>
+        <p><strong>解决步骤：</strong></p>
+        <pre><code># macOS / Linux：赋予执行权限
+chmod +x /usr/local/bin/pinable-agents
+
+# 检查文件所有权
+ls -la /usr/local/bin/pinable-agents
+
+# 如果安装在用户目录下
+chmod +x ~/.pinable-agents/bin/pinable-agents</code></pre>
+        <p><strong>预防措施：</strong>优先使用官方安装程序而非手动复制文件。如果手动安装，确保目标目录有正确的权限。</p>
+
+        <h3>问题：PATH 环境变量未配置</h3>
+        <p><strong>症状：</strong>终端提示 <code>command not found: pinable-agents</code>。</p>
+        <p><strong>原因：</strong>安装路径未添加到系统 PATH 中，或 shell 配置文件未重新加载。</p>
+        <p><strong>解决步骤：</strong></p>
+        <pre><code># 确认安装路径
+ls ~/.pinable-agents/bin/pinable-agents
+
+# 添加到 PATH（zsh）
+echo 'export PATH="$HOME/.pinable-agents/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+# 添加到 PATH（bash）
+echo 'export PATH="$HOME/.pinable-agents/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+# Windows PowerShell
+$env:PATH += ";$env:USERPROFILE\.pinable-agents\bin"</code></pre>
+
+        <h2 id="backend-issues">后端类问题</h2>
+        <p>后端类问题涉及 AI 模型 API 的连接和调用。这些问题通常与 API 密钥、网络配置和服务可用性有关。</p>
+
+        <h3>问题：API 密钥无效</h3>
+        <p><strong>症状：</strong>执行工作流时提示 <code>Authentication failed</code> 或 <code>Invalid API key</code>。</p>
+        <p><strong>原因：</strong>API 密钥过期、格式错误或配置到了错误的环境变量。</p>
+        <p><strong>解决步骤：</strong></p>
+        <ol>
+          <li>确认密钥格式：OpenAI 密钥以 <code>sk-</code> 开头，Anthropic 密钥以 <code>sk-ant-</code> 开头</li>
+          <li>检查密钥是否正确设置到对应的环境变量</li>
+          <li>在 API 提供商的控制台确认密钥状态和余额</li>
+        </ol>
+        <pre><code># 检查环境变量是否正确设置（注意不要泄露完整密钥）
+echo $ANTHROPIC_API_KEY | cut -c1-10
+# 应输出：sk-ant-xxx
+
+# 使用 pinable-agents 内置的密钥验证命令
+pinable-agents backend verify
+
+# 输出示例：
+# Backend: claude
+# API Key: sk-ant-***...***xy (valid format)
+# Status: authenticated
+# Credits remaining: $42.50</code></pre>
+
+        <h3>问题：API 请求限流</h3>
+        <p><strong>症状：</strong>工作流执行中频繁出现 <code>429 Too Many Requests</code> 错误，执行速度明显变慢。</p>
+        <p><strong>原因：</strong>短时间内发送了过多的 API 请求，超过了账户的速率限制（Rate Limit）。</p>
+        <p><strong>解决步骤：</strong></p>
+        <pre><code># 在配置中启用自动限流退避
+{
+  "backend": {
+    "rate_limit": {
+      "auto_retry": true,
+      "max_retries": 3,
+      "backoff_base_ms": 1000,
+      "backoff_multiplier": 2
+    }
+  }
+}</code></pre>
+        <p><strong>预防措施：</strong>避免同时运行多个重量级工作流。对于团队使用场景，考虑申请更高的 API 速率限制或使用多个 API 密钥进行负载均衡。</p>
+
+        <h3>问题：模型不可用</h3>
+        <p><strong>症状：</strong>提示 <code>Model not found</code> 或 <code>Model is currently overloaded</code>。</p>
+        <p><strong>原因：</strong>指定的模型已下线、账户无权访问或模型服务暂时过载。</p>
+        <p><strong>解决步骤：</strong></p>
+        <ol>
+          <li>检查 <code>CODEAGENT_MODEL</code> 环境变量指定的模型名称是否正确</li>
+          <li>查阅 API 提供商的模型列表确认可用性</li>
+          <li>配置备用模型进行自动降级</li>
+        </ol>
+        <pre><code># 配置模型降级链
+{
+  "backend": {
+    "model": "claude-opus-4-6",
+    "fallback_models": [
+      "claude-sonnet-4-20250514",
+      "claude-haiku-4-20250414"
+    ]
+  }
+}</code></pre>
+
+        <h3>问题：请求超时</h3>
+        <p><strong>症状：</strong>长时间等待后提示 <code>Request timeout</code> 或 <code>Gateway timeout</code>。</p>
+        <p><strong>原因：</strong>网络延迟过高、请求内容过大或服务端处理时间超出限制。</p>
+        <p><strong>解决步骤：</strong></p>
+        <pre><code># 调整超时配置
+{
+  "backend": {
+    "timeout_ms": 120000,
+    "connect_timeout_ms": 10000
+  }
+}
+
+# 对于中国大陆用户，配置代理可以显著改善延迟
+export HTTPS_PROXY=http://127.0.0.1:7890</code></pre>
+
+        <h2 id="execution-issues">执行类问题</h2>
+        <p>执行类问题发生在工作流运行过程中，可能导致任务中断或产出异常。</p>
+
+        <h3>问题：工作流卡住不动</h3>
+        <p><strong>症状：</strong>工作流在某个阶段停留超过 10 分钟，进度条不再更新。</p>
+        <p><strong>原因：</strong>智能体进入了无限循环的思考模式、等待一个永远不会到来的条件或后端连接中断。</p>
+        <p><strong>解决步骤：</strong></p>
+        <ol>
+          <li>检查日志中最后的活动记录：<code>pinable-agents logs tail</code></li>
+          <li>如果是后端连接问题，运行 <code>pinable-agents backend status</code></li>
+          <li>使用强制中断命令终止当前工作流</li>
+          <li>恢复到上一个检查点并重试</li>
+        </ol>
+        <pre><code># 强制终止当前工作流
+pinable-agents workflow cancel --current
+
+# 从上一个检查点恢复
+pinable-agents workflow resume --from-checkpoint
+
+# 如果需要完全重置
+pinable-agents workflow reset --session latest</code></pre>
+
+        <h3>问题：智能体崩溃</h3>
+        <p><strong>症状：</strong>工作流突然终止，错误日志中出现 <code>Agent process exited unexpectedly</code> 或 <code>Panic</code>。</p>
+        <p><strong>原因：</strong>智能体处理的输入触发了未预期的错误路径，或系统资源（内存、文件描述符）耗尽。</p>
+        <p><strong>解决步骤：</strong></p>
+        <pre><code># 查看崩溃日志
+pinable-agents logs show --level error --last 50
+
+# 检查系统资源使用
+pinable-agents doctor --check resources
+
+# 输出示例：
+# Resource Check
+# ────────────────────────
+# Memory: 6.2 GB / 16 GB (OK)
+# Disk:   42 GB free (OK)
+# Open files: 234 / 10240 (OK)
+# CPU load: 45% (OK)</code></pre>
+        <p><strong>预防措施：</strong>确保系统有至少 4 GB 的可用内存。如果在容器中运行，适当调高内存限制。</p>
+
+        <h3>问题：会话状态损坏</h3>
+        <p><strong>症状：</strong>恢复之前中断的工作流时，智能体表现异常，忘记了之前的上下文或重复执行已完成的步骤。</p>
+        <p><strong>原因：</strong>会话状态文件在异常终止时未正确保存，或文件格式损坏。</p>
+        <p><strong>解决步骤：</strong></p>
+        <pre><code># 列出所有会话
+pinable-agents session list
+
+# 检查会话完整性
+pinable-agents session verify --id session-20260225-001
+
+# 如果会话损坏，从最近的正常检查点创建新会话
+pinable-agents session recover --id session-20260225-001
+
+# 彻底清理并重新开始
+pinable-agents session clean --id session-20260225-001</code></pre>
+
+        <h3>问题：并行任务死锁</h3>
+        <p><strong>症状：</strong>多个智能体同时运行时互相等待，所有任务都停滞不前。</p>
+        <p><strong>原因：</strong>两个或多个智能体同时尝试修改同一个文件或等待对方的输出。</p>
+        <p><strong>解决步骤：</strong></p>
+        <ol>
+          <li>使用 <code>pinable-agents workflow status --verbose</code> 查看各智能体的等待状态</li>
+          <li>识别死锁的资源和智能体</li>
+          <li>手动终止优先级较低的智能体以打破死锁</li>
+        </ol>
+        <pre><code># 查看并行智能体状态
+pinable-agents workflow status --verbose
+
+# 输出示例：
+# Agent          Status    Waiting For
+# ──────────────────────────────────────
+# code-agent-1   BLOCKED   lock: src/auth/handler.go
+# code-agent-2   BLOCKED   lock: src/auth/handler.go
+# review-agent   WAITING   output: code-agent-1
+
+# 终止指定智能体
+pinable-agents agent kill code-agent-2</code></pre>
+        <p><strong>预防措施：</strong>在并行工作流中，合理划分智能体的文件操作范围，避免多个智能体修改同一个文件。在配置中设置文件锁超时：</p>
+        <pre><code>{
+  "execution": {
+    "file_lock_timeout_ms": 30000,
+    "deadlock_detection": true,
+    "max_parallel_agents": 3
+  }
+}</code></pre>
+
+        <h2 id="configuration-issues">配置类问题</h2>
+
+        <h3>问题：JSON 配置文件格式无效</h3>
+        <p><strong>症状：</strong>启动时提示 <code>Failed to parse config.json</code> 或 <code>Unexpected token</code>。</p>
+        <p><strong>原因：</strong>配置文件中存在语法错误，如缺少逗号、多余的逗号或未闭合的引号。</p>
+        <p><strong>解决步骤：</strong></p>
+        <pre><code># 使用内置的配置验证工具
+pinable-agents config validate
+
+# 或使用 jq 进行 JSON 格式检查
+cat ~/.pinable-agents/config.json | jq .
+
+# 常见错误：最后一个属性后多了逗号
+# 错误：{ "a": 1, "b": 2, }  ← 最后的逗号是非法的
+# 正确：{ "a": 1, "b": 2 }</code></pre>
+
+        <h3>问题：模块冲突</h3>
+        <p><strong>症状：</strong>两个模块提供了相同名称的智能体或技能，导致行为不确定。</p>
+        <p><strong>原因：</strong>安装了功能重叠的模块，或自定义模块与内置模块存在命名冲突。</p>
+        <p><strong>解决步骤：</strong></p>
+        <pre><code># 检查模块冲突
+pinable-agents modules conflicts
+
+# 输出示例：
+# Conflict detected:
+#   Skill "code-review" defined in both:
+#     - essentials v1.1.0
+#     - custom-review v0.3.0
+#   Resolution: custom-review will take precedence (user module priority)
+
+# 手动指定优先模块
+pinable-agents config set modules.priority '["custom-review", "essentials"]'</code></pre>
+
+        <h3>问题：缺少依赖</h3>
+        <p><strong>症状：</strong>特定技能或工作流无法执行，提示缺少外部工具或库。</p>
+        <p><strong>原因：</strong>技能依赖的外部 CLI 工具未安装（如 <code>go</code>、<code>node</code>、<code>docker</code>）。</p>
+        <p><strong>解决步骤：</strong></p>
+        <pre><code># 运行完整的依赖检查
+pinable-agents doctor --check dependencies
+
+# 输出示例：
+# Dependency Check
+# ────────────────────────────────
+# [OK]   git      v2.44.0
+# [OK]   node     v20.11.0
+# [OK]   go       v1.22.0
+# [FAIL] docker   not found
+# [WARN] kubectl  v1.28.0 (recommend v1.29+)
+#
+# Action required: install docker to enable container skills</code></pre>
+
+        <h2 id="diagnostic-commands">诊断命令参考</h2>
+        <p>PinableAgents 提供了一套完整的诊断命令，帮助你快速定位和解决问题。</p>
+        <table>
+          <thead>
+            <tr>
+              <th>命令</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>pinable-agents doctor</code></td><td>运行完整的系统健康检查</td></tr>
+            <tr><td><code>pinable-agents doctor --check dependencies</code></td><td>检查外部依赖工具</td></tr>
+            <tr><td><code>pinable-agents doctor --check resources</code></td><td>检查系统资源使用</td></tr>
+            <tr><td><code>pinable-agents backend status</code></td><td>检查 AI 后端连接状态</td></tr>
+            <tr><td><code>pinable-agents backend verify</code></td><td>验证 API 密钥有效性</td></tr>
+            <tr><td><code>pinable-agents config validate</code></td><td>验证配置文件格式</td></tr>
+            <tr><td><code>pinable-agents modules conflicts</code></td><td>检查模块间冲突</td></tr>
+            <tr><td><code>pinable-agents skills budget</code></td><td>查看技能预算使用</td></tr>
+            <tr><td><code>pinable-agents logs tail</code></td><td>实时查看最新日志</td></tr>
+            <tr><td><code>pinable-agents logs show --level error</code></td><td>查看错误级别日志</td></tr>
+            <tr><td><code>pinable-agents session list</code></td><td>列出所有会话</td></tr>
+            <tr><td><code>pinable-agents workflow status</code></td><td>查看工作流执行状态</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="log-analysis">日志文件位置与分析</h2>
+        <p>PinableAgents 的日志存储在工作目录下的 <code>logs/</code> 子目录中。日志按日期和组件分别存储：</p>
+        <pre><code># 日志目录结构
+~/.pinable-agents/logs/
+  ├── pinable-agents.log         # 主应用日志
+  ├── workflow-20260225.log      # 工作流执行日志（按日期）
+  ├── agent-code-20260225.log    # 代码智能体日志
+  ├── agent-review-20260225.log  # 审查智能体日志
+  ├── backend-20260225.log       # AI 后端通信日志
+  └── audit.log                  # 审计日志（企业版）</code></pre>
+
+        <p>日志级别从低到高为：<code>debug</code>、<code>info</code>、<code>warn</code>、<code>error</code>。排查问题时建议临时将日志级别调低到 <code>debug</code>：</p>
+        <pre><code># 临时启用 debug 日志
+export PINABLE_LOG_LEVEL=debug
+pinable-agents run do --task "你的任务描述"
+
+# 完成排查后恢复
+export PINABLE_LOG_LEVEL=info</code></pre>
+
+        <h2 id="diagnostic-report">生成诊断报告</h2>
+        <p>当你需要向社区或支持团队求助时，生成一份完整的诊断报告可以极大加速问题的定位。诊断报告会自动收集系统信息、配置、日志和错误信息，并自动脱敏 API 密钥等敏感数据。</p>
+        <pre><code># 生成诊断报告
+pinable-agents diagnostic --output report.zip
+
+# 报告内容包括：
+# - 系统信息（OS 版本、CPU、内存、磁盘）
+# - PinableAgents 版本和安装路径
+# - 已安装模块列表
+# - 配置文件内容（已脱敏）
+# - 最近 100 行错误日志
+# - 依赖工具版本检查结果
+# - 最近 5 次工作流执行的摘要
+
+# 注意：报告中的 API 密钥会被自动替换为 ***
+# 但仍建议在分享前检查报告内容</code></pre>
+
+        <h2 id="community-support">社区支持渠道</h2>
+        <p>当自助排错无法解决问题时，你可以通过以下渠道获取社区支持：</p>
+        <ul>
+          <li><strong>GitHub Issues</strong> - 提交 Bug 报告和功能建议，请附上诊断报告</li>
+          <li><strong>GitHub Discussions</strong> - 提问和讨论使用技巧，社区成员互助</li>
+          <li><strong>Discord 社区</strong> - 实时聊天，适合紧急问题和快速交流</li>
+          <li><strong>微信群</strong> - 中文用户社区，扫描官网二维码加入</li>
+        </ul>
+
+        <blockquote>
+          <p>提交问题时请附上诊断报告和复现步骤。"我遇到了一个错误"远不如"我在 macOS 14.3 上运行 do 工作流的代码实现阶段，连续 3 次遇到 Agent process exited unexpectedly 错误，附上诊断报告"有效。</p>
+        </blockquote>
+
+        <h2 id="faq">FAQ 常见问答</h2>
+
+        <h3>Q1：PinableAgents 支持哪些操作系统？</h3>
+        <p>目前支持 macOS 12+ 和 Windows 10 (1903+)。Linux 支持正在开发中，预计在下一个主要版本发布。在 Linux 上你可以通过 CLI 工具的 npm 全局安装方式使用核心功能。</p>
+
+        <h3>Q2：我可以同时使用多个 AI 后端吗？</h3>
+        <p>可以。你可以在 <code>config.json</code> 中配置多个后端的 API 密钥，并通过 <code>--backend</code> 参数在运行时切换。部分工作流支持在不同阶段使用不同的后端，例如用 Claude 进行需求分析，用 Codex 进行代码生成。</p>
+
+        <h3>Q3：API 调用的费用大约是多少？</h3>
+        <p>费用取决于工作流复杂度和使用的模型。一个简单的 <code>do</code> 工作流通常消耗 50,000-150,000 tokens，按 Claude Opus 的价格大约 $1-3。BMAD 工作流消耗更多，可能达到 300,000-500,000 tokens。你可以通过配置 <code>max_token_budget_per_task</code> 来控制上限。</p>
+
+        <h3>Q4：工作流执行中断后，之前的工作会丢失吗？</h3>
+        <p>不会。PinableAgents 会在每个阶段结束时自动创建检查点。如果执行中断，你可以使用 <code>pinable-agents workflow resume</code> 从最近的检查点恢复。代码变更通过 Git worktree 隔离，不会影响你的主分支。</p>
+
+        <h3>Q5：如何限制智能体对文件系统的访问范围？</h3>
+        <p>在配置中设置 <code>sandbox</code> 规则来限制智能体的文件访问范围：</p>
+        <pre><code>{
+  "sandbox": {
+    "allowed_paths": ["src/", "tests/", "docs/"],
+    "denied_paths": [".env", "secrets/", "*.key"],
+    "allow_network": false
+  }
+}</code></pre>
+
+        <h3>Q6：自定义智能体和技能有什么区别？</h3>
+        <p>智能体（Agent）是一个具有角色、知识和决策能力的完整实体，在工作流中承担特定阶段的职责。技能（Skill）是注入到智能体上下文中的行为增强模块，提供特定领域的知识和工具。一个智能体可以加载多个技能。</p>
+
+        <h3>Q7：为什么工作流显示成功但生成的代码有问题？</h3>
+        <p>工作流状态仅反映执行过程是否完成，不保证代码质量。建议启用质量门控来增加验证层。同时，始终对智能体生成的代码进行人工审查，将其视为"建议"而非"最终结果"。</p>
+
+        <h3>Q8：可以离线使用 PinableAgents 吗？</h3>
+        <p>PinableAgents 的核心功能依赖 AI 后端 API，因此需要网络连接。桌面端的界面、模块管理和配置编辑功能可以离线使用，但无法执行需要 AI 模型的工作流。未来可能会支持本地模型后端。</p>
+
+        <h3>Q9：如何回滚智能体对代码的修改？</h3>
+        <p>PinableAgents 的所有代码修改都在 Git worktree 中进行。你可以使用标准的 Git 命令回滚：</p>
+        <pre><code># 查看智能体的提交历史
+git log --oneline -10
+
+# 回滚最近一次智能体提交
+git revert HEAD
+
+# 回滚到指定的检查点
+pinable-agents workflow rollback --checkpoint cp-003</code></pre>
+
+        <h3>Q10：PinableAgents 会读取或上传我的代码吗？</h3>
+        <p>PinableAgents 本身不会上传你的代码。但是，工作流执行时需要将代码片段发送给 AI 后端 API 进行处理。发送的内容范围由工作流和技能定义决定。你可以通过 <code>sandbox</code> 配置限制可访问的文件范围，并在 <code>backend</code> 日志中审计所有发送的内容。</p>
+
+        <h3>Q11：如何升级 PinableAgents 到最新版本？</h3>
+        <p>桌面端会自动检查更新并提示安装。CLI 工具可以通过以下命令升级：</p>
+        <pre><code># 检查当前版本和最新版本
+pinable-agents --version
+pinable-agents update check
+
+# 执行升级
+pinable-agents update apply
+
+# 升级后验证
+pinable-agents doctor</code></pre>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="best-practices-team.html">&larr; 团队协作最佳实践</a>
+        <a class="btn btn-outline" href="/wiki.html">返回 Wiki 索引 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>

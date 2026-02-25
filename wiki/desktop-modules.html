@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PinableAgents 模块系统完整指南，包括模块定义格式、安装流程、依赖管理、内置模块清单、自定义模块开发以及模块生命周期钩子。">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <title>模块管理 - PinableAgents Wiki</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="../assets/images/logo.svg" alt="PinableAgents">
+        PinableAgents
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/wiki.html">Wiki</a>
+        <a href="/about.html">关于</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="article">
+      <div class="article-header">
+        <div class="article-breadcrumb">
+          <a href="/">首页</a> / <a href="/wiki.html">Wiki</a> / 模块管理
+        </div>
+        <h1 class="article-title">模块管理</h1>
+        <div class="article-meta">
+          <span>分类：桌面端</span>
+          <span>更新：2026-02-25</span>
+        </div>
+      </div>
+
+      <div class="article-toc">
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#module-architecture">模块系统架构</a></li>
+          <li><a href="#module-json">模块定义格式：module.json</a></li>
+          <li><a href="#install-process">安装流程详解</a></li>
+          <li><a href="#dependency-management">模块依赖与冲突解决</a></li>
+          <li><a href="#builtin-modules">内置模块清单</a></li>
+          <li><a href="#custom-modules">创建自定义模块</a></li>
+          <li><a href="#lifecycle-hooks">模块生命周期钩子</a></li>
+          <li><a href="#version-management">版本管理与更新</a></li>
+          <li><a href="#marketplace">模块市场概念</a></li>
+        </ul>
+      </div>
+
+      <div class="article-body">
+        <h2 id="module-architecture">模块系统架构</h2>
+        <p>PinableAgents 的模块系统是整个平台的扩展基础。模块（Module）是一个包含工作流定义、智能体配置和辅助脚本的独立包，它通过标准化的接口与核心编排引擎集成。模块系统的设计遵循两个核心理念：<strong>组合优于继承</strong>和<strong>约定优于配置</strong>。</p>
+        <p>从技术角度看，每个模块是一个独立的目录，包含一个 <code>module.json</code> 清单文件和一组按约定命名的子目录。编排引擎在启动时扫描模块目录，解析清单文件，注册模块提供的工作流和智能体，并建立依赖关系图。</p>
+        <p>模块之间通过两种方式交互：<strong>依赖引用</strong>（一个模块声明依赖另一个模块的特定能力）和<strong>扩展点</strong>（一个模块为其他模块提供可插入的接口）。这种设计使得模块可以在不修改核心代码的情况下扩展系统能力。</p>
+
+        <h2 id="module-json">模块定义格式：module.json</h2>
+        <p><code>module.json</code> 是每个模块的核心清单文件，定义了模块的元数据、依赖关系、提供的工作流和智能体以及配置选项。以下是完整的 Schema 说明：</p>
+        <pre><code>{
+  "name": "do",
+  "version": "1.2.0",
+  "description": "核心交付工作流，从需求分析到代码实现的完整流程",
+  "author": "PinableLab",
+  "license": "MIT",
+  "homepage": "https://pinableagents.dev/modules/do",
+  "repository": "https://github.com/pinablelab/module-do",
+  "keywords": ["workflow", "delivery", "implementation"],
+  "category": "core",
+  "engine": ">=1.0.0",
+  "dependencies": {
+    "essentials": ">=1.0.0"
+  },
+  "conflicts": ["legacy-do"],
+  "workflows": [
+    {
+      "name": "do",
+      "entry": "workflows/do.yaml",
+      "description": "标准交付工作流"
+    }
+  ],
+  "agents": [
+    {
+      "name": "architect",
+      "config": "agents/architect.yaml"
+    },
+    {
+      "name": "implementer",
+      "config": "agents/implementer.yaml"
+    }
+  ],
+  "config_schema": "config-schema.json",
+  "hooks": {
+    "post_install": "scripts/setup.sh",
+    "pre_activate": "scripts/check-deps.sh"
+  }
+}</code></pre>
+
+        <table>
+          <thead>
+            <tr>
+              <th>字段</th>
+              <th>类型</th>
+              <th>必填</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>是</td>
+              <td>模块唯一标识符，全小写，支持连字符</td>
+            </tr>
+            <tr>
+              <td><code>version</code></td>
+              <td>string</td>
+              <td>是</td>
+              <td>遵循语义化版本规范（SemVer）</td>
+            </tr>
+            <tr>
+              <td><code>engine</code></td>
+              <td>string</td>
+              <td>是</td>
+              <td>兼容的 PinableAgents 引擎版本范围</td>
+            </tr>
+            <tr>
+              <td><code>dependencies</code></td>
+              <td>object</td>
+              <td>否</td>
+              <td>依赖的其他模块及版本范围</td>
+            </tr>
+            <tr>
+              <td><code>conflicts</code></td>
+              <td>array</td>
+              <td>否</td>
+              <td>与之冲突的模块列表，不能同时安装</td>
+            </tr>
+            <tr>
+              <td><code>workflows</code></td>
+              <td>array</td>
+              <td>否</td>
+              <td>模块提供的工作流定义</td>
+            </tr>
+            <tr>
+              <td><code>agents</code></td>
+              <td>array</td>
+              <td>否</td>
+              <td>模块提供的智能体配置</td>
+            </tr>
+            <tr>
+              <td><code>hooks</code></td>
+              <td>object</td>
+              <td>否</td>
+              <td>生命周期钩子脚本路径</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="install-process">安装流程详解</h2>
+        <p>模块的安装遵循四步流水线：<strong>下载 → 验证 → 注册 → 激活</strong>。每一步都有明确的成功条件和失败处理。</p>
+
+        <h3>步骤一：下载（Download）</h3>
+        <p>系统从模块注册中心或指定的 URL 下载模块压缩包。下载过程支持断点续传和带宽限制。对于本地模块，直接从指定路径复制。</p>
+        <pre><code># 从注册中心安装
+pinable-agents modules install do
+
+# 从本地路径安装
+pinable-agents modules install --local ./my-custom-module
+
+# 从 Git 仓库安装
+pinable-agents modules install --git https://github.com/user/module.git</code></pre>
+
+        <h3>步骤二：验证（Validate）</h3>
+        <p>下载完成后，系统执行以下验证：</p>
+        <ul>
+          <li>校验 SHA256 哈希确保文件完整性</li>
+          <li>验证 <code>module.json</code> 符合 Schema 规范</li>
+          <li>检查 <code>engine</code> 版本兼容性</li>
+          <li>检查依赖是否满足，冲突是否存在</li>
+        </ul>
+
+        <h3>步骤三：注册（Register）</h3>
+        <p>将模块信息写入系统的模块注册表（位于 <code>~/.pinable-agents/registry.json</code>）。注册表记录每个模块的安装路径、版本、状态和配置。</p>
+
+        <h3>步骤四：激活（Activate）</h3>
+        <p>执行模块的 <code>pre_activate</code> 钩子（如有），然后将模块的工作流和智能体注册到编排引擎中。激活后模块即可使用。</p>
+
+        <blockquote>
+          <p>如果安装过程中任一步骤失败，系统会自动回滚已完成的步骤，确保不会留下不完整的安装状态。</p>
+        </blockquote>
+
+        <h2 id="dependency-management">模块依赖与冲突解决</h2>
+        <p>模块依赖管理采用与 npm 类似的语义化版本匹配策略。当安装一个模块时，系统会递归解析其依赖树，自动安装所有缺失的依赖模块。</p>
+        <p>冲突解决遵循以下规则：</p>
+        <ol>
+          <li><strong>版本冲突</strong>：当两个模块依赖同一模块的不同版本时，系统选择满足所有约束的最高版本。如果无法找到兼容版本，安装会失败并提示具体冲突信息。</li>
+          <li><strong>互斥冲突</strong>：通过 <code>conflicts</code> 字段声明的互斥模块不能同时安装。系统在安装前检查互斥约束，如果发现冲突，提示用户先卸载冲突模块。</li>
+          <li><strong>循环依赖</strong>：系统通过拓扑排序检测循环依赖。如果发现循环，安装会失败并以图形方式展示依赖环。</li>
+        </ol>
+        <pre><code># 查看模块的依赖树
+pinable-agents modules deps do
+
+# 输出：
+# do@1.2.0
+# └── essentials@1.1.0
+
+# 检查依赖冲突
+pinable-agents modules check --conflicts</code></pre>
+
+        <h2 id="builtin-modules">内置模块清单</h2>
+        <p>PinableAgents 提供了一系列官方维护的内置模块，覆盖从日常开发到企业级协作的各种场景。</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>模块名</th>
+              <th>分类</th>
+              <th>说明</th>
+              <th>核心能力</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>do</code></td>
+              <td>工作流</td>
+              <td>核心交付工作流</td>
+              <td>需求分析、架构设计、代码实现、代码审查</td>
+            </tr>
+            <tr>
+              <td><code>omo</code></td>
+              <td>工作流</td>
+              <td>信号驱动路由工作流</td>
+              <td>智能路由、动态阶段、信号触发</td>
+            </tr>
+            <tr>
+              <td><code>bmad</code></td>
+              <td>工作流</td>
+              <td>企业级敏捷工作流</td>
+              <td>Scrum 团队模拟、Sprint 管理、验收标准</td>
+            </tr>
+            <tr>
+              <td><code>sparv</code></td>
+              <td>工作流</td>
+              <td>轻量级快速修复工作流</td>
+              <td>快速 bug 修复、小型变更</td>
+            </tr>
+            <tr>
+              <td><code>essentials</code></td>
+              <td>智能体</td>
+              <td>基础智能体集合</td>
+              <td>代码探索、架构设计、代码审查、测试编写</td>
+            </tr>
+            <tr>
+              <td><code>develop</code></td>
+              <td>智能体</td>
+              <td>开发增强智能体</td>
+              <td>调试辅助、性能分析、重构建议</td>
+            </tr>
+            <tr>
+              <td><code>requirements</code></td>
+              <td>工具</td>
+              <td>需求管理工具</td>
+              <td>需求解析、用户故事生成、验收条件</td>
+            </tr>
+            <tr>
+              <td><code>webchat</code></td>
+              <td>接口</td>
+              <td>Web 聊天界面</td>
+              <td>浏览器端交互、会话管理</td>
+            </tr>
+            <tr>
+              <td><code>memorys</code></td>
+              <td>工具</td>
+              <td>记忆与上下文管理</td>
+              <td>跨会话记忆、项目上下文持久化</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="custom-modules">创建自定义模块</h2>
+        <p>自定义模块允许团队将特定的工作流程和智能体配置打包为可复用的模块。以下是创建自定义模块的完整步骤。</p>
+
+        <h3>目录结构</h3>
+        <p>一个标准的模块目录结构如下：</p>
+        <pre><code>my-module/
+├── module.json          # 模块清单（必需）
+├── config-schema.json   # 配置项的 JSON Schema（可选）
+├── workflows/
+│   └── my-workflow.yaml # 工作流定义
+├── agents/
+│   ├── analyzer.yaml    # 智能体配置
+│   └── executor.yaml
+├── prompts/
+│   ├── analyze.md       # 提示词模板
+│   └── execute.md
+├── scripts/
+│   ├── setup.sh         # 安装后脚本
+│   └── check-deps.sh    # 激活前检查
+└── README.md            # 模块文档</code></pre>
+
+        <h3>编写工作流定义</h3>
+        <p>工作流以 YAML 格式定义，描述任务执行的阶段序列和每个阶段使用的智能体。</p>
+        <pre><code># workflows/my-workflow.yaml
+name: my-workflow
+description: 自定义工作流示例
+phases:
+  - name: analyze
+    agent: analyzer
+    description: 分析任务需求
+    timeout: 120
+    output:
+      - analysis_report
+
+  - name: execute
+    agent: executor
+    description: 执行具体任务
+    depends_on: [analyze]
+    input:
+      - analysis_report
+    timeout: 300
+    validation:
+      - command: "npm test"
+        expect: exit_code_0</code></pre>
+
+        <h3>配置智能体</h3>
+        <p>每个智能体通过 YAML 文件定义其行为参数。</p>
+        <pre><code># agents/analyzer.yaml
+name: analyzer
+display_name: 需求分析师
+model:
+  backend: claude
+  name: claude-opus-4-6
+  temperature: 0.3
+  max_tokens: 4096
+system_prompt: |
+  你是一位经验丰富的软件需求分析师。
+  你的任务是分析用户需求，产出结构化的分析报告。
+  报告应包含：功能需求、技术约束、风险评估。
+tools:
+  - file_read
+  - file_search
+  - codebase_explore</code></pre>
+
+        <h3>打包与发布</h3>
+        <pre><code># 验证模块结构
+pinable-agents modules validate ./my-module
+
+# 打包为可分发的压缩包
+pinable-agents modules pack ./my-module
+# 输出：my-module-1.0.0.tar.gz
+
+# 本地安装测试
+pinable-agents modules install --local ./my-module-1.0.0.tar.gz</code></pre>
+
+        <h2 id="lifecycle-hooks">模块生命周期钩子</h2>
+        <p>模块通过钩子（Hooks）在生命周期的关键节点执行自定义逻辑。系统支持以下四个钩子：</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>钩子名称</th>
+              <th>触发时机</th>
+              <th>典型用途</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>post_install</code></td>
+              <td>模块文件解压完成后</td>
+              <td>下载额外资源、编译本地依赖</td>
+            </tr>
+            <tr>
+              <td><code>pre_activate</code></td>
+              <td>模块激活前</td>
+              <td>检查运行环境、验证外部依赖</td>
+            </tr>
+            <tr>
+              <td><code>pre_deactivate</code></td>
+              <td>模块停用前</td>
+              <td>保存状态、清理临时资源</td>
+            </tr>
+            <tr>
+              <td><code>pre_uninstall</code></td>
+              <td>模块卸载前</td>
+              <td>清理配置、移除注册数据</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>钩子脚本在模块目录上下文中执行，拥有访问模块文件的完整权限。脚本的退出码决定生命周期操作是否继续：退出码 0 表示成功，继续执行；非零退出码表示失败，操作回滚。</p>
+        <pre><code>#!/bin/bash
+# scripts/check-deps.sh - pre_activate 钩子示例
+# 检查 Python 3 是否可用（本模块的依赖）
+
+if ! command -v python3 &> /dev/null; then
+    echo "错误：此模块需要 Python 3，请先安装"
+    exit 1
+fi
+
+PYTHON_VERSION=$(python3 --version | cut -d' ' -f2)
+echo "检测到 Python $PYTHON_VERSION"
+exit 0</code></pre>
+
+        <h2 id="version-management">版本管理与更新</h2>
+        <p>模块版本遵循语义化版本规范（SemVer）：<code>MAJOR.MINOR.PATCH</code>。版本号的变更含义如下：</p>
+        <ul>
+          <li><strong>MAJOR</strong>：不兼容的 API 变更，升级可能需要修改配置</li>
+          <li><strong>MINOR</strong>：向后兼容的新功能</li>
+          <li><strong>PATCH</strong>：向后兼容的 bug 修复</li>
+        </ul>
+        <p>更新操作默认只安装 MINOR 和 PATCH 更新，MAJOR 更新需要用户明确确认。</p>
+        <pre><code># 检查可用更新
+pinable-agents modules outdated
+
+# 更新特定模块
+pinable-agents modules update do
+
+# 更新所有模块（仅 minor/patch）
+pinable-agents modules update --all
+
+# 强制更新到 major 版本
+pinable-agents modules update do@2.0.0 --allow-major</code></pre>
+
+        <blockquote>
+          <p>建议在更新模块前先运行 <code>pinable-agents modules outdated</code> 查看可用更新及其变更日志，评估更新影响后再执行。</p>
+        </blockquote>
+
+        <h2 id="marketplace">模块市场概念</h2>
+        <p>PinableAgents 正在规划模块市场（Module Marketplace）功能，它将提供一个中心化的模块发现和分发平台。计划中的功能包括：</p>
+        <ul>
+          <li><strong>模块搜索与发现</strong>：按分类、评分、下载量浏览和搜索模块。</li>
+          <li><strong>用户评价</strong>：安装者可以对模块进行评分和评论。</li>
+          <li><strong>自动兼容性检查</strong>：市场会标注模块与当前引擎版本的兼容性。</li>
+          <li><strong>团队私有仓库</strong>：企业用户可以搭建私有模块仓库，托管内部模块。</li>
+          <li><strong>模块模板</strong>：提供脚手架工具快速创建新模块项目。</li>
+        </ul>
+        <p>在市场功能正式上线前，你可以通过 Git 仓库或本地路径的方式分享和安装自定义模块。社区贡献的模块可以在 GitHub 上的 <code>pinablelab/community-modules</code> 仓库中找到。</p>
+      </div>
+
+      <div class="article-nav">
+        <a class="btn btn-outline" href="desktop-overview.html">&larr; pinable-desktop 完全指南</a>
+        <a class="btn btn-outline" href="config-guide.html">config.json 完整指南 &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div>&copy; 2026 PinableAgents &middot; PinableLab</div>
+      <span>Workflows / Orchestration / Execution</span>
+    </div>
+  </footer>
+</body>
+</html>
