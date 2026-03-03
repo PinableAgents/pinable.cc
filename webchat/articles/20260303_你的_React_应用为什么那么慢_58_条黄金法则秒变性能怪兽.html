@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>你的 React 应用为什么那么慢？58 条黄金法则秒变性能怪兽</title>
+<style>body { margin: 0; padding: 0; background: #f5f5f5; }
+section { background: #fff; }</style>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', Arial, sans-serif; font-size: 15px; color: #333; line-height: 1.8; letter-spacing: 1.5px; word-break: break-all;">
+<section style="max-width: 578px; margin: 0 auto; padding: 20px 16px;">
+<h1 style="font-size: 22px; font-weight: bold; color: #1a1a1a; text-align: center; margin-bottom: 24px; line-height: 1.4;">你的 React 应用为什么那么慢？58 条黄金法则秒变性能怪兽</h1>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">hi,我是 PinableAI</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">你有没有过这样的体验：写好一个 React 应用，满心欢喜上线了，结果打开页面的时候卡顿如狗，用户一拉一刷新就能看到性能警告。其实，大多数 React 开发者都在犯同样的错误，只是不自知。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">这不是你的错，是因为没有一份系统的、优先级明确的性能优化指南。直到现在。</p>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">一、性能问题的真相：瀑布流、捆绑包肥胖、渲染浪费</h3>
+<img src="https://pinable.cc/wechat/images/38c832f52d0b4779a4f0a7b0e8a117d8.png" style="display: block; max-width: 100%; height: auto; margin: 16px auto; border-radius: 4px;" />
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">说白了，React 应用性能差主要卡在几个环节：</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;"><strong style="font-weight: bold; color: #1a1a1a;">数据请求的瀑布流</strong>。组件嵌套三层，第一层数据没出来，第二层就傻等，第三层更是无谓等待。这就像排队办事，前面有人没办完，后面的人再急也得等。很多开发者写 effect 时根本没意识到这一点。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;"><strong style="font-weight: bold; color: #1a1a1a;">JavaScript 包肥得吓人</strong>。引个第三方库，又引个工具库，再加上自己的代码，最后一打包，首屏加载 3 秒起跳。用户在那儿看白屏，转身就关闭了。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;"><strong style="font-weight: bold; color: #1a1a1a;">组件无脑 re-render</strong>。一个状态改了，整个组件树都跟着重新渲染。你自己的代码没变，但 React 还是得走一遍虚拟 DOM diff，浪费了大量计算资源。这就像工人每次都要检查一遍完全没变过的零件。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">这些问题听起来复杂，其实都有解法。关键是要有一套系统的、经过验证的规则来指导优化。</p>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">二、Vercel React Best Practices：58 条规则，按威力排序</h3>
+<img src="https://pinable.cc/wechat/images/0cea6a233c5842738bb0b536627a126d.png" style="display: block; max-width: 100%; height: auto; margin: 16px auto; border-radius: 4px;" />
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">Vercel（就是那个 Next.js 的亲爹公司）集合了全球顶级 React 开发者的经验，搞出了一份 58 条规则的完整优化指南。但这不是一堆杂乱的建议，而是按照对应用性能的影响大小排优先级。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;"><strong style="font-weight: bold; color: #1a1a1a;">关键优化方向有 8 个</strong>：</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">第一个是<strong style="font-weight: bold; color: #1a1a1a;">消除瀑布流</strong>。异步数据加载的顺序问题，这是最高优先级，因为它能救你 500ms 以上的时间。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">第二个是<strong style="font-weight: bold; color: #1a1a1a;">包体积优化</strong>。动态导入、懒加载、树摇。这能让首屏快 1-2 秒。你想啊，首屏快了，用户就不会跳出去。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">第三个是<strong style="font-weight: bold; color: #1a1a1a;">服务端性能</strong>。缓存策略、数据序列化，把计算压力从浏览器转移到服务器。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">第四到八个分别是<strong style="font-weight: bold; color: #1a1a1a;">客户端数据请求</strong>、<strong style="font-weight: bold; color: #1a1a1a;">重渲染优化</strong>、<strong style="font-weight: bold; color: #1a1a1a;">DOM 性能</strong>、<strong style="font-weight: bold; color: #1a1a1a;">JavaScript 执行</strong>和<strong style="font-weight: bold; color: #1a1a1a;">高级模式</strong>。这些是细节优化，但积少成多。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">关键点是什么？每条规则都带着"为什么"和"怎么做"，还有对比代码示例。不是让你莽撞优化，而是理解原理后再下手。</p>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">三、这套规则能给你省多少钱？性能就是生产力</h3>
+<img src="https://pinable.cc/wechat/images/854add4220fb4554ba76ca3c8e50443f.png" style="display: block; max-width: 100%; height: auto; margin: 16px auto; border-radius: 4px;" />
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">你可能想，"性能优化" 听起来很技术，和生意有啥关系？</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">其实关系大了去了。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;"><strong style="font-weight: bold; color: #1a1a1a;">用户体验差一秒，转化率掉 7%</strong>。这是业界公认的数据。如果你的应用慢，用户不买单，转身就去竞争对手那里了。而且优化后更快的应用，不仅留住用户，还能减少服务器成本——更少的重渲染意味着更少的 CPU 占用，云服务费直接下来。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;"><strong style="font-weight: bold; color: #1a1a1a;">对于开发团队</strong>，有了这套规则，就不用每次都重新发明轮子。新人入职，给他这 58 条规则，他快速上手 React 性能优化。老司机用它来做代码审查，分分钟找出瓶颈。有些团队甚至直接用这套规则自动化重构代码。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">说白了，这套规则的价值就是：<strong style="font-weight: bold; color: #1a1a1a;">省时间、省成本、提转化</strong>。时间省了，成本下来了，转化率上去了，这就是钱。</p>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">四、你现在就可以开始用，不用等完美</h3>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">《图片4》</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">最后要说的是，优化不是一蹴而就的事，而是持续迭代。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">Vercel 这套规则的妙处在于，你可以先从 CRITICAL 的优化开始（消除瀑布流、包体积），这两项通常能解决 80% 的问题。然后逐步往下走，优化重渲染、DOM 效率这些。不用一次全改，反而容易引入 bug。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">实际上，很多大厂就是这么用的。他们不是一开始就想着 "一定要做完美优化"，而是 "这周先干掉瀑布流，下周再优化包体积，下下周再调重渲染"。一步一个脚印，两三个迭代下来，应用性能飙升。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">你的 React 应用现在是否也在吃性能的亏？与其埋头乱折腾，不如有一套系统的方法论来指导。58 条规则，每一条都经过验证，每一条都有实战价值。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">加我微信 gopinkgamer，领取完整的 Vercel React 性能优化规则宝典，直接拿去用。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">下周见，继续聊怎样用系统方法论提升你的技术体系。</p>
+</section>
+</body>
+</html>
