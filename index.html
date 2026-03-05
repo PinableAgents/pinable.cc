@@ -185,37 +185,37 @@
       <h2 class="section-title">Wiki 文档中心</h2>
       <p class="section-desc">整理工作流、模块配置与最佳实践，帮助团队快速上手并建立统一执行标准。</p>
       <div class="wiki-grid">
-        <a class="wiki-card" href="/wiki.html#wiki-start">
+        <a class="wiki-card" href="/wiki/getting-started.html">
           <span class="wiki-tag">起步</span>
           <h4>快速开始</h4>
           <p>安装桌面端、启用模块、首次运行 do 工作流的完整步骤。</p>
           <span class="wiki-meta">更新：2026-02-10</span>
         </a>
-        <a class="wiki-card" href="/wiki.html#wiki-workflows">
+        <a class="wiki-card" href="/wiki/workflow-comparison.html">
           <span class="wiki-tag">工作流</span>
           <h4>工作流对比</h4>
           <p>do / omo / bmad / sparv 的场景选择与协作建议。</p>
           <span class="wiki-meta">更新：2026-02-10</span>
         </a>
-        <a class="wiki-card" href="/wiki.html#wiki-config">
+        <a class="wiki-card" href="/wiki/config-guide.html">
           <span class="wiki-tag">配置</span>
           <h4>模块与配置</h4>
           <p>config.json 开关说明、模块组合推荐与冲突策略。</p>
           <span class="wiki-meta">更新：2026-02-10</span>
         </a>
-        <a class="wiki-card" href="/wiki.html#wiki-backends">
+        <a class="wiki-card" href="/wiki/multi-backend.html">
           <span class="wiki-tag">执行</span>
           <h4>多后端执行</h4>
           <p>Codex / Claude / Gemini 的参数规范与会话恢复。</p>
           <span class="wiki-meta">更新：2026-02-10</span>
         </a>
-        <a class="wiki-card" href="/wiki.html#wiki-desktop">
+        <a class="wiki-card" href="/wiki/desktop-overview.html">
           <span class="wiki-tag">桌面端</span>
           <h4>pinable-desktop</h4>
           <p>模块安装、配置编辑与执行监控的操作指引。</p>
           <span class="wiki-meta">更新：2026-02-10</span>
         </a>
-        <a class="wiki-card" href="/wiki.html#wiki-troubleshooting">
+        <a class="wiki-card" href="/wiki/troubleshooting.html">
           <span class="wiki-tag">排错</span>
           <h4>常见问题</h4>
           <p>安装失败、后端 CLI 缺失、权限提示的处理方法。</p>
@@ -240,6 +240,74 @@
         <div class="arch-block">
           <h4>执行层：codeagent-wrapper</h4>
           <p>统一 CLI，连接 Codex/Claude/Gemini，支持会话恢复与并行。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="testimonials">
+    <div class="container">
+      <h2 class="section-title">用户推荐</h2>
+      <p class="section-desc">来自工程一线的反馈，帮助团队判断是否适配当前流程。</p>
+      <div class="cards">
+        <div class="card">
+          <h4>平台工程师（AI 公司）</h4>
+          <p>分阶段执行后，评审更聚焦，交付节奏比手工编排更稳。</p>
+        </div>
+        <div class="card">
+          <h4>开源维护者（工具项目）</h4>
+          <p>统一命令和日志格式后，协作成本下降，新贡献者更快上手。</p>
+        </div>
+        <div class="card">
+          <h4>研发负责人（SaaS 团队）</h4>
+          <p>以前靠经验推进，现在流程可复盘，跨角色协作冲突少很多。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="comparison">
+    <div class="container">
+      <h2 class="section-title">关键指标对比</h2>
+      <p class="section-desc">同样人力投入下，标准化流程更容易产出稳定结果。</p>
+      <div class="point">
+        <div class="article-body" style="overflow-x: auto;">
+          <table aria-label="手工编排工作流与 PinableAgents 对比">
+            <thead>
+              <tr>
+                <th>维度</th>
+                <th>手工编排工作流</th>
+                <th>PinableAgents</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>效率</td>
+                <td>切换频繁，推进偏慢</td>
+                <td>阶段明确，推进更快</td>
+              </tr>
+              <tr>
+                <td>可维护性</td>
+                <td>流程分散，难沉淀</td>
+                <td>模板统一，可复用</td>
+              </tr>
+              <tr>
+                <td>学习曲线</td>
+                <td>依赖口传，新人上手慢</td>
+                <td>文档齐全，上手路径清晰</td>
+              </tr>
+              <tr>
+                <td>团队协作</td>
+                <td>交接易漏，上下文易断</td>
+                <td>输入输出清晰，协作更顺</td>
+              </tr>
+              <tr>
+                <td>综合成本</td>
+                <td>返工与沟通成本偏高</td>
+                <td>前期规范化，长期更省</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
