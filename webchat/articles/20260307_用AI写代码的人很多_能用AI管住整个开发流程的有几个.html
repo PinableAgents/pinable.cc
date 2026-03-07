@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用AI写代码的人很多，能用AI管住整个开发流程的有几个</title>
+<style>body { margin: 0; padding: 0; background: #f5f5f5; }
+section { background: #fff; }</style>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', Arial, sans-serif; font-size: 15px; color: #333; line-height: 1.8; letter-spacing: 1.5px; word-break: break-all;">
+<section style="max-width: 578px; margin: 0 auto; padding: 20px 16px;">
+<h1 style="font-size: 22px; font-weight: bold; color: #1a1a1a; text-align: center; margin-bottom: 24px; line-height: 1.4;">用AI写代码的人很多，能用AI管住整个开发流程的有几个</h1>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">你以为的AI编程 vs 真正的AI编程</h3>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">hi,我是PinableAI</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">最近圈子里讨论AI写代码的特别多。Copilot、Cursor、Claude Code……工具一个接一个冒出来。但你有没有发现一个问题：这些工具解决的都是"写代码"这一个环节，而一个feature从需求到上线，写代码只占30%。</p>
+<img src="https://pinable.cc/webchat/images/470d04efd29943ae8b9f274f6691e9c9.png" style="display: block; max-width: 100%; height: auto; margin: 16px auto; border-radius: 4px;" />
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">剩下的70%是什么？需求分析、架构设计、代码审查、测试验证、质量把关。你让Copilot帮你做PRD评审？让Cursor帮你跑完整的多阶段开发流程？它们做不到。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">这就是我们做PinableAI多智能体工作流系统的原因。不是再造一个代码补全工具，而是把整个软件开发生命周期用AI串起来，让每个环节都有对应的智能体负责，每个阶段都有质量门控。</p>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">一个工具四个后端，不跟任何模型绑死</h3>
+<img src="https://pinable.cc/webchat/images/3d17dbe01751487691925c7ea1f4ce3c.png" style="display: block; max-width: 100%; height: auto; margin: 16px auto; border-radius: 4px;" />
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">技术负责人选工具最怕什么？厂商锁定。今天用Claude写得好好的，明天Anthropic涨价50%，你整个团队的工作流就得推翻重来。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">我们的codeagent-wrapper从架构层面解决了这个问题。它是一个Go语言写的多后端执行器，统一封装了Codex、Claude、Gemini、OpenCode四个AI后端。每个后端不是简单的"换个API"——而是根据任务特性智能路由：</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- Codex：复杂代码分析、大规模重构</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- Claude：文档生成、逻辑推理、简单功能</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- Gemini：UI/UX原型设计</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- OpenCode：代码库探索和理解</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">你的团队用一套命令、一套工作流，底层后端随时可以切换。哪个模型性价比高就用哪个，哪个模型在特定任务上效果好就路由到哪个。这才是理性的技术选型。</p>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">七套工作流，从小修小补到企业级敏捷全覆盖</h3>
+<img src="https://pinable.cc/webchat/images/b2a8eac9935a4f17a3a5c564a27d08bc.png" style="display: block; max-width: 100%; height: auto; margin: 16px auto; border-radius: 4px;" />
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">不同场景需要不同重量级的流程。修一个bug不需要走完整的敏捷流程，做一个大feature也不能只靠一句prompt就上线。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">我们设计了7+可插拔工作流模块，覆盖开发场景的完整光谱：</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;"><strong style="font-weight: bold; color: #1a1a1a;">轻量级</strong>：/ask（单次技术咨询，4个专家顾问）、/code（直接实现，4个开发专家）、/debug（问题定位）、/test（测试策略）。每个命令背后都是多个专业智能体协同，不是一个通用模型在硬撑。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;"><strong style="font-weight: bold; color: #1a1a1a;">中量级</strong>：/do 是五阶段特性开发流程——理解→澄清→设计→实现→完成。每个阶段有明确的输入输出标准。澄清阶段是强制的，不允许跳过，因为我们发现90%的返工都源于需求没搞清楚就动手写代码。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;"><strong style="font-weight: bold; color: #1a1a1a;">重量级</strong>：/omo 是多智能体路由编排，6个专业智能体（Oracle、Librarian、Explore、Develop等）根据风险信号自动路由。涉及多文件修改、外部API、安全相关的变更，Oracle会介入做风险评估。/bmad-pilot 是完整的企业级敏捷流程，从PO写需求、架构师设计、SM拆任务、开发实现到QA验证，每个角色都是独立智能体，PRD和架构设计必须达到90分以上才能进入下一阶段。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">这意味着什么？你的团队可以按任务复杂度选择匹配的流程。日常小需求用/code几分钟搞定，核心功能用/do走标准流程，关键系统用/bmad走全量敏捷。工具适配流程，不是流程迁就工具。</p>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">编排和执行分离，这才是工程化的正确姿势</h3>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">大多数AI编程工具的架构是：一个模型既负责理解需求，又负责写代码，还负责自我验证。这就像让一个人既当运动员又当裁判——利益冲突，质量不可控。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">我们的系统采用分离式架构：Claude Code作为编排层，只负责规划、上下文收集和验证，永远不直接碰代码。codeagent-wrapper作为执行层，接收结构化任务描述，执行代码编辑和测试。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">这带来三个直接好处：</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;"><strong style="font-weight: bold; color: #1a1a1a;">可追溯</strong>——每次执行都有唯一的SESSION_ID，中断了可以恢复，出了问题可以追溯到具体的执行上下文。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;"><strong style="font-weight: bold; color: #1a1a1a;">可并行</strong>——codeagent-wrapper支持依赖感知的并行执行。前端和后端任务可以同时跑，有依赖关系的任务自动排序。团队协作效率直接翻倍。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;"><strong style="font-weight: bold; color: #1a1a1a;">可控制</strong>——EHRB风险门控机制，涉及生产环境、安全相关、破坏性操作的命令必须显式确认。SPARV工作流连续失败3次自动停止。不是AI说什么就执行什么，而是在关键节点有人类审批。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">选AI开发工具，很多人只看"能不能生成代码"。但作为技术负责人，你需要考虑的是：能不能管住整个开发流程？能不能保证质量？能不能在出问题时快速定位和回滚？</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">不是AI越强大越好，而是AI越可控越好。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">工程化的本质，从来不是追求速度，而是追求可重复的高质量交付。</p>
+</section>
+</body>
+</html>
