@@ -1,0 +1,37 @@
+<section style="max-width: 578px; margin: 0 auto; padding: 20px 16px;">
+<h1 style="font-size: 22px; font-weight: bold; color: #1a1a1a; text-align: center; margin-bottom: 24px; line-height: 1.4;">我用3小时配飞书Webhook，同事10分钟用长连接搞定</h1>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">hi，我是PinableAI</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">今年我在给开发者装飞书机器人的时候，遇到一个有趣的现象：80% 的开发者都选择 Webhook + ngrok 的方案，死磕了 2-3 小时才搞定。然后我跟他们说，其实有个长连接模式，零公网 IP、零 ngrok，只需要 App ID 和 Secret——说完他们都是一脸懊悔。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">这篇文章我就来拆解一下，为什么那么多人踩这个坑，以及如何一步到位用长连接省掉这 3 小时。</p>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">你看：Webhook 为什么看起来是"标准答案"</h3>
+<img src="https://pinable.cc/webchat/images/4be449f704424ed0a65b896a28fcf7e0.png" style="display: block; max-width: 100%; height: auto; margin: 16px auto; border-radius: 4px;" />
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">说白了，你查飞书官方文档、看网上教程，99% 都在说怎么配 Webhook。绝大多数 IM 平台（钉钉、企业微信）确实都是 Webhook 模式，所以开发者会默认觉得"这是行业标准"。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">但问题来了：</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- 你需要一个公网 IP 或域名（本地开发？不好意思，ngrok 救命）</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- 你需要装 ngrok，配 authtoken（额外依赖）</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- ngrok 免费版隧道不稳定，重启后 URL 就变了，每次都要跑回飞书开发者后台更新一遍</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- 你还得处理 Verification Token 和 Encrypt Key，多一层加密配置</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- 最绝的是：当 ngrok 隧道断开时，飞书的消息就完全收不到</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">你想想，你在 Webhook 模式下开发，突然网络抖动，隧道掉了，你还没反应过来，已经损失了 10 条消息。这在生产环境有多坑？</p>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">其实：长连接模式才是降维打击</h3>
+<img src="https://pinable.cc/webchat/images/8b3f9d71694f4e4d810c55ebe84ae2d2.png" style="display: block; max-width: 100%; height: auto; margin: 16px auto; border-radius: 4px;" />
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">飞书有个长连接（WebSocket）模式，是专门为了本地开发和内网环境设计的。听我列这些优势：</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- 无需公网 IP、无需 ngrok：飞书 SDK 主动建立 WebSocket 连接到飞书服务器，你的电脑根本不暴露在网络上</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- 配置极简：只需要 App ID 和 App Secret，没有 Verification Token、没有 Encrypt Key、没有 Port 折腾</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- 自动重连：连接掉了，SDK 自动重连，不会像 ngrok 一样隧道没了就彻底黑了</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- 开发友好：你在笔记本上写代码，飞书机器人照样实时收消息，零延迟</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">来看对比，我写个表格给你感受一下差别有多大。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">Webhook 模式（踩坑路线）：1. 安装 ngrok；2. 设置 authtoken；3. 启动隧道；4. 复制 HTTPS 地址；5. 跑到飞书后台粘贴；6. 填 Token 和 Encrypt Key；7. 等验证；8. ngrok 崩了？重新来。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">长连接模式（降维路线）：1. 飞书后台选长连接；2. 填 App ID 和 Secret；3. 点启动。完事儿。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">你数一下，一个 8 步，一个 3 步。最关键的是，长连接掉线自动重连，Webhook 掉线就是黑屏。</p>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">说白了：你把简单的事情复杂化了</h3>
+<img src="https://pinable.cc/webchat/images/e4bc6872a8fb4da288b7d038421e88f9.png" style="display: block; max-width: 100%; height: auto; margin: 16px auto; border-radius: 4px;" />
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">为什么这么多人还在用 Webhook？原因很简单：</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- 第一，信息不对称。网上教程大多数讲 Webhook，没人专门拿出来讲长连接的好处</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- 第二，路径依赖。你看别人怎么做的，就跟着怎么做，没人问这是最优解吗</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- 第三，认知惯性。既然其他 IM 都是 Webhook，飞书也应该是——错了，飞书考虑周到，给你留了更好的方案</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">这就是为什么我说这是个反常识的地方。看似"标准"的 Webhook，反而是负担。真正聪明的做法，是用飞书设计好的长连接。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">我见过很多开发团队，本来想快速集成飞书机器人，结果被 ngrok 卡了大半天。然后切到长连接，15 分钟搞定。就这差别，你说值不值？</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">所以下次再有人问你怎么接飞书，告诉他一句话：忘掉 ngrok，直接用长连接。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">加我微信 gopinkgamer，领取一份 PinableAI 完整的飞书接入方案（包括权限配置快速清单和故障排查手册）。不用 3 小时，15 分钟上线。</p>
+</section>
