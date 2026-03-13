@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pinable-desktop 重磅更新：模型分组使用，让你的 AI 助手彻底自由</title>
+<style>body { margin: 0; padding: 0; background: #f5f5f5; }
+section { background: #fff; }</style>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', Arial, sans-serif; font-size: 15px; color: #333; line-height: 1.8; letter-spacing: 1.5px; word-break: break-all;">
+<section style="max-width: 578px; margin: 0 auto; padding: 20px 16px;">
+<h1 style="font-size: 22px; font-weight: bold; color: #1a1a1a; text-align: center; margin-bottom: 24px; line-height: 1.4;">pinable-desktop 重磅更新：模型分组使用，让你的 AI 助手彻底自由</h1>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">打破全局限制，模型选择自由</h3>
+<img src="https://pinable.cc/webchat/images/a6dcf2ed76f0433bb130496f482063bf.png" style="display: block; max-width: 100%; height: auto; margin: 16px auto; border-radius: 4px;" />
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">hi,我是PinableAI。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">今天要聊一个很多开发者都在吐槽的问题：AI 工具的模型选择太不自由了。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">你有没有遇到过这种情况？正在写代码用的是 Claude 模型，结果另一个项目需要用 Codex，你得去设置里改全局配置。这一改不要紧，所有会话都跟着变了。最坑的是，有时候模型失效了，你必须跑到 Provider 页面去修改 active group，直接影响所有正在进行的任务。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">这就是所谓的「全局 active group」问题——一个设置绑死所有会话。</p>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">分组架构：每个会话独立选择</h3>
+<img src="https://pinable.cc/webchat/images/5dc80ed414444fe884b20467ac2926ae.png" style="display: block; max-width: 100%; height: auto; margin: 16px auto; border-radius: 4px;" />
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">pinable-desktop 最新提交 d2a7b19 解决了这个痛点。核心思路很简单：把模型分组的定义和调用分离。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">Provider 页面依然负责管理分组定义（也就是数据源），但在 WorkflowsPage、GatewayPage、TerminalPage 启动时，你可以独立选择 Group + Model。每个会话都有自己的环境变量，互不干扰。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">后端架构也配合做了调整：</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- 新增 <code style="background:#f5f5f5;padding:2px 6px;border-radius:3px;font-size:13px;color:#c7254e;">BuildWrapperEnvForGroup()</code> 方法，支持 per-session env 注入，优先级高于宿主进程 env</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- Terminal Service 引入 Functional Options 模式，通过 <code style="background:#f5f5f5;padding:2px 6px;border-radius:3px;font-size:13px;color:#c7254e;">WithEnvOverrides()</code> 注入个性化环境变量</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- Gateway Service 在 handoff 时自动注入对应 group 的环境变量</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">简单说就是：以前是一把钥匙开所有锁，现在每把锁都有自己独立的钥匙。</p>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">实际体验：哪里需要就选哪里</h3>
+<img src="https://pinable.cc/webchat/images/de741dbefd6041668414ff54c2b06b07.png" style="display: block; max-width: 100%; height: auto; margin: 16px auto; border-radius: 4px;" />
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">具体使用场景是这样：</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">1. <strong style="font-weight: bold; color: #1a1a1a;">Workflows 工作流</strong>：启动时三级联动——Backend → Group → Model，独立选择本次工作流使用的模型分组</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">2. <strong style="font-weight: bold; color: #1a1a1a;">Gateway 网关</strong>：Defaults Group 独立配置，不同项目用不同的模型</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">3. <strong style="font-weight: bold; color: #1a1a1a;">Terminal 终端</strong>：直接指定 providerID + groupID 启动，每个终端会话都可以用不同的模型</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">模型失效了？不用再跑回 Provider 页面改全局配置，直接在当前会话切换分组就行。这就是真正的「按需选择」。</p>
+<h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">写在最后</h3>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">这个功能看似小改动，实际意义很大。它把「模型选择权」从系统级别下沉到了会话级别。对于需要同时处理多个项目的开发者来说，这意味着你可以：</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- A 项目用 Claude 3.5</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- B 项目用 Codex</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">- C 项目用 Gemini</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">完全并行，互不影响。这才是真正的效率工具。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">加我微信 gopinkgamer，领取一份 PinableAI 资料。</p>
+</section>
+</body>
+</html>
