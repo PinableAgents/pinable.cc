@@ -10,7 +10,7 @@
 
 ## 配置 AI 后端
 
-PinableAgents 通过 codeagent-wrapper 统一调用多种 AI 后端，需至少配置一个：
+PinableAgents 通过 pinable 统一调用多种 AI 后端，需至少配置一个：
 
 | 后端 | 说明 |
 |------|------|
@@ -90,7 +90,7 @@ npx http-server
 |------|----------|
 | 后端 CLI 未找到 | 确认 CLI 已安装并在 PATH 中 |
 | 模块安装失败 | 检查网络连接，重试一次 |
-| 会话恢复失败 | 检查 codeagent-wrapper 版本是否最新 |
+| 会话恢复失败 | 检查 pinable 版本是否最新 |
 | 桌面端无法启动 | macOS 需在「系统设置 → 安全性」中允许运行 |
 
 更多问题见 [Wiki - 常见问题](https://pinable.cc/wiki/troubleshooting.html)。

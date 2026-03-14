@@ -18,7 +18,7 @@ PinableAgents 面向研发团队，将复杂开发任务拆解为可验证的阶
 ┌─────────────────────────────┐
 │   编排层：Claude Code        │  规划、上下文收集、验证
 ├─────────────────────────────┤
-│   执行层：codeagent-wrapper  │  统一 CLI → Codex / Claude / Gemini
+│   执行层：pinable  │  统一 CLI → Codex / Claude / Gemini
 ├─────────────────────────────┤
 │   桌面端：pinable-desktop    │  模块安装、配置编辑、执行监控
 └─────────────────────────────┘

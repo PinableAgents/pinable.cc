@@ -10,7 +10,7 @@
 <p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">OpenClaw的定位是个人AI助手——帮你管日程、发消息、跑脚本。这跟专业的AI辅助开发完全是两个赛道。拿它跟我们的多智能体工作流系统比，就像拿瑞士军刀跟手术刀比。瑞士军刀什么都能切，但你敢让它上手术台吗？</p>
 <h3 style="font-size: 17px; font-weight: bold; color: #1a1a1a; margin: 28px 0 12px 0; padding-left: 10px; border-left: 3px solid #333; line-height: 1.4;">架构决定上限，细节决定下限</h3>
 <img src="https://pinable.cc/webchat/images/5c45b14668bf46b9ba957206b19ec994.png" style="display: block; max-width: 100%; height: auto; margin: 16px auto; border-radius: 4px;" />
-<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">我们的系统采用分离式架构：Claude Code做编排（规划、上下文收集、验证），codeagent-wrapper做执行（代码编辑、测试运行）。编排层永远不直接碰代码。</p>
+<p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">我们的系统采用分离式架构：Claude Code做编排（规划、上下文收集、验证），pinable做执行（代码编辑、测试运行）。编排层永远不直接碰代码。</p>
 <p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">这意味着什么？安全。可控。可追溯。</p>
 <p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">再看OpenClaw。2026年1月底爆出CVE-2026-25253，一个跨站WebSocket劫持漏洞，CVSS评分8.8。任何网站都能偷你的认证令牌，一个链接就能拿到你机器的完整控制权。Censys扫描发现当时有超过2.1万个OpenClaw实例暴露在公网上。Cisco的AI安全团队还发现第三方技能在用户不知情的情况下进行数据窃取和提示注入。</p>
 <p style="font-size: 15px; color: #3f3f3f; margin: 0 0 16px 0; text-align: justify; line-height: 1.8; letter-spacing: 1.5px;">你作为技术负责人，敢让团队在生产环境旁边跑这玩意儿？</p>

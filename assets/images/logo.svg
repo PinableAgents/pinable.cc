@@ -1,6 +1,26 @@
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="64" height="64" rx="16" fill="#1F6F6C"/>
-  <path d="M20 42C28 26 36 22 44 22" stroke="#FDF9F2" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="22" cy="42" r="4" fill="#E06D54"/>
-  <circle cx="44" cy="22" r="4" fill="#D8A35B"/>
+<svg width="160" height="140" viewBox="0 0 160 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="pinable_blue" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2B5295"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+    <linearGradient id="pinable_orange" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F47621"/>
+      <stop offset="100%" stop-color="#EF4444"/>
+    </linearGradient>
+  </defs>
+
+  <!-- HD Icon Component (Stacked Top) -->
+  <g transform="translate(48, 10) scale(1.15)">
+    <path d="M32 4L46 22H18L32 4Z" fill="#2B5295"/>
+    <path d="M18 26C12 26 8 32 8 40C8 48 14 54 20 54L32 46L18 26Z" fill="url(#pinable_blue)"/>
+    <path d="M46 26C52 26 56 32 56 40C56 48 50 54 44 54L32 46L46 26Z" fill="url(#pinable_orange)"/>
+    <circle cx="32" cy="40" r="4" fill="white"/>
+    <path d="M32 4V0M8 40H2M56 40H62M20 54V60M44 54V60" stroke="#2B5295" stroke-width="1.5" stroke-linecap="round" opacity="0.3"/>
+  </g>
+
+  <!-- HD Text Component (Stacked Bottom) -->
+  <text x="80" y="115" font-family="Inter, -apple-system, sans-serif" font-weight="800" font-size="24" text-anchor="middle" letter-spacing="-0.03em">
+    <tspan fill="#2B5295">Pinable</tspan><tspan fill="#F47621">Lab</tspan>
+  </text>
 </svg>
