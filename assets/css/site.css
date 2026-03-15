@@ -276,6 +276,147 @@ body {
   margin-bottom: 1rem;
 }
 
+/* Wiki Layout Optimization */
+.wiki-container {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.wiki-sidebar {
+  position: sticky;
+  top: 100px;
+  padding: 1.5rem;
+  background: var(--secondary);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+}
+
+.wiki-sidebar h3 {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-body);
+  margin-bottom: 1.5rem;
+}
+
+.wiki-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wiki-nav a {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: var(--text-heading);
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.wiki-nav a:hover {
+  background: white;
+  color: var(--accent-start);
+}
+
+.wiki-nav a.active {
+  background: var(--accent-start);
+  color: white;
+}
+
+.wiki-section {
+  margin-bottom: 5rem;
+  scroll-margin-top: 120px;
+}
+
+.wiki-section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--secondary);
+}
+
+.wiki-section-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin: 0;
+}
+
+.wiki-section-header .count {
+  font-size: 0.875rem;
+  color: var(--text-body);
+  background: var(--secondary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 99px;
+}
+
+.wiki-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.wiki-card h4 {
+  font-size: 1.125rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.wiki-card p {
+  font-size: 0.875rem;
+  color: var(--text-body);
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.wiki-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--text-body);
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+/* Featured Card Style */
+.wiki-card.featured {
+  grid-column: span 2;
+  flex-direction: row;
+  gap: 2rem;
+  background: var(--accent-start);
+  color: white;
+}
+
+.wiki-card.featured h4, 
+.wiki-card.featured p,
+.wiki-card.featured .wiki-meta {
+  color: white;
+  border-color: rgba(255,255,255,0.2);
+}
+
+.wiki-card.featured .wiki-tag {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+@media (max-width: 1024px) {
+  .wiki-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .wiki-sidebar {
+    display: none;
+  }
+}
+
 /* Footer */
 .footer {
   padding: 80px 0;
