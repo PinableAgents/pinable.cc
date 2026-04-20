@@ -1,0 +1,14 @@
+{
+  "version": "20260421-0735.12",
+  "tag": "desktop-v20260421-0735.12",
+  "released_at": "2026-04-21 07:38:42 +0800",
+  "source_branch": "pinable",
+  "source_commit": "1e5d807bd6a05ffbf9d692727f79f5818179ece8",
+  "assets": {
+    "mac_dmg": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260421-0735.12/PinableAgents-mac.dmg",
+    "windows_exe": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260421-0735.12/PinableAgents-win.exe",
+    "windows_portable_zip": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260421-0735.12/PinableAgents-win-portable.zip",
+    "linux_tar_gz_amd64": null,
+    "linux_appimage_amd64": null
+  }
+}
