@@ -1,0 +1,22 @@
+{
+  "version": "20260424-0653.18",
+  "tag": "desktop-v20260424-0653.18",
+  "released_at": "2026-04-24 06:57:22 +0800",
+  "published_at": "2026-04-23T22:57:22Z",
+  "pub_date": "2026-04-23T22:57:22Z",
+  "source_branch": "pinable",
+  "source_commit": "437e36b70f49c857b6d5dd8e077625bc566ac43d",
+  "notes": "PinableAgents 20260424-0653.18\n\n- fix: restore windows terminal action buttons\n- Built from pinable@437e36b70f49.",
+  "changelog": "PinableAgents 20260424-0653.18\n\n- fix: restore windows terminal action buttons\n- Built from pinable@437e36b70f49.",
+  "html_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260424-0653.18",
+  "details_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260424-0653.18",
+  "download_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260424-0653.18",
+  "url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260424-0653.18",
+  "assets": {
+    "mac_dmg": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260424-0653.18/PinableAgents-mac.dmg",
+    "windows_exe": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260424-0653.18/PinableAgents-win.exe",
+    "windows_portable_zip": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260424-0653.18/PinableAgents-win-portable.zip",
+    "linux_tar_gz_amd64": null,
+    "linux_appimage_amd64": null
+  }
+}
