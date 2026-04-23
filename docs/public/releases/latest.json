@@ -1,0 +1,22 @@
+{
+  "version": "20260423-1620.15",
+  "tag": "desktop-v20260423-1620.15",
+  "released_at": "2026-04-23 16:24:21 +0800",
+  "published_at": "2026-04-23T08:24:21Z",
+  "pub_date": "2026-04-23T08:24:21Z",
+  "source_branch": "pinable",
+  "source_commit": "73be46dc397ef58ab8f0075cad953e6fe34ec7a1",
+  "notes": "PinableAgents 20260423-1620.15\n\n- chore: bump desktop version to 20260423-1553.14\n- Built from pinable@73be46dc397e.",
+  "changelog": "PinableAgents 20260423-1620.15\n\n- chore: bump desktop version to 20260423-1553.14\n- Built from pinable@73be46dc397e.",
+  "html_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260423-1620.15",
+  "details_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260423-1620.15",
+  "download_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260423-1620.15",
+  "url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260423-1620.15",
+  "assets": {
+    "mac_dmg": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260423-1620.15/PinableAgents-mac.dmg",
+    "windows_exe": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260423-1620.15/PinableAgents-win.exe",
+    "windows_portable_zip": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260423-1620.15/PinableAgents-win-portable.zip",
+    "linux_tar_gz_amd64": null,
+    "linux_appimage_amd64": null
+  }
+}
