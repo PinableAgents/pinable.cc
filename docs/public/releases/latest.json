@@ -1,0 +1,22 @@
+{
+  "version": "20260423-1728.17",
+  "tag": "desktop-v20260423-1728.17",
+  "released_at": "2026-04-23 17:31:56 +0800",
+  "published_at": "2026-04-23T09:31:56Z",
+  "pub_date": "2026-04-23T09:31:56Z",
+  "source_branch": "pinable",
+  "source_commit": "4c59e4644ac14c2961a14214c7a12a3e3c480a19",
+  "notes": "PinableAgents 20260423-1728.17\n\n- fix: skip Wails bindings generation to resolve type.Time binding errors\n- Built from pinable@4c59e4644ac1.",
+  "changelog": "PinableAgents 20260423-1728.17\n\n- fix: skip Wails bindings generation to resolve type.Time binding errors\n- Built from pinable@4c59e4644ac1.",
+  "html_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260423-1728.17",
+  "details_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260423-1728.17",
+  "download_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260423-1728.17",
+  "url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260423-1728.17",
+  "assets": {
+    "mac_dmg": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260423-1728.17/PinableAgents-mac.dmg",
+    "windows_exe": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260423-1728.17/PinableAgents-win.exe",
+    "windows_portable_zip": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260423-1728.17/PinableAgents-win-portable.zip",
+    "linux_tar_gz_amd64": null,
+    "linux_appimage_amd64": null
+  }
+}
