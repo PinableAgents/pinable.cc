@@ -1,0 +1,22 @@
+{
+  "version": "20260423-1722.16",
+  "tag": "desktop-v20260423-1722.16",
+  "released_at": "2026-04-23 17:25:36 +0800",
+  "published_at": "2026-04-23T09:25:36Z",
+  "pub_date": "2026-04-23T09:25:36Z",
+  "source_branch": "pinable",
+  "source_commit": "d77d899f6e859cc7b2665c848d8bd2e672dbf709",
+  "notes": "PinableAgents 20260423-1722.16\n\n- fix: harden release pipeline completion checks\n- Built from pinable@d77d899f6e85.",
+  "changelog": "PinableAgents 20260423-1722.16\n\n- fix: harden release pipeline completion checks\n- Built from pinable@d77d899f6e85.",
+  "html_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260423-1722.16",
+  "details_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260423-1722.16",
+  "download_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260423-1722.16",
+  "url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260423-1722.16",
+  "assets": {
+    "mac_dmg": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260423-1722.16/PinableAgents-mac.dmg",
+    "windows_exe": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260423-1722.16/PinableAgents-win.exe",
+    "windows_portable_zip": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260423-1722.16/PinableAgents-win-portable.zip",
+    "linux_tar_gz_amd64": null,
+    "linux_appimage_amd64": null
+  }
+}
