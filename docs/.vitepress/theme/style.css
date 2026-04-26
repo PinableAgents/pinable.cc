@@ -1,0 +1,1150 @@
+/**
+ * PinableAgents Custom Theme
+ * Based on VitePress Default Theme + Alma-style Design
+ */
+
+/* ========================================
+   CSS Variables - Brand Colors
+   ======================================== */
+:root {
+  --vp-c-brand-1: #0ea5e9;
+  --vp-c-brand-2: #38bdf8;
+  --vp-c-brand-3: #2563eb;
+  --vp-c-brand-soft: rgba(14, 165, 233, 0.08);
+  --vp-c-cta: #10b981;
+  --vp-c-cta-soft: rgba(16, 185, 129, 0.1);
+  --accent-gradient: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+  --brand-rgb: 14, 165, 233;
+  --cta-rgb: 16, 185, 129;
+  --surface-rgb: 255, 255, 255;
+  --surface-strong: #ffffff;
+  --surface-muted: #eef4f8;
+
+  /* Surface Colors */
+  --vp-c-bg: #FFFFFF;
+  --vp-c-bg-soft: #f5fbff;
+
+  /* Override VitePress colors with soft, rounded fonts */
+  /* Override VitePress colors with soft, rounded fonts */
+  --vp-font-family-base: 'Nunito Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --vp-font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Navigation */
+  --vp-nav-height: 56px;
+  --vp-sidebar-width: 275px;
+}
+
+.dark {
+  --vp-c-brand-1: #67e8f9;
+  --vp-c-brand-2: #38bdf8;
+  --vp-c-brand-3: #60a5fa;
+  --vp-c-brand-soft: rgba(56, 189, 248, 0.14);
+  --vp-c-cta: #34d399;
+  --vp-c-cta-soft: rgba(16, 185, 129, 0.12);
+  --brand-rgb: 56, 189, 248;
+  --cta-rgb: 16, 185, 129;
+  --surface-rgb: 15, 23, 42;
+  --surface-strong: #08111f;
+  --surface-muted: #020617;
+
+  --vp-c-bg: #0f172a;
+  --vp-c-bg-soft: #08111f;
+  --vp-c-text-1: #e2e8f0;
+  --vp-c-text-2: #cbd5e1;
+  --vp-c-text-3: #94a3b8;
+  --vp-c-divider: #334155;
+}
+
+/* ========================================
+   Navigation Bar
+   ======================================== */
+.VPNav {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--vp-c-divider);
+  height: var(--vp-nav-height);
+}
+
+.dark .VPNav {
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.VPNavBar {
+  background: transparent !important;
+}
+
+.VPNavBarTitle .title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--vp-c-text-1);
+}
+
+.VPNavBarMenuLink {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.VPNavBarMenuLink:hover,
+.VPNavBarMenuLink.active {
+  color: var(--vp-c-brand-1);
+}
+
+.dark .VPNavBarMenuLink:hover,
+.dark .VPNavBarMenuLink.active {
+  color: var(--vp-c-brand-1);
+}
+
+/* ========================================
+   Hero Section (Home Page Only) - Soft Control Deck
+   ======================================== */
+.VPHome {
+  padding: 0;
+}
+
+.VPHero {
+  padding: 64px 24px 48px;
+  background:
+    radial-gradient(circle at 6% 8%, rgba(125, 211, 252, 0.24), transparent 24%),
+    radial-gradient(circle at 92% 12%, rgba(134, 239, 172, 0.16), transparent 22%),
+    linear-gradient(180deg, #f8fbff 0%, #eef4f8 48%, #edf2f7 100%);
+}
+
+.dark .VPHero {
+  background:
+    radial-gradient(circle at 8% 10%, rgba(56, 189, 248, 0.16), transparent 24%),
+    radial-gradient(circle at 88% 8%, rgba(16, 185, 129, 0.12), transparent 22%),
+    linear-gradient(180deg, #020617 0%, #08111f 52%, #0f172a 100%);
+}
+
+.VPHero .name {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+  font-family: 'Varela Round', sans-serif;
+}
+
+.dark .VPHero .name {
+  background: linear-gradient(135deg, #67e8f9 0%, #60a5fa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.VPHero .text {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+  background: linear-gradient(135deg, var(--vp-c-text-1) 0%, var(--vp-c-brand-1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: 'Varela Round', sans-serif;
+}
+
+.dark .VPHero .text {
+  background: linear-gradient(135deg, #f8fafc 0%, #67e8f9 52%, #a7f3d0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.VPHero .tagline {
+  font-size: 0.95rem;
+  color: var(--vp-c-text-2);
+  max-width: 900px;
+  margin: 0 auto;
+  line-height: 1.6;
+  font-weight: 500;
+  white-space: normal;
+}
+
+/* ========================================
+   Buttons
+   ======================================== */
+/* ========================================
+   Accessibility & Motion
+   ======================================== */
+.VPButton {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+
+.VPButton.medium {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+}
+
+.VPButton.primary {
+  background: var(--accent-gradient) !important;
+  color: white !important;
+  box-shadow: 0 14px 26px rgba(37, 99, 235, 0.24);
+  border: none;
+}
+
+.VPButton.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 30px rgba(37, 99, 235, 0.28);
+  filter: brightness(1.05);
+}
+
+.dark .VPButton.primary {
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.3);
+}
+
+.dark .VPButton.primary:hover {
+  box-shadow: 0 18px 32px rgba(37, 99, 235, 0.34);
+}
+
+.VPButton.alt {
+  border: 1px solid var(--vp-c-divider);
+  background: transparent;
+  color: var(--vp-c-text-1);
+}
+
+.VPButton.alt:hover {
+  background: var(--vp-c-alt-soft);
+  border-color: var(--vp-c-text-3);
+}
+
+/* ========================================
+   Feature Cards - Enhanced Density
+   ======================================== */
+.VPFeature {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  background: var(--vp-c-bg);
+  padding: 1rem;
+  cursor: pointer;
+}
+
+.VPFeature:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--vp-shadow-2);
+  border-color: var(--vp-c-brand-1);
+  background: linear-gradient(135deg, var(--vp-c-bg-soft) 0%, var(--vp-c-bg) 100%);
+}
+
+.dark .VPFeature {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+.dark .VPFeature:hover {
+  background: linear-gradient(135deg, #334155 0%, #1E293B 100%);
+  border-color: var(--vp-c-brand-1);
+}
+
+.VPFeature .icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--vp-c-brand-1);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.VPFeature .icon svg {
+  width: 2rem;
+  height: 2rem;
+  stroke-width: 1.5;
+  color: var(--vp-c-brand-1);
+  stroke: currentColor;
+}
+
+.dark .VPFeature .icon {
+  color: var(--vp-c-brand-1);
+}
+
+.dark .VPFeature .icon svg {
+  color: var(--vp-c-brand-1);
+  stroke: var(--vp-c-brand-1);
+}
+
+.VPFeature .title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+  margin-bottom: 0.375rem;
+}
+
+.VPFeature .details {
+  font-size: 0.8rem;
+  color: var(--vp-c-text-2);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* ========================================
+   VPFeatures Grid - Data Density
+   ======================================== */
+.VPFeatures {
+  padding: 30px 24px;
+}
+
+.VPFeatures .grid-6 {
+  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr) !important;
+}
+
+/* ========================================
+   Sidebar - Compact Control Layout
+   ======================================== */
+.VPSidebar {
+  background: var(--vp-c-bg-soft);
+  border-right: 1px solid var(--vp-c-divider);
+  padding-top: 1rem;
+}
+
+.dark .VPSidebar {
+  background: #1E293B;
+  border-right-color: #334155;
+}
+
+.VPSidebarItem > .item {
+  padding: 0.35rem 0.875rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.VPSidebarItem > .item:hover {
+  background: var(--vp-c-cta-soft);
+  border-left: 2px solid var(--vp-c-cta);
+}
+
+.dark .VPSidebarItem > .item:hover {
+  background: var(--vp-c-cta-soft);
+  border-left-color: var(--vp-c-cta);
+}
+
+.VPSidebarItem .text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--vp-c-text-1);
+}
+
+.VPSidebarItem.is-active > .item {
+  background: var(--vp-c-brand-soft);
+  border-left: 2px solid var(--vp-c-brand-1);
+}
+
+.dark .VPSidebarItem.is-active > .item {
+  background: var(--vp-c-brand-soft);
+  border-left-color: var(--vp-c-brand-1);
+}
+
+.VPSidebarItem.is-active > .item .text {
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+}
+
+.dark .VPSidebarItem.is-active > .item .text {
+  color: var(--vp-c-brand-1);
+}
+
+/* ========================================
+   Content Area
+   ======================================== */
+.VPContent {
+  padding-top: var(--vp-nav-height);
+  background:
+    radial-gradient(circle at 6% 8%, rgba(125, 211, 252, 0.16), transparent 24%),
+    radial-gradient(circle at 92% 12%, rgba(134, 239, 172, 0.12), transparent 22%),
+    linear-gradient(180deg, #f8fbff 0%, #eef4f8 48%, #edf2f7 100%);
+}
+
+.dark .VPContent {
+  background:
+    radial-gradient(circle at 8% 10%, rgba(56, 189, 248, 0.12), transparent 24%),
+    radial-gradient(circle at 88% 8%, rgba(16, 185, 129, 0.1), transparent 22%),
+    linear-gradient(180deg, #020617 0%, #08111f 52%, #0f172a 100%);
+}
+
+.VPContent.has-sidebar {
+  padding-left: var(--vp-sidebar-width);
+}
+
+.vp-doc {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 3rem;
+  background: transparent;
+}
+
+.dark .vp-doc {
+  background: transparent;
+}
+
+.page-content {
+  margin: 0 auto;
+  padding: 0.8rem 3rem 1.5rem;
+  color: var(--vp-c-text-2);
+}
+
+.page-content h1,
+.page-content h2,
+.page-content h3 {
+  color: var(--vp-c-text-1);
+  font-family: 'Varela Round', sans-serif;
+}
+
+.page-content h1 {
+  font-size: 2.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: 'Varela Round', sans-serif;
+}
+
+.dark .page-content h1 {
+  background: linear-gradient(135deg, #67e8f9 0%, #60a5fa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-content h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin: 1.5rem 0 0.875rem;
+  padding-bottom: 0.5rem;
+  color: var(--vp-c-text-1);
+  font-family: 'Varela Round', sans-serif;
+}
+
+.page-content h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.625rem;
+  color: var(--vp-c-text-1);
+  font-family: 'Varela Round', sans-serif;
+}
+
+.page-content p {
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+  color: var(--vp-c-text-2);
+  font-size: 0.95rem;
+}
+
+.page-content a {
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.dark .page-content a {
+  color: var(--vp-c-brand-1);
+}
+
+.page-content a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.page-content ul,
+.page-content ol {
+  padding-left: 1.25rem;
+  margin-bottom: 0.875rem;
+}
+
+.page-content li {
+  margin-bottom: 0.375rem;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+}
+
+/* ========================================
+   Landing Pages
+   ======================================== */
+.landing-page {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 0 0 84px;
+}
+
+.landing-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0 0 1.5rem;
+}
+
+.landing-stat,
+.landing-card,
+.landing-frame,
+.landing-cta {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(var(--brand-rgb), 0.12);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(241, 245, 249, 0.94) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 18px 44px rgba(59, 130, 246, 0.08);
+}
+
+.dark .landing-stat,
+.dark .landing-card,
+.dark .landing-frame,
+.dark .landing-cta {
+  border-color: rgba(var(--brand-rgb), 0.18);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.88) 0%, rgba(15, 23, 42, 0.74) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(148, 163, 184, 0.08),
+    0 22px 48px rgba(2, 6, 23, 0.28);
+}
+
+.landing-stat {
+  padding: 1.4rem 1.5rem 1.45rem;
+}
+
+.landing-stat::after,
+.landing-card::after,
+.landing-cta::after {
+  content: '';
+  position: absolute;
+  inset: auto auto -30% -8%;
+  width: 140px;
+  height: 140px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(var(--cta-rgb), 0.14), transparent 72%);
+  pointer-events: none;
+}
+
+.landing-stat-label,
+.landing-eyebrow,
+.landing-card-kicker {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(var(--brand-rgb), 0.08);
+  color: var(--vp-c-brand-1);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.landing-stat strong,
+.landing-card h3,
+.landing-section h2,
+.landing-cta h2 {
+  display: block;
+  margin: 0.95rem 0 0.55rem;
+  color: var(--vp-c-text-1);
+  font-family: 'Varela Round', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.landing-stat strong {
+  font-size: 1.05rem;
+}
+
+.landing-stat p,
+.landing-card p,
+.landing-section-copy p,
+.landing-cta p {
+  margin: 0;
+  color: var(--vp-c-text-2);
+  line-height: 1.72;
+  font-size: 0.97rem;
+}
+
+.landing-section {
+  margin-top: 1.5rem;
+  padding: 2rem;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(125, 211, 252, 0.16), transparent 22%),
+    radial-gradient(circle at left center, rgba(167, 243, 208, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.62));
+  border: 1px solid rgba(var(--brand-rgb), 0.08);
+}
+
+.dark .landing-section {
+  background:
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.14), transparent 22%),
+    radial-gradient(circle at left center, rgba(16, 185, 129, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.68));
+  border-color: rgba(var(--brand-rgb), 0.14);
+}
+
+.landing-section-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.landing-section-copy {
+  padding: 0.25rem 0.25rem 0 0.25rem;
+}
+
+.landing-section-copy-center {
+  max-width: 760px;
+  margin: 0 auto 1.5rem;
+  text-align: center;
+}
+
+.landing-section h2,
+.landing-cta h2 {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+.landing-lead {
+  font-size: 1.08rem;
+  color: var(--vp-c-text-1);
+}
+
+.landing-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.landing-card {
+  padding: 1.4rem;
+  min-height: 100%;
+}
+
+.landing-card-tall {
+  min-height: 220px;
+}
+
+.landing-frame {
+  padding: 1.2rem;
+  background:
+    radial-gradient(circle at top left, rgba(125, 211, 252, 0.1), transparent 26%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 249, 255, 0.92) 100%);
+}
+
+.landing-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.6rem 1.75rem;
+}
+
+.landing-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.landing-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.7rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--vp-c-text-1);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.landing-link-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(186, 230, 253, 0.92);
+  box-shadow: 0 14px 26px rgba(15, 23, 42, 0.08);
+}
+
+.landing-link-button-accent {
+  border-color: rgba(125, 211, 252, 0.92);
+  background: linear-gradient(135deg, #38bdf8, #3b82f6);
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 14px 26px rgba(37, 99, 235, 0.2);
+}
+
+.landing-link-button-accent:hover {
+  border-color: rgba(186, 230, 253, 0.98);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 18px 30px rgba(37, 99, 235, 0.24);
+}
+
+.dark .landing-link-button-accent {
+  border-color: rgba(56, 189, 248, 0.34);
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.92), rgba(37, 99, 235, 0.92));
+  box-shadow:
+    inset 0 1px 0 rgba(186, 230, 253, 0.1),
+    0 18px 32px rgba(2, 6, 23, 0.28);
+}
+
+.dark .landing-link-button-accent:hover {
+  border-color: rgba(103, 232, 249, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(186, 230, 253, 0.12),
+    0 20px 34px rgba(2, 6, 23, 0.32);
+}
+
+/* ========================================
+   Typography
+   ======================================== */
+.vp-doc h1 {
+  font-size: 2.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 1.25rem;
+  color: var(--vp-c-text-1);
+  padding-bottom: 0.75rem;
+  font-family: 'Varela Round', sans-serif;
+}
+
+.vp-doc h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin: 1.5rem 0 0.875rem;
+  padding-bottom: 0.5rem;
+  color: var(--vp-c-text-1);
+  font-family: 'Varela Round', sans-serif;
+}
+
+.vp-doc h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.625rem;
+  color: var(--vp-c-text-1);
+}
+
+.vp-doc h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+  color: var(--vp-c-text-1);
+}
+
+.vp-doc p {
+  line-height: 1.7;
+  margin-bottom: 0.875rem;
+  color: var(--vp-c-text-2);
+  font-size: 0.95rem;
+}
+
+.vp-doc a {
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.dark .vp-doc a {
+  color: var(--vp-c-brand-1);
+}
+
+.vp-doc a:hover {
+  text-decoration: underline;
+}
+
+/* ========================================
+   Code Blocks
+   ======================================== */
+.vp-doc div[class*='language-'] {
+  border-radius: 10px;
+  margin: 1.5rem 0;
+  border: 1px solid var(--vp-c-divider);
+}
+
+.vp-doc code {
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.85em;
+  background: var(--vp-c-bg-soft);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  color: var(--vp-c-text-2);
+}
+
+.dark .vp-doc code {
+  background: #1E293B;
+  color: #CBD5E1;
+}
+
+.vp-doc pre code {
+  background: transparent;
+  padding: 0;
+  font-size: 0.875rem;
+}
+
+/* ========================================
+   Lists
+   ======================================== */
+.vp-doc ul,
+.vp-doc ol {
+  padding-left: 1.25rem;
+  margin-bottom: 0.875rem;
+}
+
+.vp-doc li {
+  margin-bottom: 0.375rem;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+}
+
+/* ========================================
+   Blockquotes
+   ======================================== */
+.vp-doc blockquote {
+  border-left: 4px solid var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.dark .vp-doc blockquote {
+  border-left-color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+}
+
+.vp-doc blockquote p {
+  margin: 0;
+  font-style: italic;
+  color: var(--vp-c-text-2);
+}
+
+/* ========================================
+   Tables - Data Visualization
+   ======================================== */
+.vp-doc table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.vp-doc th,
+.vp-doc td {
+  padding: 0.625rem 0.875rem;
+  text-align: left;
+  border-bottom: 1px solid var(--vp-c-divider);
+  font-size: 0.9rem;
+}
+
+.vp-doc th {
+  background: var(--vp-c-brand-soft);
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+}
+
+.dark .vp-doc th {
+  background: var(--vp-c-brand-soft);
+  border-bottom-color: #334155;
+}
+
+.dark .vp-doc td {
+  border-bottom-color: #334155;
+}
+
+.vp-doc tr:last-child td {
+  border-bottom: none;
+}
+
+.vp-doc tr:hover td {
+  background: linear-gradient(90deg, var(--vp-c-bg-soft) 0%, transparent 100%);
+}
+
+.dark .vp-doc tr:hover td {
+  background: linear-gradient(90deg, #1E293B 0%, transparent 100%);
+}
+
+/* ========================================
+   Custom Blocks (Tips, Warnings, etc.)
+   ======================================== */
+.vp-doc .custom-block {
+  border-radius: 8px;
+  padding: 0.875rem 1.25rem;
+  margin: 1rem 0;
+  border-left: 4px solid var(--vp-c-divider);
+}
+
+.vp-doc .custom-block.tip {
+  background: var(--vp-c-brand-soft);
+  border-left-color: var(--vp-c-brand-1);
+}
+
+.dark .vp-doc .custom-block.tip {
+  background: var(--vp-c-brand-soft);
+  border-left-color: var(--vp-c-brand-1);
+}
+
+.vp-doc .custom-block.warning {
+  background: rgba(244, 118, 33, 0.08);
+  border-left-color: #F47621;
+}
+
+.dark .vp-doc .custom-block.warning {
+  background: rgba(244, 118, 33, 0.1);
+  border-left-color: #FB923C;
+}
+
+.vp-doc .custom-block.danger {
+  background: rgba(239, 68, 68, 0.08);
+  border-left-color: #EF4444;
+}
+
+.dark .vp-doc .custom-block.danger {
+  background: rgba(239, 68, 68, 0.1);
+  border-left-color: #F87171;
+}
+
+/* ========================================
+   Footer
+   ======================================== */
+.VPFooter {
+  border-top: 1px solid var(--vp-c-divider);
+  padding: 20px 24px;
+  background: linear-gradient(180deg, var(--vp-c-bg-soft) 0%, var(--vp-c-bg) 100%);
+}
+
+.dark .VPFooter {
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  border-top-color: #334155;
+}
+
+.VPFooter .message,
+.VPFooter .copyright {
+  font-size: 0.75rem;
+  color: var(--vp-c-text-2);
+}
+
+/* ========================================
+   Page Navigation (Prev/Next)
+   ======================================== */
+.VPDocFooter {
+  border-top: 1px solid var(--vp-c-divider);
+  padding: 2rem 0;
+}
+
+.vp-doc-footer {
+  padding: 1.5rem 0;
+}
+
+/* ========================================
+   Dark Mode Toggle
+   ======================================== */
+.VPSwitchAppearance {
+  border-radius: 50%;
+}
+
+.VPSwitchAppearance .sun,
+.VPSwitchAppearance .moon {
+  font-size: 1rem;
+}
+
+/* ========================================
+   Search
+   ======================================== */
+.DocSearch-Button {
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+}
+
+.dark .DocSearch-Button {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+.DocSearch-Button:hover {
+  background: var(--vp-c-alt-soft);
+  border-color: var(--vp-c-text-3);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.dark .DocSearch-Button:hover {
+  background: #334155;
+  border-color: #475569;
+}
+
+/* ========================================
+   Responsive Adjustments
+   ======================================== */
+@media (max-width: 768px) {
+  .VPHero {
+    padding: 50px 16px 70px;
+  }
+
+  .VPHero .name {
+    font-size: 2rem !important;
+  }
+
+  .VPHero .text {
+    font-size: 1.1rem;
+  }
+
+  .VPHero .tagline {
+    font-size: 0.95rem;
+  }
+
+  .vp-doc {
+    padding: 1.5rem 1rem;
+  }
+
+  .page-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .vp-doc h1,
+  .page-content h1 {
+    font-size: 1.625rem;
+  }
+
+  .vp-doc h2,
+  .page-content h2 {
+    font-size: 1.125rem;
+  }
+
+  .VPContent.has-sidebar {
+    padding-left: 0;
+  }
+
+  .VPSidebar {
+    display: none;
+  }
+
+  .VPFeature {
+    margin-bottom: 0.875rem;
+  }
+
+  .VPFeatures .grid-6 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .landing-page {
+    width: min(100% - 32px, 100%);
+    padding-bottom: 72px;
+  }
+
+  .landing-strip,
+  .landing-section-grid,
+  .landing-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-section,
+  .landing-frame,
+  .landing-cta {
+    padding: 1.2rem;
+  }
+
+  .landing-stat,
+  .landing-card {
+    padding: 1.2rem;
+  }
+
+  .landing-cta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .VPHero .name {
+    font-size: 1.75rem !important;
+  }
+
+  .VPButton.medium {
+    padding: 0.6rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .page-content {
+    padding: 1rem;
+  }
+
+  .vp-doc {
+    padding: 1rem;
+  }
+
+  .landing-page {
+    width: min(100% - 24px, 100%);
+    padding-bottom: 60px;
+  }
+
+  .landing-section,
+  .landing-frame,
+  .landing-cta {
+    padding: 1rem;
+  }
+
+  .landing-stat,
+  .landing-card {
+    padding: 1rem;
+  }
+}
+
+/* ========================================
+   Ad Slot
+   ======================================== */
+.ad-slot-container {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--vp-c-bg-soft);
+  border-top: 1px solid var(--vp-c-divider);
+  margin-top: 2rem;
+}
+
+.ad-slot-container ins.adsbygoogle {
+  max-width: 728px;
+  width: 100%;
+  height: 90px;
+}
+
+/* ========================================
+   Accessibility & Motion Preferences
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .VPButton {
+    transition: none !important;
+  }
+
+  .VPFeature {
+    transition: none !important;
+  }
+
+  .VPButton:hover {
+    transform: none !important;
+  }
+
+  .VPFeature:hover {
+    transform: none !important;
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "version": "20260426-1716.19",
+  "tag": "desktop-v20260426-1716.19",
+  "released_at": "2026-04-26 17:19:40 +0800",
+  "published_at": "2026-04-26T09:19:40Z",
+  "pub_date": "2026-04-26T09:19:40Z",
+  "source_branch": "pinable",
+  "source_commit": "f886c026080b2ea548eec361a31f8306e779b4a9",
+  "notes": "PinableAgents 20260426-1716.19\n\n- fix: harden system terminal launch and env search\n- Built from pinable@f886c026080b.",
+  "changelog": "PinableAgents 20260426-1716.19\n\n- fix: harden system terminal launch and env search\n- Built from pinable@f886c026080b.",
+  "html_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260426-1716.19",
+  "details_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260426-1716.19",
+  "download_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260426-1716.19",
+  "url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260426-1716.19",
+  "assets": {
+    "mac_dmg": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260426-1716.19/PinableAgents-mac.dmg",
+    "windows_exe": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260426-1716.19/PinableAgents-win.exe",
+    "windows_portable_zip": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260426-1716.19/PinableAgents-win-portable.zip",
+    "linux_tar_gz_amd64": null,
+    "linux_appimage_amd64": null
+  }
+}
