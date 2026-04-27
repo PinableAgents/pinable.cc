@@ -1,0 +1,22 @@
+{
+  "version": "20260428-0721.20",
+  "tag": "desktop-v20260428-0721.20",
+  "released_at": "2026-04-28 07:24:51 +0800",
+  "published_at": "2026-04-27T23:24:51Z",
+  "pub_date": "2026-04-27T23:24:51Z",
+  "source_branch": "pinable",
+  "source_commit": "cd835c2fc363cc24b68ec8a9b4df1cf82c0c7f66",
+  "notes": "PinableAgents 20260428-0721.20\n\n- fix: 修复依赖模块安装后未生成配置env\n- Built from pinable@cd835c2fc363.",
+  "changelog": "PinableAgents 20260428-0721.20\n\n- fix: 修复依赖模块安装后未生成配置env\n- Built from pinable@cd835c2fc363.",
+  "html_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260428-0721.20",
+  "details_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260428-0721.20",
+  "download_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260428-0721.20",
+  "url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260428-0721.20",
+  "assets": {
+    "mac_dmg": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260428-0721.20/PinableAgents-mac.dmg",
+    "windows_exe": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260428-0721.20/PinableAgents-win.exe",
+    "windows_portable_zip": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260428-0721.20/PinableAgents-win-portable.zip",
+    "linux_tar_gz_amd64": null,
+    "linux_appimage_amd64": null
+  }
+}
