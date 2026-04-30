@@ -1,0 +1,22 @@
+{
+  "version": "20260430-1307.22",
+  "tag": "desktop-v20260430-1307.22",
+  "released_at": "2026-04-30 13:10:59 +0800",
+  "published_at": "2026-04-30T05:10:59Z",
+  "pub_date": "2026-04-30T05:10:59Z",
+  "source_branch": "pinable",
+  "source_commit": "8031d48df2089c1c4f9ab90b8c5f6605365648b9",
+  "notes": "PinableAgents 20260430-1307.22\n\n- 发布时间: 2026-04-30 13:10:59 +0800\n- 版本区间: 20260430-0901.21 -> 20260430-1307.22\n- 提交数量: 0\n- 源码分支: pinable\n- 源码提交: 8031d48df2089c1c4f9ab90b8c5f6605365648b9\n\n### 更新内容\n- 本次版本没有新增提交，主要用于重新发布或补发构建产物。",
+  "changelog": "PinableAgents 20260430-1307.22\n\n- 发布时间: 2026-04-30 13:10:59 +0800\n- 版本区间: 20260430-0901.21 -> 20260430-1307.22\n- 提交数量: 0\n- 源码分支: pinable\n- 源码提交: 8031d48df2089c1c4f9ab90b8c5f6605365648b9\n\n### 更新内容\n- 本次版本没有新增提交，主要用于重新发布或补发构建产物。",
+  "html_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260430-1307.22",
+  "details_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260430-1307.22",
+  "download_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260430-1307.22",
+  "url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260430-1307.22",
+  "assets": {
+    "mac_dmg": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260430-1307.22/PinableAgents-mac.dmg",
+    "windows_exe": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260430-1307.22/PinableAgents-win.exe",
+    "windows_portable_zip": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260430-1307.22/PinableAgents-win-portable.zip",
+    "linux_tar_gz_amd64": null,
+    "linux_appimage_amd64": null
+  }
+}
