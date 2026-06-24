@@ -1,0 +1,8 @@
+.chatgame
+.claude/do-tasks
+.code-review
+docs/node_modules
+.claude
+docs/.vitepress/cache
+docs/.vitepress/dist
+.env
