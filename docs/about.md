@@ -5,7 +5,7 @@ layout: home
 
 hero:
   name: "Product"
-  text: "统一桌面端、执行引擎与团队协作的产品骨架"
+  text: "统一桌面端、执行引擎与个人 AI 工作台的产品骨架"
   actions:
     - theme: brand
       text: 查看联系渠道

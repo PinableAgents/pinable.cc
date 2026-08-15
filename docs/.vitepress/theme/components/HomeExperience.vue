@@ -2,10 +2,10 @@
   <div class="home-experience">
     <section class="workbench-band" aria-labelledby="workbench-title">
       <div class="workbench-copy">
-        <span class="section-label">研发流程控制台</span>
-        <h2 id="workbench-title">把 AI 能力放进可运营、可追踪的交付链路。</h2>
+        <span class="section-label">个人 AI 工作台</span>
+        <h2 id="workbench-title">把 AI 能力放进可验证、可复用的个人交付链路。</h2>
         <p>
-          PinableAgents 将需求拆解、并行执行、桌面端模块管理和消息网关联动统一到一套工作台里，让团队从一次性问答转向持续可复用的研发生产系统。
+          PinableAgents 统一管理多 AI Runtime、可安装能力与本地交付，让超级个体从一次性问答转向持续可复用的研发系统。
         </p>
       </div>
 
@@ -63,53 +63,53 @@ const activeIndex = ref(0)
 const stages = [
   {
     step: '01',
-    title: '统一入口',
+    title: '统一 Runtime',
     kicker: 'Control',
-    signal: 'Provider / Skill / Workflow',
-    body: '桌面端集中管理模型后端、技能模块、工作流入口和执行记录，减少团队成员各自维护脚本的成本。',
-    points: ['配置集中', '模块可复用', '入口一致']
+    signal: 'Provider / Runtime / Capability',
+    body: '在同一工作台配置多个 AI Provider、模型与本地 Runtime，管理 Skill、MCP、Plugin 等可安装能力，减少重复维护。',
+    points: ['配置集中', '能力可复用', '入口一致']
   },
   {
     step: '02',
-    title: '并行编排',
-    kicker: 'Orchestration',
-    signal: 'Parallel execution',
-    body: '任务可以按依赖关系拆分并发执行，失败聚合后回到同一个上下文，适合多角色协作和多步骤流水线。',
-    points: ['依赖编排', '失败聚合', '多路执行']
+    title: '可验证交付',
+    kicker: 'Delivery',
+    signal: 'Worktree · Evidence · Approval',
+    body: '以本地 Git 仓库为载体，在隔离 worktree 中执行交付，沉淀证据、检查与审批记录，让 AI 变更可追溯。',
+    points: ['隔离 worktree', '证据沉淀', '审批留痕']
   },
   {
     step: '03',
-    title: '远程联动',
+    title: '网关联动',
     kicker: 'Gateway',
-    signal: 'Message trigger',
-    body: '消息通道可以触发终端任务并回传结果，让团队在远程沟通工具里完成请求、执行和状态同步。',
-    points: ['消息触发', '执行回传', '状态同步']
+    signal: 'Message / Schedule trigger',
+    body: '接入飞书、微信、Telegram 与定时任务，从消息触发到执行回传形成个人自动化闭环。',
+    points: ['消息触发', '执行回传', '定时任务']
   },
   {
     step: '04',
-    title: '闭环回溯',
-    kicker: 'Traceability',
-    signal: 'Session history',
-    body: '会话历史、执行日志和产物记录沉淀为可回放资产，帮助团队复盘、审查和持续优化协作方式。',
-    points: ['上下文保留', '记录可审计', '经验复用']
+    title: '经验复用',
+    kicker: 'Experience',
+    signal: 'Experience recall',
+    body: '从任务与交付中采集候选经验，经脱敏评审进入复用库，按上下文召回并持续验证使用效果。',
+    points: ['候选采集', '评审入库', '按需召回']
   }
 ]
 
 const metrics = [
   {
-    label: '从零散工具到统一工作台',
+    label: '从多个 AI 工具到统一工作台',
     value: '1 个控制面',
-    text: '模块、执行、调度和回溯不再分散。'
+    text: 'Provider、能力、任务与历史不再分散。'
   },
   {
-    label: '从单线程问答到研发流水线',
-    value: '多路并行',
-    text: '拆解后的任务可以同步推进。'
-  },
-  {
-    label: '从临时产出到团队资产',
+    label: '从一次性问答到可验证交付',
     value: '全程可追踪',
-    text: '每次协作都能复盘、复用、审计。'
+    text: '证据、检查、审批都留痕可回看。'
+  },
+  {
+    label: '从零散提示到个人经验资产',
+    value: '可复用内核',
+    text: 'Workflow、模块与经验都能沉淀复用。'
   }
 ]
 

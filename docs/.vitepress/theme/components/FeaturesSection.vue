@@ -3,7 +3,7 @@
     <div class="features-header">
       <span>核心能力</span>
       <h2 id="features-title">围绕研发过程，而不是单次对话。</h2>
-      <p>PinableAgents 的设计重点是让团队把 AI 研发动作沉淀成可安装、可编排、可触发、可回溯的生产能力。</p>
+      <p>PinableAgents 的设计重点是让个人把 AI 研发动作沉淀成可安装、可编排、可触发、可回溯的生产能力。</p>
     </div>
     <div class="features-container">
       <div v-for="(feature, index) in features" :key="index" class="feature-card">
@@ -21,26 +21,26 @@ const features = [
   {
     index: '01',
     icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 18 10 18 14 10 19 10 11 3 5.5"></polygon></svg>',
-    title: '多角色协作编排',
-    details: '围绕需求、设计、开发、测试等角色组织任务，让协作过程保持清晰边界和统一节奏。'
+    title: '统一 Runtime 与能力管理',
+    details: '在同一工作台配置 Provider、模型与本地 AI Runtime，管理 Skill、MCP、Plugin 等可安装能力，减少在不同工具间重复维护配置。'
   },
   {
     index: '02',
     icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m5.08 0l4.24-4.24M1 12h6m6 0h6m-1.78 7.78l-4.24-4.24m-5.08 0l-4.24 4.24"></path></svg>',
-    title: '并行任务编排',
-    details: '支持任务依赖、并发执行与失败聚合，把多步骤研发流水线从人工接力变成系统调度。'
+    title: '可验证交付',
+    details: '以本地 Git 仓库为项目载体，在隔离 worktree 中执行 Delivery，沉淀证据、检查结果与审批记录，让 AI 生成的变更具备可追溯的交付链路。'
   },
   {
     index: '03',
     icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>',
-    title: '消息网关联动',
-    details: '将消息通道与终端任务联动，远程触发、执行状态和结果回传都进入同一个协作闭环。'
+    title: '经验内核',
+    details: '从任务与交付中采集候选经验，经脱敏、评审后进入复用库，按上下文召回并持续验证使用效果。'
   },
   {
     index: '04',
     icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h8v8H6zM14 6h4c1.1 0 2 .9 2 2v4h-6zM6 14h6v4H8c-1.1 0-2-.9-2-2zM14 14h4v4c0 1.1-.9 2-2 2h-2z"></path></svg>',
-    title: '模块与工作流管理',
-    details: '桌面端提供安装、更新、卸载、创建模块和执行入口，让能力分发更接近团队日常工具链。'
+    title: '网关与自动化',
+    details: '接入飞书、微信、Telegram 等消息渠道，联动终端任务与定时任务，让个人自动化从消息触发到执行回传形成闭环。'
   }
 ]
 </script>

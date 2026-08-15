@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: "PinableAgents"
-  text: "把 AI 研发协作变成团队的交付系统"
-  tagline: "统一编排、会话、调度、消息网关与桌面端模块管理，让需求拆解、并行执行、回溯复盘运行在同一条链路上。"
+  text: "把 AI 能力变成可验证的个人交付系统"
+  tagline: "统一管理多 AI Runtime、可安装能力与本地交付，让超级个体的研发过程可控、可复用、可追踪。"
   actions:
     - theme: brand
       text: 立即下载

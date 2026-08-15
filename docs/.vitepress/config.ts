@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 
 export default defineConfig({
   title: 'PinableAgents',
-  description: '面向游戏行业的 AI 研发协作平台，统一编排与多后端执行，让功能交付可控、可复用、可追踪。',
+  description: '面向超级个体与 AI Power User 的软件交付工作台，统一管理多 AI Runtime 与可安装能力，让个人研发可控、可复用、可追踪。',
 
   lang: 'zh-CN',
   base: '/',
