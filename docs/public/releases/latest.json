@@ -1,107 +1,107 @@
 {
-  "version": "20260821-0627.144",
-  "tag": "desktop-v20260821-0627.144",
-  "released_at": "2026-08-21 06:30:37 +0800",
-  "published_at": "2026-08-20T22:30:37Z",
-  "pub_date": "2026-08-20T22:30:37Z",
+  "version": "20260824-0802.151",
+  "tag": "desktop-v20260824-0802.151",
+  "released_at": "2026-08-24 08:06:06 +0800",
+  "published_at": "2026-08-24T00:06:06Z",
+  "pub_date": "2026-08-24T00:06:06Z",
   "source_branch": "main",
-  "source_commit": "a3d85505d9b6a62eaf9425b53a0199b34dfc82b1",
+  "source_commit": "f139b3453067ca334b36afa56b73032a1175ec18",
   "notes": "",
   "changelog": "",
-  "html_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260821-0627.144",
-  "details_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260821-0627.144",
-  "download_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260821-0627.144",
-  "url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260821-0627.144",
+  "html_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260824-0802.151",
+  "details_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260824-0802.151",
+  "download_url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260824-0802.151",
+  "url": "https://github.com/PinableAgents/pinable.cc/releases/tag/desktop-v20260824-0802.151",
   "platforms": {
     "darwin": {
-      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-mac.dmg",
-      "sha256": "1f5c1ce748df917c8fa86770a1c34832c4184c1b1474ed08e82391fc46a62e34",
+      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-mac.dmg",
+      "sha256": "dc0efdf3d70fd76edd7ad3ce5a821bf924a6d1b07d554a37647a99059114e16a",
       "asset_name": "PinableAgents-mac.dmg",
       "installer_type": "dmg",
       "install_mode": "manual"
     },
     "darwin-universal": {
-      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-mac.dmg",
-      "sha256": "1f5c1ce748df917c8fa86770a1c34832c4184c1b1474ed08e82391fc46a62e34",
+      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-mac.dmg",
+      "sha256": "dc0efdf3d70fd76edd7ad3ce5a821bf924a6d1b07d554a37647a99059114e16a",
       "asset_name": "PinableAgents-mac.dmg",
       "installer_type": "dmg",
       "install_mode": "manual"
     },
     "darwin-arm64": {
-      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-mac-arm64.zip",
-      "sha256": "8f9b424ed73e62fde99cea756262f2e5ace573be300012490aa1af284068a421",
+      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-mac-arm64.zip",
+      "sha256": "825b7004060e28d2fa155eb7b7f4b35b25733bb39edfa72bf7041b6b33e27469",
       "asset_name": "PinableAgents-mac-arm64.zip",
       "installer_type": "zip",
       "install_mode": "portable"
     },
     "darwin-amd64": {
-      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-mac-amd64.zip",
-      "sha256": "d580130d97c599e259bf0c8f2a7e6fdcb46101fc6c60bca7f332ba314c3c6b1b",
+      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-mac-amd64.zip",
+      "sha256": "05aebe6185c24b506ff52c6c9dbaae02863caae524105fd52874b8db5f8de52c",
       "asset_name": "PinableAgents-mac-amd64.zip",
       "installer_type": "zip",
       "install_mode": "portable"
     },
     "darwin-aarch64": {
-      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-mac-arm64.zip",
-      "sha256": "8f9b424ed73e62fde99cea756262f2e5ace573be300012490aa1af284068a421",
+      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-mac-arm64.zip",
+      "sha256": "825b7004060e28d2fa155eb7b7f4b35b25733bb39edfa72bf7041b6b33e27469",
       "asset_name": "PinableAgents-mac-arm64.zip",
       "installer_type": "zip",
       "install_mode": "portable"
     },
     "darwin-x86_64": {
-      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-mac-amd64.zip",
-      "sha256": "d580130d97c599e259bf0c8f2a7e6fdcb46101fc6c60bca7f332ba314c3c6b1b",
+      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-mac-amd64.zip",
+      "sha256": "05aebe6185c24b506ff52c6c9dbaae02863caae524105fd52874b8db5f8de52c",
       "asset_name": "PinableAgents-mac-amd64.zip",
       "installer_type": "zip",
       "install_mode": "portable"
     },
     "windows": {
-      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-win-portable.zip",
-      "sha256": "091107dc9da745afb8cd2735097b7b2d5719ea8a427546182fcca2ff4eadc00e",
+      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-win-portable.zip",
+      "sha256": "3425615795371db68af04c9744bec9ba07fd4c1edd0dc5710c32646d513fa128",
       "asset_name": "PinableAgents-win-portable.zip",
       "installer_type": "zip",
       "install_mode": "portable"
     },
     "windows-amd64": {
-      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-win-portable.zip",
-      "sha256": "091107dc9da745afb8cd2735097b7b2d5719ea8a427546182fcca2ff4eadc00e",
+      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-win-portable.zip",
+      "sha256": "3425615795371db68af04c9744bec9ba07fd4c1edd0dc5710c32646d513fa128",
       "asset_name": "PinableAgents-win-portable.zip",
       "installer_type": "zip",
       "install_mode": "portable"
     },
     "windows-x86_64": {
-      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-win-portable.zip",
-      "sha256": "091107dc9da745afb8cd2735097b7b2d5719ea8a427546182fcca2ff4eadc00e",
+      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-win-portable.zip",
+      "sha256": "3425615795371db68af04c9744bec9ba07fd4c1edd0dc5710c32646d513fa128",
       "asset_name": "PinableAgents-win-portable.zip",
       "installer_type": "zip",
       "install_mode": "portable"
     },
     "linux-core": {
-      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/pinable-linux-core.tar.gz",
-      "sha256": "32172336303c00c6bd333ebdb2c0adbbf4ef011eec40d3e5bb17a37e30fd921f",
+      "url": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/pinable-linux-core.tar.gz",
+      "sha256": "35e92ac413291120f410d51adbebbfac4ec265296546550494771ca4b1945155",
       "asset_name": "pinable-linux-core.tar.gz",
       "installer_type": "tar.gz",
       "install_mode": "portable"
     }
   },
   "assets": {
-    "mac_zip_arm64": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-mac-arm64.zip",
-    "mac_zip_amd64": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-mac-amd64.zip",
-    "mac_dmg": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-mac.dmg",
-    "windows_exe": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-win.exe",
-    "windows_portable_zip": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/PinableAgents-win-portable.zip",
+    "mac_zip_arm64": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-mac-arm64.zip",
+    "mac_zip_amd64": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-mac-amd64.zip",
+    "mac_dmg": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-mac.dmg",
+    "windows_exe": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-win.exe",
+    "windows_portable_zip": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/PinableAgents-win-portable.zip",
     "linux_tar_gz_amd64": null,
     "linux_appimage_amd64": null,
-    "linux_core_tar_gz": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260821-0627.144/pinable-linux-core.tar.gz"
+    "linux_core_tar_gz": "https://github.com/PinableAgents/pinable.cc/releases/download/desktop-v20260824-0802.151/pinable-linux-core.tar.gz"
   },
   "asset_sha256": {
-    "mac_zip_arm64": "8f9b424ed73e62fde99cea756262f2e5ace573be300012490aa1af284068a421",
-    "mac_zip_amd64": "d580130d97c599e259bf0c8f2a7e6fdcb46101fc6c60bca7f332ba314c3c6b1b",
-    "mac_dmg": "1f5c1ce748df917c8fa86770a1c34832c4184c1b1474ed08e82391fc46a62e34",
-    "windows_exe": "d92f08513f10f6bb6dd3b92eb71e3214a636878700949d77f73793b0764bc542",
-    "windows_portable_zip": "091107dc9da745afb8cd2735097b7b2d5719ea8a427546182fcca2ff4eadc00e",
+    "mac_zip_arm64": "825b7004060e28d2fa155eb7b7f4b35b25733bb39edfa72bf7041b6b33e27469",
+    "mac_zip_amd64": "05aebe6185c24b506ff52c6c9dbaae02863caae524105fd52874b8db5f8de52c",
+    "mac_dmg": "dc0efdf3d70fd76edd7ad3ce5a821bf924a6d1b07d554a37647a99059114e16a",
+    "windows_exe": "00787df600f4fe70e7fecb9889aa22ca43bb7cff838107a4ad55a4fd7d833f61",
+    "windows_portable_zip": "3425615795371db68af04c9744bec9ba07fd4c1edd0dc5710c32646d513fa128",
     "linux_tar_gz_amd64": null,
     "linux_appimage_amd64": null,
-    "linux_core_tar_gz": "32172336303c00c6bd333ebdb2c0adbbf4ef011eec40d3e5bb17a37e30fd921f"
+    "linux_core_tar_gz": "35e92ac413291120f410d51adbebbfac4ec265296546550494771ca4b1945155"
   }
 }
