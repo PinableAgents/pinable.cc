@@ -1,90 +1,116 @@
-<template>
-  <section class="features-section" aria-labelledby="features-title">
-    <div class="features-header">
-      <span>核心能力</span>
-      <h2 id="features-title">围绕研发过程，而不是单次对话。</h2>
-      <p>PinableAgents 的设计重点是让个人把 AI 研发动作沉淀成可安装、可编排、可触发、可回溯的生产能力。</p>
-    </div>
-    <div class="features-container">
-      <div v-for="(feature, index) in features" :key="index" class="feature-card">
-        <div class="feature-icon" v-html="feature.icon"></div>
-        <span class="feature-index">{{ feature.index }}</span>
-        <h3 class="feature-title">{{ feature.title }}</h3>
-        <p class="feature-details">{{ feature.details }}</p>
-      </div>
-    </div>
-  </section>
-</template>
-
 <script setup>
+/**
+ * Capability matrix — the dense grid near the end of the landing page.
+ *
+ * Entries are grouped by where the capability lives rather than by how it
+ * sounds, and each one names something concrete (a flag, a protocol, a count)
+ * so the grid reads as an inventory, not as adjectives.
+ */
 const features = [
   {
-    index: '01',
-    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 18 10 18 14 10 19 10 11 3 5.5"></polygon></svg>',
-    title: '统一 Runtime 与能力管理',
-    details: '在同一工作台配置 Provider、模型与本地 AI Runtime，管理 Skill、MCP、Plugin 等可安装能力，减少在不同工具间重复维护配置。'
+    group: 'Runtime',
+    title: '四个 AI 后端统一调度',
+    details: 'codex、claude、antigravity、pi 在同一控制面配置，按任务指定 --backend 与 --model。',
   },
   {
-    index: '02',
-    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m5.08 0l4.24-4.24M1 12h6m6 0h6m-1.78 7.78l-4.24-4.24m-5.08 0l-4.24 4.24"></path></svg>',
+    group: 'Runtime',
+    title: 'Provider 与算力池',
+    details: '集中管理 Provider、模型与随包 AI 兼容网关，密钥与账号不外散到各个项目。',
+  },
+  {
+    group: 'Execution',
+    title: '并行任务编排',
+    details: '--parallel 读入 ---TASK--- 块，按 dependencies 排序执行，逐任务指定 workdir、backend 与 skills。',
+  },
+  {
+    group: 'Execution',
+    title: 'Git worktree 隔离',
+    details: '--worktree 让每个任务在自己的 worktree 中执行，互不踩踏，完成后可单独审阅。',
+  },
+  {
+    group: 'Execution',
+    title: '内置终端与远程服务器',
+    details: '多 Tab PTY 终端，本机与 SSH 服务器统一接入，危险命令有 Guard 规则拦截。',
+  },
+  {
+    group: 'Delivery',
     title: '可验证交付',
-    details: '以本地 Git 仓库为项目载体，在隔离 worktree 中执行 Delivery，沉淀证据、检查结果与审批记录，让 AI 生成的变更具备可追溯的交付链路。'
+    details: '提交、校验、执行、审批、证据、时间线六段链路，AI 变更全程留痕可回放。',
   },
   {
-    index: '03',
-    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>',
+    group: 'Delivery',
     title: '经验内核',
-    details: '从任务与交付中采集候选经验，经脱敏、评审后进入复用库，按上下文召回并持续验证使用效果。'
+    details: '从任务与纠正中采集候选经验，脱敏评审后入库，按上下文召回并验证效果。',
   },
   {
-    index: '04',
-    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h8v8H6zM14 6h4c1.1 0 2 .9 2 2v4h-6zM6 14h6v4H8c-1.1 0-2-.9-2-2zM14 14h4v4c0 1.1-.9 2-2 2h-2z"></path></svg>',
-    title: '网关与自动化',
-    details: '接入飞书、微信、Telegram 等消息渠道，联动终端任务与定时任务，让个人自动化从消息触发到执行回传形成闭环。'
-  }
+    group: 'Surface',
+    title: '消息网关与定时任务',
+    details: 'telegram、feishu、weixin、weixin_miniapp 四个通道接入，支持后台执行或终端接管。',
+  },
+  {
+    group: 'Surface',
+    title: '内置 MCP 与 CodeGraph',
+    details: 'codegraph 提供 8 个只读代码图谱工具，另有 remote-servers 与 a2ui 开箱可用。',
+  },
+  {
+    group: 'Surface',
+    title: '可安装模块',
+    details: 'do、bugfix、image-gen、video-analysis、a2ui、pinable 六个模块按需安装，支持依赖排序。',
+  },
+  {
+    group: 'Surface',
+    title: '定时任务与静态站',
+    details: '把周期性工作交给调度器，本机静态站点服务直接对外，无需另起一套工具。',
+  },
+  {
+    group: 'Surface',
+    title: 'A2A 与外部接入',
+    details: '以 Agent Card 与访问凭据对外暴露能力，并发与授权范围可独立控制。',
+  },
 ]
 </script>
 
+<template>
+  <section class="features-section" aria-labelledby="features-title">
+    <div class="features-header">
+      <span class="landing-eyebrow">Capabilities</span>
+      <h2 id="features-title">能力清单，按它实际所在的位置排列。</h2>
+      <p>
+        下面每一条都对应产品里一个真实可用的入口或命令。没有占位功能，也没有"即将上线"。
+      </p>
+    </div>
+
+    <ul class="features-grid">
+      <li v-for="feature in features" :key="feature.title" class="feature-card">
+        <span class="feature-group">{{ feature.group }}</span>
+        <h3 class="feature-title">{{ feature.title }}</h3>
+        <p class="feature-details">{{ feature.details }}</p>
+      </li>
+    </ul>
+  </section>
+</template>
+
 <style scoped>
+/* The one site-wide measure; see the Layout block in tokens.css. */
 .features-section {
-  --feature-card-bg: var(--ui-panel);
-  --feature-card-border: var(--ui-border);
-  --feature-card-shadow: var(--ui-shadow);
-  --feature-card-shadow-hover: 0 18px 40px rgba(37, 99, 235, 0.13);
-  --feature-card-border-hover: var(--ui-border-strong);
-  --feature-icon-bg: rgba(var(--brand-rgb), 0.1);
-  --feature-title-color: var(--vp-c-text-1);
-  --feature-details-color: var(--vp-c-text-2);
-  width: min(1180px, calc(100% - 48px));
+  width: min(var(--pa-page-width), 100% - var(--pa-gutter));
   margin: 0 auto;
-  padding: 0 0 72px;
+  padding: 64px 0 88px;
 }
 
 .features-header {
-  max-width: 760px;
-  margin-bottom: 20px;
-}
-
-.features-header span {
-  display: inline-flex;
-  min-height: 30px;
-  align-items: center;
-  padding: 0 10px;
-  border: 1px solid var(--feature-card-border);
-  border-radius: 8px;
-  background: rgba(var(--brand-rgb), 0.08);
-  color: var(--vp-c-brand-1);
-  font-size: 0.78rem;
-  font-weight: 800;
+  max-width: 62ch;
+  margin-bottom: 36px;
 }
 
 .features-header h2 {
-  margin: 18px 0 12px;
+  margin: 0 0 14px;
   color: var(--vp-c-text-1);
-  font-family: 'Varela Round', sans-serif;
-  font-size: 2rem;
-  line-height: 1.2;
+  font-size: clamp(1.625rem, 2.8vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.16;
   letter-spacing: 0;
+  text-wrap: balance;
 }
 
 .features-header p {
@@ -94,180 +120,80 @@ const features = [
   line-height: 1.75;
 }
 
-.features-container {
+/* Hairline matrix: the container paints the grid lines, the cells sit on top. */
+.features-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
-.feature-card {
-  position: relative;
-  text-align: left;
-  min-height: 228px;
-  padding: 18px;
-  border-radius: 8px;
-  background: var(--feature-card-bg);
-  border: 1px solid var(--feature-card-border);
-  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  box-shadow: var(--feature-card-shadow);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 1px;
+  list-style: none;
+  background: var(--vp-c-border);
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--pa-radius-lg);
   overflow: hidden;
 }
 
-.feature-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(var(--brand-rgb), 0.06) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(var(--brand-rgb), 0.06) 1px, transparent 1px);
-  background-size: 28px 28px;
-  opacity: 0;
-  transition: opacity 0.22s ease;
-  pointer-events: none;
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 20px;
+  background: var(--vp-c-bg-elv);
+  transition: background-color var(--pa-transition);
 }
 
 .feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--feature-card-shadow-hover);
-  border-color: var(--feature-card-border-hover);
+  background: var(--vp-c-bg-soft);
 }
 
-.feature-card:hover::before {
-  opacity: 1;
-}
-
-.feature-icon {
-  width: 46px;
-  height: 46px;
-  margin-bottom: 18px;
-  color: var(--vp-c-brand-1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  padding: 0.72rem;
-  border-radius: 8px;
-  background: var(--feature-icon-bg);
-}
-
-.feature-icon :deep() svg {
-  width: 100%;
-  height: 100%;
-  stroke: currentColor;
-}
-
-.feature-index {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  color: var(--vp-c-text-3);
+.feature-group {
+  margin-bottom: 12px;
   font-family: var(--vp-font-family-mono);
-  font-size: 0.76rem;
-  font-weight: 700;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vp-c-text-3);
 }
 
 .feature-title {
-  margin: 0 0 0.75rem;
-  font-size: 1.08rem;
-  font-weight: 800;
-  color: var(--feature-title-color);
+  margin: 0 0 8px;
+  color: var(--vp-c-text-1);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
   letter-spacing: 0;
-  font-family: 'Varela Round', sans-serif;
 }
 
 .feature-details {
   margin: 0;
-  font-size: 0.95rem;
-  color: var(--feature-details-color);
-  line-height: 1.6;
-}
-
-:global(html.dark) .features-section,
-:global(.dark) .features-section {
-  --feature-card-bg: var(--ui-panel);
-  --feature-card-border: var(--ui-border);
-  --feature-card-shadow: var(--ui-shadow);
-  --feature-card-shadow-hover: 0 20px 42px rgba(2, 6, 23, 0.34);
-  --feature-card-border-hover: var(--ui-border-strong);
-  --feature-icon-bg: rgba(56, 189, 248, 0.14);
-  --feature-title-color: #f8fafc;
-  --feature-details-color: #94a3b8;
+  color: var(--vp-c-text-2);
+  font-size: 0.875rem;
+  line-height: 1.65;
 }
 
 @media (max-width: 1200px) {
-  .features-container {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+  .features-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 768px) {
   .features-section {
-    width: min(100% - 32px, 100%);
-    padding-bottom: 56px;
+    padding: 48px 0 64px;
   }
+}
 
-  .features-container {
+@media (max-width: 560px) {
+  .features-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .feature-card {
-    padding: 1.3rem;
-  }
-
-  .feature-icon {
-    width: 48px;
-    height: 48px;
-    margin-bottom: 1.2rem;
-  }
-
-  .feature-title {
-    font-size: 1.05rem;
-  }
-
-  .feature-details {
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .features-section {
-    width: min(100% - 24px, 100%);
-  }
-
-  .feature-card {
-    padding: 1.15rem;
-  }
-
-  .feature-icon {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 1rem;
-  }
-
-  .feature-title {
-    font-size: 0.95rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .feature-details {
-    font-size: 0.8rem;
-    line-height: 1.5;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .feature-card,
-  .feature-card::before {
-    transition: none;
-  }
-
-  .feature-card:hover {
-    transform: none;
   }
 }
 </style>

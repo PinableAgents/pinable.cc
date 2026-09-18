@@ -7,6 +7,10 @@ export default defineConfig({
   lang: 'zh-CN',
   base: '/',
 
+  // Dark by default, matching the desktop app's own neutral dark palette.
+  // 'dark' (not 'force-dark') keeps the light theme available via the toggle.
+  appearance: 'dark',
+
   cleanUrls: true,
   ignoreDeadLinks: true,
 
@@ -15,7 +19,7 @@ export default defineConfig({
     ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }],
     ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
     ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
-    ['link', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Varela+Round&family=Nunito+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap' }],
+    ['link', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap' }],
     ['script', { async: '', src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3137049467355939', crossorigin: 'anonymous' }],
   ],
 

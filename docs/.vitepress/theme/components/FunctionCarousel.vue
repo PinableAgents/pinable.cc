@@ -1,13 +1,17 @@
-<script setup lang="ts">
+<script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
-type Slide = {
-  src: string
-  alt: string
-}
+/**
+ * Screenshot carousel. Plays through once, then offers a replay button rather
+ * than looping forever — a looping carousel fights the reader who is trying to
+ * study a screenshot.
+ *
+ * Drag, keyboard and autoplay behave as before; styling is now on tokens and
+ * scoped (it used to be a global stylesheet rule).
+ */
 
-const slides: Slide[] = [
-  { src: '/assets/functions/1-provider.png', alt: 'Provider 管理界面' },
+const slides = [
+  { src: '/assets/functions/1-provider.png', alt: 'Provider 与执行引擎配置界面' },
   { src: '/assets/functions/2-workflow.png', alt: '工作流列表界面' },
   { src: '/assets/functions/4-workflow-tasks.png', alt: '工作流任务执行界面' },
   { src: '/assets/functions/5-teminal.png', alt: '终端执行界面' },
@@ -18,14 +22,14 @@ const SWIPE_THRESHOLD_RATIO = 0.14
 const AUTOPLAY_DELAY = 2800
 
 const currentIndex = ref(0)
-const frameRef = ref<HTMLDivElement | null>(null)
+const frameRef = ref(null)
 const dragOffset = ref(0)
 const isDragging = ref(false)
 const hasEnded = ref(false)
 
 let dragStartX = 0
-let activePointerId: number | null = null
-let autoplayTimer: ReturnType<typeof window.setTimeout> | null = null
+let activePointerId = null
+let autoplayTimer = null
 
 const trackStyle = computed(() => ({
   transform: `translate3d(calc(-${currentIndex.value * 100}% + ${dragOffset.value}px), 0, 0)`,
@@ -34,34 +38,23 @@ const trackStyle = computed(() => ({
 
 function clearAutoplay() {
   if (autoplayTimer === null) return
-
   window.clearTimeout(autoplayTimer)
   autoplayTimer = null
 }
 
 function scheduleAutoplay() {
   clearAutoplay()
-
   if (hasEnded.value || isDragging.value) return
-
-  autoplayTimer = window.setTimeout(() => {
-    advance('auto')
-  }, AUTOPLAY_DELAY)
+  autoplayTimer = window.setTimeout(() => advance(), AUTOPLAY_DELAY)
 }
 
 function prev() {
   hasEnded.value = false
-
-  if (currentIndex.value === 0) {
-    currentIndex.value = slides.length - 1
-  } else {
-    currentIndex.value -= 1
-  }
-
+  currentIndex.value = currentIndex.value === 0 ? slides.length - 1 : currentIndex.value - 1
   scheduleAutoplay()
 }
 
-function advance(mode: 'auto' | 'manual' = 'manual') {
+function advance() {
   if (currentIndex.value >= slides.length - 1) {
     hasEnded.value = true
     clearAutoplay()
@@ -70,12 +63,7 @@ function advance(mode: 'auto' | 'manual' = 'manual') {
 
   hasEnded.value = false
   currentIndex.value += 1
-
-  if (mode === 'auto') {
-    scheduleAutoplay()
-  } else {
-    scheduleAutoplay()
-  }
+  scheduleAutoplay()
 }
 
 function restart() {
@@ -85,7 +73,7 @@ function restart() {
   scheduleAutoplay()
 }
 
-function onPointerDown(event: PointerEvent) {
+function onPointerDown(event) {
   if (!frameRef.value) return
 
   clearAutoplay()
@@ -96,24 +84,22 @@ function onPointerDown(event: PointerEvent) {
   frameRef.value.setPointerCapture(event.pointerId)
 }
 
-function onPointerMove(event: PointerEvent) {
+function onPointerMove(event) {
   if (!isDragging.value || event.pointerId !== activePointerId) return
-
   dragOffset.value = event.clientX - dragStartX
 }
 
-function onPointerEnd(event: PointerEvent) {
+function onPointerEnd(event) {
   if (!isDragging.value || event.pointerId !== activePointerId) return
 
   const frameWidth = frameRef.value?.clientWidth ?? 1
-  const threshold = frameWidth * SWIPE_THRESHOLD_RATIO
   const offset = dragOffset.value
 
   isDragging.value = false
   dragOffset.value = 0
   activePointerId = null
 
-  if (Math.abs(offset) < threshold) {
+  if (Math.abs(offset) < frameWidth * SWIPE_THRESHOLD_RATIO) {
     scheduleAutoplay()
     return
   }
@@ -126,13 +112,8 @@ function onPointerEnd(event: PointerEvent) {
   advance()
 }
 
-onMounted(() => {
-  scheduleAutoplay()
-})
-
-onBeforeUnmount(() => {
-  clearAutoplay()
-})
+onMounted(scheduleAutoplay)
+onBeforeUnmount(clearAutoplay)
 </script>
 
 <template>
@@ -141,10 +122,10 @@ onBeforeUnmount(() => {
     tabindex="0"
     aria-label="功能截图轮播"
     @keydown.left.prevent="prev"
-    @keydown.right.prevent="advance()"
+    @keydown.right.prevent="advance"
   >
     <button
-      class="function-carousel-arrow function-carousel-arrow-prev"
+      class="carousel-arrow carousel-arrow-prev"
       type="button"
       aria-label="上一张"
       @click="prev"
@@ -154,58 +135,52 @@ onBeforeUnmount(() => {
 
     <div
       ref="frameRef"
-      class="function-carousel-frame"
+      class="carousel-frame"
       @pointerdown="onPointerDown"
       @pointermove="onPointerMove"
       @pointerup="onPointerEnd"
       @pointercancel="onPointerEnd"
     >
-      <div class="function-carousel-track" :style="trackStyle">
-        <figure
-          v-for="slide in slides"
-          :key="slide.src"
-          class="function-slide"
-        >
+      <div class="carousel-track" :style="trackStyle">
+        <figure v-for="slide in slides" :key="slide.src" class="carousel-slide">
           <img :src="slide.src" :alt="slide.alt" loading="lazy">
         </figure>
       </div>
     </div>
 
     <button
-      class="function-carousel-arrow function-carousel-arrow-next"
+      class="carousel-arrow carousel-arrow-next"
       type="button"
       aria-label="下一张"
-      @click="advance()"
+      @click="advance"
     >
       <span aria-hidden="true">›</span>
     </button>
 
     <button
       v-if="hasEnded"
-      class="function-carousel-replay"
+      class="carousel-replay"
       type="button"
       aria-label="重新播放"
       @click="restart"
     >
       <span aria-hidden="true">↻</span>
+      <span class="carousel-replay-text">重新播放</span>
     </button>
+
+    <p class="carousel-count">
+      <span>{{ String(currentIndex + 1).padStart(2, '0') }}</span>
+      <span class="carousel-count-sep" aria-hidden="true">/</span>
+      <span>{{ String(slides.length).padStart(2, '0') }}</span>
+    </p>
   </div>
 </template>
 
-<style>
+<style scoped>
 .function-carousel {
-  --carousel-frame-bg:
-    linear-gradient(90deg, var(--ui-grid-line) 1px, transparent 1px),
-    linear-gradient(0deg, var(--ui-grid-line) 1px, transparent 1px),
-    var(--ui-panel);
-  --carousel-border: var(--ui-border);
-  --carousel-shadow: var(--ui-shadow);
-  --carousel-control-bg: var(--ui-panel-strong);
-  --carousel-control-border: var(--ui-border);
-  --carousel-control-shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
   position: relative;
-  margin: 1rem auto 0;
-  padding: 0 4.5rem;
+  margin: 0 auto;
+  padding: 0 4.5rem 3rem;
 }
 
 .function-carousel:focus-visible {
@@ -213,52 +188,30 @@ onBeforeUnmount(() => {
   outline-offset: 6px;
 }
 
-.function-carousel-frame {
+.carousel-frame {
   overflow: hidden;
-  border-radius: 8px;
-  border: 1px solid var(--carousel-border);
-  background: var(--carousel-frame-bg);
-  background-size: 32px 32px, 32px 32px, 100% 100%;
-  box-shadow: var(--carousel-shadow);
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--pa-radius-lg);
+  background: var(--vp-c-bg-elv);
   cursor: grab;
   touch-action: pan-y;
 }
 
-.dark .function-carousel,
-html.dark .function-carousel {
-  --carousel-frame-bg:
-    linear-gradient(90deg, rgba(103, 232, 249, 0.08) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(103, 232, 249, 0.08) 1px, transparent 1px),
-    rgba(15, 23, 42, 0.76);
-  --carousel-border: rgba(var(--brand-rgb), 0.18);
-  --carousel-shadow: 0 18px 44px rgba(2, 6, 23, 0.32);
-  --carousel-control-bg: rgba(15, 23, 42, 0.92);
-  --carousel-control-border: rgba(var(--brand-rgb), 0.34);
-  --carousel-control-shadow: 0 18px 40px rgba(2, 6, 23, 0.42);
-}
-
-.dark .function-carousel-frame {
-  background: var(--carousel-frame-bg);
-  background-size: 32px 32px, 32px 32px, 100% 100%;
-  border-color: var(--carousel-border);
-  box-shadow: var(--carousel-shadow);
-}
-
-.function-carousel-frame:active {
+.carousel-frame:active {
   cursor: grabbing;
 }
 
-.function-carousel-track {
+.carousel-track {
   display: flex;
   will-change: transform;
 }
 
-.function-slide {
+.carousel-slide {
   flex: 0 0 100%;
   margin: 0;
 }
 
-.function-slide img {
+.carousel-slide img {
   display: block;
   width: 100%;
   height: auto;
@@ -270,142 +223,120 @@ html.dark .function-carousel {
   pointer-events: none;
 }
 
-.function-carousel-arrow {
+/* ---- Controls ---- */
+.carousel-arrow {
   position: absolute;
-  top: 50%;
+  top: calc(50% - 1.5rem);
   z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
+  width: 40px;
+  height: 40px;
   padding: 0;
-  border: 1px solid var(--carousel-control-border);
-  border-radius: 8px;
-  background: var(--carousel-control-bg);
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--pa-radius);
+  background: var(--vp-c-bg-elv);
   color: var(--vp-c-text-1);
-  box-shadow: var(--carousel-control-shadow);
   transform: translateY(-50%);
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  transition: background-color var(--pa-transition), border-color var(--pa-transition);
 }
 
-.dark .function-carousel-arrow {
-  background: var(--carousel-control-bg);
-  color: #f8fafc;
-  border-color: var(--carousel-control-border);
-  box-shadow: var(--carousel-control-shadow);
+.carousel-arrow:hover {
+  background: var(--vp-c-bg-soft);
+  border-color: var(--vp-c-text-3);
 }
 
-.function-carousel-arrow:hover {
-  background: rgba(var(--brand-rgb), 0.12);
-  border-color: rgba(var(--brand-rgb), 0.42);
-}
-
-.dark .function-carousel-arrow:hover {
-  background: rgba(var(--brand-rgb), 0.22);
-  border-color: rgba(var(--brand-rgb), 0.55);
-}
-
-.function-carousel-arrow:focus-visible {
+.carousel-arrow:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
-.function-carousel-arrow span {
-  font-size: 2rem;
+.carousel-arrow span {
+  font-size: 1.5rem;
   line-height: 1;
   transform: translateY(-1px);
 }
 
-.function-carousel-arrow-prev {
-  left: 0.5rem;
+.carousel-arrow-prev {
+  left: 0.75rem;
 }
 
-.function-carousel-arrow-next {
-  right: 0.5rem;
+.carousel-arrow-next {
+  right: 0.75rem;
 }
 
-.function-carousel-replay {
+.carousel-replay {
   position: absolute;
-  top: 50%;
+  top: calc(50% - 1.5rem);
   left: 50%;
   z-index: 2;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  min-width: 132px;
-  height: 56px;
-  padding: 0 1rem;
-  border: 1px solid var(--carousel-control-border);
-  border-radius: 8px;
-  background: var(--carousel-control-bg);
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--pa-radius);
+  background: var(--vp-c-bg-elv);
   backdrop-filter: blur(16px);
   color: var(--vp-c-text-1);
-  box-shadow: var(--carousel-control-shadow);
   cursor: pointer;
   transform: translate(-50%, -50%);
-  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  transition: background-color var(--pa-transition), border-color var(--pa-transition);
 }
 
-.dark .function-carousel-replay {
-  background: var(--carousel-control-bg);
-  color: #f8fafc;
-  border-color: var(--carousel-control-border);
-  box-shadow: var(--carousel-control-shadow);
+.carousel-replay:hover {
+  background: var(--vp-c-bg-soft);
+  border-color: var(--vp-c-text-3);
 }
 
-.function-carousel-replay:hover {
-  transform: translate(-50%, -50%);
-  background: rgba(var(--brand-rgb), 0.12);
-  border-color: rgba(var(--brand-rgb), 0.44);
-}
-
-.dark .function-carousel-replay:hover {
-  background: rgba(var(--brand-rgb), 0.22);
-  border-color: rgba(var(--brand-rgb), 0.58);
-}
-
-.function-carousel-replay:focus-visible {
+.carousel-replay:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
-.function-carousel-replay span {
-  font-size: 1.5rem;
+.carousel-replay span[aria-hidden] {
+  font-size: 1.125rem;
   line-height: 1;
 }
 
-.function-carousel-replay::after {
-  content: '重新播放';
-  font-size: 0.95rem;
-  font-weight: 600;
-  line-height: 1;
+.carousel-replay-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* ---- Counter ---- */
+.carousel-count {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.75rem;
+  color: var(--vp-c-text-3);
+}
+
+.carousel-count-sep {
+  margin: 0 4px;
+  color: var(--vp-c-border);
 }
 
 @media (max-width: 640px) {
   .function-carousel {
-    padding: 0 3.25rem;
+    padding: 0 0 2.5rem;
   }
 
-  .function-carousel-frame {
-    border-radius: 8px;
+  .carousel-arrow {
+    display: none;
   }
+}
 
-  .function-carousel-arrow {
-    width: 42px;
-    height: 42px;
-  }
-
-  .function-carousel-arrow span {
-    font-size: 1.6rem;
-  }
-
-  .function-carousel-replay {
-    min-width: 112px;
-    height: 48px;
-    padding: 0 0.9rem;
+@media (prefers-reduced-motion: reduce) {
+  .carousel-track {
+    transition: none !important;
   }
 }
 </style>

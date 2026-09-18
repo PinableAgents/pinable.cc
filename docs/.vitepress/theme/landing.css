@@ -1,0 +1,381 @@
+/**
+ * Marketing-page layout vocabulary.
+ *
+ * These classes are the only styling hooks markdown pages use; `.md` files
+ * compose them by hand. Keeping the vocabulary small and semantic means page
+ * copy stays editable without touching CSS.
+ *
+ * ---------------------------------------------------------------------------
+ * WHY EVERY SELECTOR IS PREFIXED WITH `.vp-doc`
+ *
+ * The default theme ships its prose rules in an *unscoped* global stylesheet
+ * (`.vp-doc h2 { border-top: …; margin: 48px 0 16px; letter-spacing: -.02em }`,
+ * `.vp-doc ul { padding-left: 1.25rem; list-style: disc }`, `.vp-doc a { color:
+ * var(--vp-c-brand-1); text-decoration: underline }`). Those sit at (0,1,1) and
+ * a `layout: home` page's markdown body is wrapped in `.vp-doc` too, so they
+ * apply here — and they outrank a bare `.landing-title` / `.landing-points` /
+ * `.landing-link-button` (0,1,0) regardless of source order. Left alone, every
+ * section heading grows a stray hairline, every bullet triad grows disc markers
+ * and a 20px indent, and every CTA renders as a blue underlined link.
+ *
+ * Prefixing lifts each rule to (0,2,0)+, which clears the theme's prose rules
+ * including the `.vp-doc li + li` (0,1,2) one. The cost: a `.landing-*` class
+ * used *outside* the markdown body will not be styled. Nothing does today —
+ * `HeroDownloads` uses its own `.hd-*` vocabulary, and the two components that
+ * live outside `.landing-page` (`HomeExperience`, `FeaturesSection`) only borrow
+ * `.landing-eyebrow`, which no theme rule targets. If you move a landing class
+ * out of `.vp-doc`, give it an explicitly escaped rule rather than deleting the
+ * prefix here.
+ * ---------------------------------------------------------------------------
+ *
+ * Typographic note: headings here set `letter-spacing: 0`. The reference site
+ * uses negative tracking and uppercasing, both of which are Latin-letterform
+ * devices — Han characters already carry their own sidebearings, and uppercase
+ * is a no-op on them. Tracking is therefore reserved for the all-Latin mono
+ * eyebrows via .landing-eyebrow.
+ */
+
+/* ========================================
+   Page shell
+   ======================================== */
+.vp-doc .landing-page {
+  width: min(var(--pa-page-width), 100% - var(--pa-gutter));
+  margin: 0 auto;
+  padding: 0 0 96px;
+}
+
+/* Sections are separated by a hairline, not by cards.
+ *
+ * `scroll-margin-top` is what SectionRail's anchors land on: the nav is fixed
+ * and overlays the top of the page, so without it a jumped-to heading ends up
+ * underneath the nav bar. The rail's own READ_LINE (140px) is deliberately
+ * larger than this offset, so a section is marked active the moment it lands. */
+.vp-doc .landing-section,
+.vp-doc .features-section {
+  scroll-margin-top: calc(var(--vp-nav-height) + 32px);
+}
+
+.vp-doc .landing-section {
+  padding: 72px 0;
+  border-top: 1px solid var(--vp-c-border);
+}
+
+.vp-doc .landing-section:first-child {
+  border-top: none;
+}
+
+/* ========================================
+   Section header
+   ======================================== */
+.vp-doc .landing-eyebrow {
+  display: block;
+  margin-bottom: 16px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vp-c-text-3);
+}
+
+/* `20em`, not `ch` — see the note on the hero tagline in docs.css. 22ch is
+ * about 12 Han characters, which wrapped most of these headings onto a second
+ * line for the sake of two or three characters. The longest heading on either
+ * page is 16em, so 20em holds every one of them on a single line. */
+.vp-doc .landing-title {
+  margin: 0 0 16px;
+  max-width: 20em;
+  font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+  line-height: 1.14;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--vp-c-text-1);
+  text-wrap: balance;
+}
+
+.vp-doc .landing-lead {
+  margin: 0;
+  max-width: 64ch;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--vp-c-text-2);
+  text-wrap: pretty;
+}
+
+/* ========================================
+   Bullet triad
+   ----------------------------------------
+   The reference site's repeated unit: a bold lead-in followed by one plain
+   sentence. The theme's `.vp-doc ul` would otherwise give this a disc marker,
+   a 20px indent and a 16px vertical margin.
+   ======================================== */
+.vp-doc .landing-points {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin: 36px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vp-doc .landing-points li {
+  margin: 0;
+  color: var(--vp-c-text-2);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.vp-doc .landing-points strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--vp-c-text-1);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+/* ========================================
+   Panel — the wide mockup / surface
+   ======================================== */
+.vp-doc .landing-panel {
+  margin-top: 40px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--pa-radius-lg);
+  background: var(--vp-c-bg-elv);
+  overflow: hidden;
+}
+
+.vp-doc .landing-panel-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--vp-c-border);
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-3);
+  font-size: 0.8125rem;
+}
+
+.vp-doc .landing-panel-body {
+  padding: 24px;
+}
+
+/* ========================================
+   Screenshot inside a panel
+   ======================================== */
+.vp-doc .landing-shot {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--pa-radius);
+  border: 1px solid var(--vp-c-border);
+  background: var(--vp-c-bg-soft);
+}
+
+.vp-doc .landing-panel-body:has(> .landing-shot) {
+  padding: 0;
+}
+
+.vp-doc .landing-panel-body:has(> .landing-shot) .landing-shot {
+  border: none;
+  border-radius: 0;
+}
+
+/* ========================================
+   Capability matrix
+   ======================================== */
+.vp-doc .landing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 40px;
+  background: var(--vp-c-border);
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--pa-radius-lg);
+  overflow: hidden;
+}
+
+.vp-doc .landing-grid > * {
+  padding: 20px;
+  background: var(--vp-c-bg-elv);
+}
+
+.vp-doc .landing-grid h3 {
+  margin: 0 0 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--vp-c-text-1);
+}
+
+.vp-doc .landing-grid p {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--vp-c-text-2);
+}
+
+/* ========================================
+   Inline monospace — commands, paths, flags
+   ======================================== */
+.vp-doc .landing-mono {
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.875em;
+  color: var(--vp-c-text-1);
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--pa-radius-sm);
+  padding: 0.1em 0.4em;
+  white-space: nowrap;
+}
+
+/* ========================================
+   Chips — status / platform labels
+   ======================================== */
+.vp-doc .landing-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vp-doc .landing-chips li {
+  margin: 0;
+  padding: 5px 10px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--pa-radius-sm);
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.75rem;
+}
+
+/* ========================================
+   Links and buttons
+   ----------------------------------------
+   `.vp-doc a` (0,1,1) would otherwise paint every one of these brand-blue and
+   underlined — see the header note.
+   ======================================== */
+.vp-doc .landing-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--pa-radius);
+  background: transparent;
+  color: var(--vp-c-text-1);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color var(--pa-transition), border-color var(--pa-transition);
+}
+
+.vp-doc .landing-link-button:hover {
+  background: var(--vp-c-bg-soft);
+  border-color: var(--vp-c-text-3);
+  text-decoration: none;
+}
+
+.vp-doc .landing-link-button-accent {
+  background: var(--vp-c-neutral);
+  border-color: var(--vp-c-neutral);
+  color: var(--vp-c-neutral-inverse);
+}
+
+.vp-doc .landing-link-button-accent:hover {
+  background: var(--vp-c-text-1);
+  border-color: var(--vp-c-text-1);
+  color: var(--vp-c-neutral-inverse);
+}
+
+/* ========================================
+   Closing CTA
+   ======================================== */
+.vp-doc .landing-cta {
+  padding: 96px 0 0;
+  border-top: 1px solid var(--vp-c-border);
+  text-align: center;
+}
+
+.vp-doc .landing-cta h2 {
+  margin: 0 0 14px;
+  padding: 0;
+  border-top: none;
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  line-height: 1.12;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--vp-c-text-1);
+  text-wrap: balance;
+}
+
+.vp-doc .landing-cta p {
+  margin: 0 auto;
+  max-width: 56ch;
+  color: var(--vp-c-text-2);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.vp-doc .landing-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 32px;
+}
+
+/* ========================================
+   Carousel frame (about page)
+   ======================================== */
+.vp-doc .landing-frame {
+  margin-top: 8px;
+}
+
+/* ========================================
+   Responsive
+   ======================================== */
+@media (max-width: 960px) {
+  .vp-doc .landing-points,
+  .vp-doc .landing-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vp-doc .landing-section {
+    padding: 56px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .vp-doc .landing-points,
+  .vp-doc .landing-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .vp-doc .landing-grid {
+    gap: 1px;
+  }
+
+  .vp-doc .landing-title {
+    font-size: 1.625rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .vp-doc .landing-section {
+    padding: 44px 0;
+  }
+
+  .vp-doc .landing-panel-body {
+    padding: 18px;
+  }
+
+  .vp-doc .landing-cta {
+    padding-top: 64px;
+  }
+}
