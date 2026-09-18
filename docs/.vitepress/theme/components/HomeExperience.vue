@@ -1,15 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
 
-/**
- * Interactive pipeline panel: one task's lifecycle from configuration through
- * to recall. High-altitude on purpose — the numbered SectionShell blocks below
- * it on the landing page go into capability depth, so this stays a map rather
- * than a second copy of the same list.
- *
- * Every stage names a real command, path or artifact.
- */
-
 const activeIndex = ref(0)
 
 const stages = [
@@ -47,32 +38,69 @@ const stages = [
   },
 ]
 
-const metrics = [
-  {
-    label: '统一调度',
-    value: '4',
-    unit: '个 AI 后端',
-    text: 'codex · claude · antigravity · pi',
-  },
-  {
-    label: '并行编排',
-    value: '--parallel',
-    unit: '',
-    text: '按 dependencies 排序，逐任务隔离 worktree',
-  },
-  {
-    label: '单一运行根',
-    value: '$PINABLE_HOME',
-    unit: '',
-    text: '配置、会话、交付与经验归集一处',
-  },
-]
-
 const activeStage = computed(() => stages[activeIndex.value])
 </script>
 
 <template>
+  <!-- Hero product shot band -->
+  <div class="he-shot-band">
+    <div class="he-shot-inner">
+      <div class="he-shot-backdrop">
+        <div class="he-shot-panel he-shot-panel--left"></div>
+        <div class="he-shot-panel he-shot-panel--right"></div>
+      </div>
+      <div class="he-shot-card">
+        <div class="he-shot-card-bar">
+          <span class="he-shot-traffic"></span>
+          <span class="he-shot-title">pinable — 工作流执行</span>
+          <span class="he-shot-pill">运行中</span>
+        </div>
+        <img
+          src="/assets/functions/4-workflow-tasks.png"
+          alt="PinableAgents 工作流执行界面"
+          class="he-shot-img"
+          loading="eager"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Why section -->
   <div class="home-experience">
+    <section class="why-band" aria-labelledby="why-title">
+      <div class="why-copy">
+        <span class="landing-eyebrow">Why PinableAgents</span>
+        <h2 id="why-title">为什么需要一条固定的 AI 交付链路？</h2>
+        <p>
+          AI 工具越来越多，但"AI 做了什么、做对了没有、改了哪里、谁批准的"这些问题在大多数工具里没有答案。
+          PinableAgents 把 AI 研发动作串成固定流程——从接入 Runtime、并行编排、到可验证交付、经验回流，每一段都有对应的命令与落盘产物。
+        </p>
+        <ul class="why-points">
+          <li>
+            <strong>不是黑盒</strong>
+            每次执行都有日志、证据与时间线，AI 做了什么随时可以回看。
+          </li>
+          <li>
+            <strong>不是孤岛</strong>
+            四个 AI 后端统一调度，配置一次、所有项目共用，不需要为每个工具单独维护一套配置。
+          </li>
+          <li>
+            <strong>不是实验</strong>
+            可验证交付链路保证 AI 产出的改动在被批准之前不会生效，审批留痕，可追溯。
+          </li>
+        </ul>
+      </div>
+      <div class="why-panel">
+        <img
+          src="/assets/functions/6-history.png"
+          alt="交付历史与审批记录界面"
+          class="why-img"
+          loading="lazy"
+        />
+      </div>
+    </section>
+
+    <!-- Pipeline interactive panel -->
     <section class="workbench-band" aria-labelledby="workbench-title">
       <div class="workbench-copy">
         <span class="landing-eyebrow">Pipeline</span>
@@ -121,32 +149,210 @@ const activeStage = computed(() => stages[activeIndex.value])
       </div>
     </section>
 
+    <!-- Metrics strip -->
     <section class="impact-strip" aria-label="运行事实">
-      <div v-for="metric in metrics" :key="metric.label" class="impact-item">
-        <span class="impact-label">{{ metric.label }}</span>
-        <strong>
-          {{ metric.value }}
-          <em v-if="metric.unit">{{ metric.unit }}</em>
-        </strong>
-        <p>{{ metric.text }}</p>
+      <div class="impact-item">
+        <span class="impact-label">统一调度</span>
+        <strong>4 <em>个 AI 后端</em></strong>
+        <p>codex · claude · antigravity · pi</p>
+      </div>
+      <div class="impact-item">
+        <span class="impact-label">并行编排</span>
+        <strong>--parallel</strong>
+        <p>按 dependencies 排序，逐任务隔离 worktree</p>
+      </div>
+      <div class="impact-item">
+        <span class="impact-label">单一运行根</span>
+        <strong>$PINABLE_HOME</strong>
+        <p>配置、会话、交付与经验归集一处</p>
       </div>
     </section>
   </div>
 </template>
 
 <style scoped>
-/* The one site-wide measure; see the Layout block in tokens.css. */
+/* ---- Hero shot band ---- */
+.he-shot-band {
+  width: 100%;
+  padding: 0 0 0;
+  background: var(--vp-c-bg);
+  border-bottom: 1px solid var(--vp-c-border);
+  overflow: hidden;
+}
+
+.he-shot-inner {
+  position: relative;
+  width: min(var(--pa-page-width), 100% - var(--pa-gutter));
+  margin: 0 auto;
+  padding: 48px 0 0;
+}
+
+/* Two colored backdrop panels — subtle on achromatic palette */
+.he-shot-backdrop {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  height: 55%;
+  display: flex;
+  pointer-events: none;
+}
+
+.he-shot-panel {
+  flex: 1;
+  border-radius: var(--pa-radius-lg) var(--pa-radius-lg) 0 0;
+}
+
+.he-shot-panel--left {
+  background: var(--vp-c-bg-soft);
+  border-right: 1px solid var(--vp-c-border);
+}
+
+.he-shot-panel--right {
+  background: var(--vp-c-bg-alt);
+}
+
+/* The floating product screenshot card */
+.he-shot-card {
+  position: relative;
+  z-index: 1;
+  max-width: 880px;
+  margin: 0 auto;
+  border: 1px solid var(--vp-c-border);
+  border-bottom: none;
+  border-radius: var(--pa-radius-lg) var(--pa-radius-lg) 0 0;
+  background: var(--vp-c-bg-elv);
+  box-shadow: var(--pa-shadow-lg);
+  overflow: hidden;
+}
+
+.he-shot-card-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--vp-c-border);
+  background: var(--vp-c-bg-soft);
+}
+
+/* macOS traffic lights */
+.he-shot-traffic {
+  display: inline-flex;
+  width: 42px;
+  height: 10px;
+  background:
+    radial-gradient(circle, #ff5f57 0 4px, transparent 4px) 0 0 / 12px 10px no-repeat,
+    radial-gradient(circle, #febc2e 0 4px, transparent 4px) 15px 0 / 12px 10px no-repeat,
+    radial-gradient(circle, #28c840 0 4px, transparent 4px) 30px 0 / 12px 10px no-repeat;
+  flex-shrink: 0;
+}
+
+.he-shot-title {
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.75rem;
+  color: var(--vp-c-text-3);
+  flex: 1;
+}
+
+.he-shot-pill {
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.6875rem;
+  color: #28c840;
+  background: rgba(40,200,64,.1);
+  border: 1px solid rgba(40,200,64,.2);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.he-shot-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---- Main experience area ---- */
 .home-experience {
   width: min(var(--pa-page-width), 100% - var(--pa-gutter));
   margin: 0 auto;
-  padding: 64px 0 0;
+  padding: 80px 0 0;
 }
 
+/* ---- Why band ---- */
+.why-band {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 72px;
+  align-items: center;
+  padding-bottom: 80px;
+  border-bottom: 1px solid var(--vp-c-border);
+}
+
+.why-copy h2 {
+  margin: 0 0 16px;
+  max-width: 18em;
+  color: var(--vp-c-text-1);
+  font-size: clamp(1.625rem, 2.8vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.why-copy p {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--vp-c-text-2);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.why-points {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.why-points li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--vp-c-text-2);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.why-points strong {
+  color: var(--vp-c-text-1);
+  font-weight: 600;
+}
+
+.why-panel {
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--pa-radius-lg);
+  background: var(--vp-c-bg-elv);
+  overflow: hidden;
+  box-shadow: var(--pa-shadow-lg);
+}
+
+.why-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---- Pipeline band ---- */
 .workbench-band {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(480px, 1.1fr);
   gap: 40px;
   align-items: center;
+  padding: 80px 0;
+  border-bottom: 1px solid var(--vp-c-border);
 }
 
 .workbench-copy h2 {
@@ -168,12 +374,13 @@ const activeStage = computed(() => stages[activeIndex.value])
   line-height: 1.75;
 }
 
-/* ---- Panel ---- */
+/* ---- Flow panel ---- */
 .flow-panel {
   border: 1px solid var(--vp-c-border);
   border-radius: var(--pa-radius-lg);
   background: var(--vp-c-bg-elv);
   overflow: hidden;
+  box-shadow: var(--pa-shadow);
 }
 
 .panel-topbar {
@@ -246,7 +453,7 @@ const activeStage = computed(() => stages[activeIndex.value])
 }
 
 .stage-detail {
-  min-height: 236px;
+  min-height: 220px;
   padding: 26px 24px;
 }
 
@@ -293,12 +500,12 @@ const activeStage = computed(() => stages[activeIndex.value])
   font-size: 0.75rem;
 }
 
-/* ---- Facts strip ---- */
+/* ---- Metrics strip ---- */
 .impact-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
-  margin-top: 40px;
+  margin-top: 0;
   background: var(--vp-c-border);
   border: 1px solid var(--vp-c-border);
   border-radius: var(--pa-radius-lg);
@@ -306,7 +513,7 @@ const activeStage = computed(() => stages[activeIndex.value])
 }
 
 .impact-item {
-  padding: 20px;
+  padding: 24px;
   background: var(--vp-c-bg-elv);
 }
 
@@ -327,6 +534,7 @@ const activeStage = computed(() => stages[activeIndex.value])
   font-size: 1.375rem;
   font-weight: 600;
   letter-spacing: 0;
+  font-family: var(--vp-font-family-mono);
 }
 
 .impact-item em {
@@ -354,18 +562,28 @@ const activeStage = computed(() => stages[activeIndex.value])
   transform: translateY(4px);
 }
 
-@media (max-width: 1024px) {
-  .workbench-band {
+/* ---- Responsive ---- */
+@media (max-width: 1100px) {
+  .why-band {
     grid-template-columns: 1fr;
-    gap: 28px;
+    gap: 36px;
   }
 
-  .home-experience {
-    padding-top: 48px;
+  .workbench-band {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .he-shot-inner {
+    padding-top: 36px;
   }
 }
 
 @media (max-width: 768px) {
+  .home-experience {
+    padding-top: 56px;
+  }
+
   .stage-controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -381,6 +599,15 @@ const activeStage = computed(() => stages[activeIndex.value])
 
   .stage-detail h3 {
     font-size: 1.25rem;
+  }
+
+  .why-band,
+  .workbench-band {
+    padding-bottom: 56px;
+  }
+
+  .he-shot-backdrop {
+    display: none;
   }
 }
 

@@ -16,8 +16,9 @@ import { computed, onMounted, ref } from 'vue'
 
 const RELEASES_PAGE = 'https://github.com/PinableAgents/pinable.cc/releases'
 
+const props = defineProps({ startExpanded: { type: Boolean, default: false } })
 const feed = ref(null)
-const expanded = ref(false)
+const expanded = ref(props.startExpanded)
 
 /** Every entry we can offer, in a stable display order. */
 const TARGETS = [
@@ -111,6 +112,20 @@ const alternatives = computed(() =>
     : available.value,
 )
 
+const alternativeGroups = computed(() => {
+  const groups = [
+    ['macOS', 'mac'],
+    ['Windows', 'windows'],
+    ['Linux', 'linux'],
+  ]
+  return groups
+    .map(([label, platform]) => ({
+      label,
+      items: alternatives.value.filter((target) => target.platform === platform),
+    }))
+    .filter((group) => group.items.length)
+})
+
 onMounted(async () => {
   visitorPlatform.value = detectPlatform()
 
@@ -125,7 +140,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="hero-downloads">
+  <div id="download" class="hero-downloads">
     <div class="hd-row">
       <a class="hd-primary" :href="primaryUrl" rel="noreferrer">
         <span class="hd-primary-label">{{ primaryLabel }}</span>
@@ -144,12 +159,15 @@ onMounted(async () => {
       </button>
     </div>
 
-    <ul v-if="expanded" class="hd-list">
-      <li v-for="target in alternatives" :key="target.label">
-        <a :href="urlFor(target)" rel="noreferrer">{{ target.label }}</a>
-        <span class="hd-list-hint">{{ target.hint }}</span>
-      </li>
-    </ul>
+    <div v-if="expanded" class="hd-list">
+      <section v-for="group in alternativeGroups" :key="group.label" class="hd-group">
+        <h3>{{ group.label }}</h3>
+        <a v-for="target in group.items" :key="target.label" :href="urlFor(target)" rel="noreferrer">
+          <span>{{ target.label.replace(`${group.label} · `, '') }}</span>
+          <span class="hd-list-hint">{{ target.hint }}</span>
+        </a>
+      </section>
+    </div>
 
     <p v-if="version" class="hd-note">
       <span class="hd-version">{{ version }}</span>
@@ -165,7 +183,7 @@ onMounted(async () => {
 .hero-downloads {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 14px;
   width: 100%;
 }
@@ -173,7 +191,7 @@ onMounted(async () => {
 .hd-row {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
 }
 
@@ -236,20 +254,31 @@ onMounted(async () => {
 }
 
 .hd-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
   width: min(420px, 100%);
   margin: 4px 0 0;
-  padding: 1px;
-  list-style: none;
-  background: var(--vp-c-border);
+  padding: 0;
   border: 1px solid var(--vp-c-border);
   border-radius: var(--pa-radius);
   overflow: hidden;
 }
 
-.hd-list li {
+.hd-group + .hd-group {
+  border-top: 1px solid var(--vp-c-border);
+}
+
+.hd-group h3 {
+  margin: 0;
+  padding: 9px 12px 6px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-3);
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hd-group a {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -260,7 +289,7 @@ onMounted(async () => {
   text-align: left;
 }
 
-.hd-list a {
+.hd-group a {
   color: var(--vp-c-text-1);
   font-size: 0.875rem;
   text-decoration: none;
@@ -268,7 +297,7 @@ onMounted(async () => {
 
 /* Neutral, matching the rest of the site — the accent is reserved for focus
  * rings and in-prose links, not for hover states. */
-.hd-list a:hover {
+.hd-group a:hover {
   color: var(--vp-c-text-1);
   text-decoration: underline;
   text-underline-offset: 3px;

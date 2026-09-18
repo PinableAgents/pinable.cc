@@ -1,38 +1,13 @@
 /**
- * Marketing-page layout vocabulary.
+ * Marketing-page layout vocabulary — Finch-style redesign.
  *
- * These classes are the only styling hooks markdown pages use; `.md` files
- * compose them by hand. Keeping the vocabulary small and semantic means page
- * copy stays editable without touching CSS.
+ * Core layout change: sections with a #panel slot use a two-column split
+ * (text left, panel right), alternating every other section. Sections without
+ * a panel remain full-width.
  *
- * ---------------------------------------------------------------------------
  * WHY EVERY SELECTOR IS PREFIXED WITH `.vp-doc`
- *
- * The default theme ships its prose rules in an *unscoped* global stylesheet
- * (`.vp-doc h2 { border-top: …; margin: 48px 0 16px; letter-spacing: -.02em }`,
- * `.vp-doc ul { padding-left: 1.25rem; list-style: disc }`, `.vp-doc a { color:
- * var(--vp-c-brand-1); text-decoration: underline }`). Those sit at (0,1,1) and
- * a `layout: home` page's markdown body is wrapped in `.vp-doc` too, so they
- * apply here — and they outrank a bare `.landing-title` / `.landing-points` /
- * `.landing-link-button` (0,1,0) regardless of source order. Left alone, every
- * section heading grows a stray hairline, every bullet triad grows disc markers
- * and a 20px indent, and every CTA renders as a blue underlined link.
- *
- * Prefixing lifts each rule to (0,2,0)+, which clears the theme's prose rules
- * including the `.vp-doc li + li` (0,1,2) one. The cost: a `.landing-*` class
- * used *outside* the markdown body will not be styled. Nothing does today —
- * `HeroDownloads` uses its own `.hd-*` vocabulary, and the two components that
- * live outside `.landing-page` (`HomeExperience`, `FeaturesSection`) only borrow
- * `.landing-eyebrow`, which no theme rule targets. If you move a landing class
- * out of `.vp-doc`, give it an explicitly escaped rule rather than deleting the
- * prefix here.
- * ---------------------------------------------------------------------------
- *
- * Typographic note: headings here set `letter-spacing: 0`. The reference site
- * uses negative tracking and uppercasing, both of which are Latin-letterform
- * devices — Han characters already carry their own sidebearings, and uppercase
- * is a no-op on them. Tracking is therefore reserved for the all-Latin mono
- * eyebrows via .landing-eyebrow.
+ * The default theme ships prose rules at (0,1,1). Prefixing lifts our rules
+ * to (0,2,0)+, which overrides them without !important.
  */
 
 /* ========================================
@@ -44,24 +19,53 @@
   padding: 0 0 96px;
 }
 
-/* Sections are separated by a hairline, not by cards.
- *
- * `scroll-margin-top` is what SectionRail's anchors land on: the nav is fixed
- * and overlays the top of the page, so without it a jumped-to heading ends up
- * underneath the nav bar. The rail's own READ_LINE (140px) is deliberately
- * larger than this offset, so a section is marked active the moment it lands. */
 .vp-doc .landing-section,
 .vp-doc .features-section {
   scroll-margin-top: calc(var(--vp-nav-height) + 32px);
 }
 
 .vp-doc .landing-section {
-  padding: 72px 0;
+  padding: 96px 0;
   border-top: 1px solid var(--vp-c-border);
 }
 
 .vp-doc .landing-section:first-child {
   border-top: none;
+}
+
+/* ========================================
+   Split layout — Finch-style side-by-side
+   ======================================== */
+.vp-doc .landing-section--split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 72px;
+  align-items: center;
+}
+
+/* Alternate: even split sections flip panel to left side */
+.vp-doc .landing-section--split:nth-child(even) {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+}
+
+.vp-doc .landing-section--split:nth-child(even) .landing-section-content {
+  order: 2;
+}
+
+.vp-doc .landing-section--split:nth-child(even) .landing-panel {
+  order: 1;
+}
+
+/* In split mode the panel sits beside the text, no top margin */
+.vp-doc .landing-section--split .landing-panel {
+  margin-top: 0;
+}
+
+/* In split mode, bullet points become single column */
+.vp-doc .landing-section--split .landing-points {
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin-top: 28px;
 }
 
 /* ========================================
@@ -78,15 +82,12 @@
   color: var(--vp-c-text-3);
 }
 
-/* `20em`, not `ch` — see the note on the hero tagline in docs.css. 22ch is
- * about 12 Han characters, which wrapped most of these headings onto a second
- * line for the sake of two or three characters. The longest heading on either
- * page is 16em, so 20em holds every one of them on a single line. */
 .vp-doc .landing-title {
   margin: 0 0 16px;
   max-width: 20em;
-  font-size: clamp(1.75rem, 3.4vw, 2.75rem);
-  line-height: 1.14;
+  font-family: var(--pa-font-display);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  line-height: 1.16;
   font-weight: 600;
   letter-spacing: 0;
   color: var(--vp-c-text-1);
@@ -95,7 +96,7 @@
 
 .vp-doc .landing-lead {
   margin: 0;
-  max-width: 64ch;
+  max-width: 44ch;
   font-size: 1.0625rem;
   line-height: 1.75;
   color: var(--vp-c-text-2);
@@ -104,10 +105,6 @@
 
 /* ========================================
    Bullet triad
-   ----------------------------------------
-   The reference site's repeated unit: a bold lead-in followed by one plain
-   sentence. The theme's `.vp-doc ul` would otherwise give this a disc marker,
-   a 20px indent and a 16px vertical margin.
    ======================================== */
 .vp-doc .landing-points {
   display: grid;
@@ -134,7 +131,7 @@
 }
 
 /* ========================================
-   Panel — the wide mockup / surface
+   Panel — the screenshot / mockup surface
    ======================================== */
 .vp-doc .landing-panel {
   margin-top: 40px;
@@ -142,6 +139,7 @@
   border-radius: var(--pa-radius-lg);
   background: var(--vp-c-bg-elv);
   overflow: hidden;
+  box-shadow: var(--pa-shadow-lg);
 }
 
 .vp-doc .landing-panel-bar {
@@ -154,6 +152,19 @@
   background: var(--vp-c-bg-soft);
   color: var(--vp-c-text-3);
   font-size: 0.8125rem;
+}
+
+/* macOS-style traffic lights */
+.vp-doc .landing-panel-bar::before {
+  content: '';
+  display: inline-flex;
+  width: 40px;
+  height: 10px;
+  background:
+    radial-gradient(circle, #ff5f57 0 4px, transparent 4px) 0 0 / 12px 10px no-repeat,
+    radial-gradient(circle, #febc2e 0 4px, transparent 4px) 14px 0 / 12px 10px no-repeat,
+    radial-gradient(circle, #28c840 0 4px, transparent 4px) 28px 0 / 12px 10px no-repeat;
+  flex-shrink: 0;
 }
 
 .vp-doc .landing-panel-body {
@@ -216,7 +227,7 @@
 }
 
 /* ========================================
-   Inline monospace — commands, paths, flags
+   Inline monospace
    ======================================== */
 .vp-doc .landing-mono {
   font-family: var(--vp-font-family-mono);
@@ -230,7 +241,7 @@
 }
 
 /* ========================================
-   Chips — status / platform labels
+   Chips
    ======================================== */
 .vp-doc .landing-chips {
   display: flex;
@@ -254,16 +265,13 @@
 
 /* ========================================
    Links and buttons
-   ----------------------------------------
-   `.vp-doc a` (0,1,1) would otherwise paint every one of these brand-blue and
-   underlined — see the header note.
    ======================================== */
 .vp-doc .landing-link-button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 38px;
-  padding: 0 16px;
+  min-height: 40px;
+  padding: 0 18px;
   border: 1px solid var(--vp-c-border);
   border-radius: var(--pa-radius);
   background: transparent;
@@ -290,6 +298,66 @@
   background: var(--vp-c-text-1);
   border-color: var(--vp-c-text-1);
   color: var(--vp-c-neutral-inverse);
+}
+
+/* ========================================
+   Testimonials — user quote grid
+   ======================================== */
+.vp-doc .landing-quotes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 40px;
+  padding: 0;
+  list-style: none;
+}
+
+.vp-doc .landing-quote {
+  margin: 0;
+  padding: 24px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--pa-radius-lg);
+  background: var(--vp-c-bg-elv);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: box-shadow var(--pa-transition);
+}
+
+.vp-doc .landing-quote:hover {
+  box-shadow: var(--pa-shadow);
+}
+
+.vp-doc .landing-quote-body {
+  flex: 1;
+  margin: 0;
+  color: var(--vp-c-text-2);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.vp-doc .landing-quote-body::before {
+  content: '\201C';
+  display: block;
+  margin-bottom: 8px;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--vp-c-text-3);
+  font-family: Georgia, serif;
+}
+
+.vp-doc .landing-quote-author {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--vp-c-text-3);
+}
+
+.vp-doc .landing-quote-author strong {
+  display: block;
+  color: var(--vp-c-text-1);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 2px;
 }
 
 /* ========================================
@@ -336,9 +404,101 @@
   margin-top: 8px;
 }
 
+/* Downloads page */
+.vp-doc .downloads-page {
+  width: min(var(--pa-page-width), 100% - var(--pa-gutter));
+  margin: 0 auto;
+  padding: 16px 0 104px;
+}
+
+.vp-doc .downloads-panel {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 56px);
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--pa-radius-lg);
+  background: var(--vp-c-bg-elv);
+}
+
+.vp-doc .downloads-panel-head h2 {
+  margin: 0 0 12px;
+  font-family: var(--pa-font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.12;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+}
+
+.vp-doc .downloads-panel-head p,
+.vp-doc .downloads-note p {
+  margin: 0;
+  color: var(--vp-c-text-2);
+  line-height: 1.75;
+}
+
+.vp-doc .downloads-panel .hero-downloads {
+  align-items: stretch;
+  margin-top: 36px;
+}
+
+.vp-doc .downloads-panel .hd-row {
+  justify-content: flex-start;
+}
+
+.vp-doc .downloads-panel .hd-list {
+  width: 100%;
+}
+
+.vp-doc .downloads-note {
+  max-width: 760px;
+  margin: 48px auto 0;
+  padding-top: 28px;
+  border-top: 1px solid var(--vp-c-border);
+}
+
+.vp-doc .downloads-note a {
+  display: inline-block;
+  margin-top: 14px;
+  color: var(--vp-c-text-1);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.vp-doc .downloads-note a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* ========================================
    Responsive
    ======================================== */
+@media (max-width: 1024px) {
+  .vp-doc .landing-section--split {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .vp-doc .landing-section--split:nth-child(even) {
+    grid-template-columns: 1fr;
+  }
+
+  .vp-doc .landing-section--split:nth-child(even) .landing-section-content {
+    order: 1;
+  }
+
+  .vp-doc .landing-section--split:nth-child(even) .landing-panel {
+    order: 2;
+  }
+
+  .vp-doc .landing-section--split .landing-panel {
+    margin-top: 32px;
+  }
+
+  .vp-doc .landing-section--split .landing-points {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 960px) {
   .vp-doc .landing-points,
   .vp-doc .landing-grid {
@@ -346,7 +506,11 @@
   }
 
   .vp-doc .landing-section {
-    padding: 56px 0;
+    padding: 64px 0;
+  }
+
+  .vp-doc .landing-quotes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -363,6 +527,14 @@
 
   .vp-doc .landing-title {
     font-size: 1.625rem;
+  }
+
+  .vp-doc .landing-section--split .landing-points {
+    grid-template-columns: 1fr;
+  }
+
+  .vp-doc .landing-quotes {
+    grid-template-columns: 1fr;
   }
 }
 

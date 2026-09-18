@@ -1,17 +1,8 @@
 <script setup>
 /**
- * Numbered section shell, the repeated unit of the marketing pages:
- * mono eyebrow → headline → one-sentence lead → body → optional wide panel.
- *
- * Deliberately thin. It reuses the .landing-* vocabulary from landing.css so
- * section styling lives in one place, and page copy stays in markdown where it
- * can be edited without touching a component.
- *
- * Usage from markdown:
- *   <SectionShell eyebrow="01 · Runtime" title="…" lead="…" panel-label="…">
- *     …body…
- *     <template #panel>…</template>
- *   </SectionShell>
+ * Numbered section shell — Finch-style split layout.
+ * When a #panel slot is provided the section becomes a two-column grid:
+ * content left, panel right (alternated by CSS nth-child).
  */
 defineProps({
   eyebrow: { type: String, default: '' },
@@ -22,12 +13,13 @@ defineProps({
 </script>
 
 <template>
-  <section class="landing-section">
-    <span v-if="eyebrow" class="landing-eyebrow">{{ eyebrow }}</span>
-    <h2 v-if="title" class="landing-title">{{ title }}</h2>
-    <p v-if="lead" class="landing-lead">{{ lead }}</p>
-
-    <slot />
+  <section class="landing-section" :class="{ 'landing-section--split': $slots.panel }">
+    <div class="landing-section-content">
+      <span v-if="eyebrow" class="landing-eyebrow">{{ eyebrow }}</span>
+      <h2 v-if="title" class="landing-title">{{ title }}</h2>
+      <p v-if="lead" class="landing-lead">{{ lead }}</p>
+      <slot />
+    </div>
 
     <div v-if="$slots.panel" class="landing-panel">
       <div v-if="panelLabel" class="landing-panel-bar">

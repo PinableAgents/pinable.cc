@@ -7,9 +7,7 @@ export default defineConfig({
   lang: 'zh-CN',
   base: '/',
 
-  // Dark by default, matching the desktop app's own neutral dark palette.
-  // 'dark' (not 'force-dark') keeps the light theme available via the toggle.
-  appearance: 'dark',
+  appearance: 'light',
 
   cleanUrls: true,
   ignoreDeadLinks: true,
@@ -19,7 +17,7 @@ export default defineConfig({
     ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }],
     ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
     ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
-    ['link', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap' }],
+    ['link', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@500;600;700&display=swap' }],
     ['script', { async: '', src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3137049467355939', crossorigin: 'anonymous' }],
   ],
 
@@ -29,8 +27,11 @@ export default defineConfig({
 
     nav: [
       { text: '首页', link: '/' },
-      { text: '产品', link: '/about' },
+      { text: '设计理念', link: '/#experience' },
+      { text: '功能', link: '/#capabilities' },
+      { text: '文档', link: '/about' },
       { text: '联系', link: '/contact' },
+      { text: '下载', link: '/downloads' },
     ],
 
     sidebar: {

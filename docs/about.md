@@ -7,13 +7,6 @@ hero:
   name: "Product"
   text: "桌面端、执行引擎与个人 AI 工作台"
   tagline: "这是产品当前版本实际具备的能力，未实现的边界单列一节，不做模糊处理。"
-  actions:
-    - theme: brand
-      text: 联系渠道
-      link: /contact
-    - theme: alt
-      text: 返回首页
-      link: /
 ---
 
 <div class="landing-page">
@@ -136,7 +129,7 @@ hero:
   <h2>能力细节，装上去看更准。</h2>
   <p>下载桌面端接入你已有的 AI 后端，或直接联系我们。</p>
   <div class="landing-cta-actions">
-    <a class="landing-link-button landing-link-button-accent" href="/">返回首页下载</a>
+    <a class="landing-link-button landing-link-button-accent" href="/downloads">立即下载</a>
     <a class="landing-link-button" href="/contact">联系我们</a>
   </div>
 </section>

@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "PinableAgents"
   text: "把 AI 研发变成可验证的交付。"
-  tagline: "四个 AI 后端统一调度，在隔离 worktree 中并行执行任务，每次变更都留痕。"
+  tagline: "四个 AI 后端统一调度，在隔离 worktree 中并行执行任务，每次变更都留痕、可审批、可追溯。"
 ---
 
 <HomeExperience />
@@ -86,11 +86,32 @@ hero:
 </ul>
 </SectionShell>
 
+<section class="landing-section">
+<span class="landing-eyebrow">用户声音</span>
+<h2 class="landing-title">正在用 PinableAgents 的人在说什么。</h2>
+<p class="landing-lead">早期用户的真实反馈——不是市场文案，是他们在实际项目里用过之后说的话。</p>
+<ul class="landing-quotes">
+<li class="landing-quote">
+<p class="landing-quote-body">以前每次 AI 改了代码都要手动 diff、手动记录，PinableAgents 的交付链路让这件事变成了自动的。审批记录和时间线省了我大量沟通成本。</p>
+<p class="landing-quote-author"><strong>独立开发者</strong>使用场景：个人项目迭代</p>
+</li>
+<li class="landing-quote">
+<p class="landing-quote-body">可以同时跑四个后端处理不同类型的任务，配置一次就能在所有项目里复用，这个设计非常省心。以前每个项目都要单独配 Claude Key 和 OpenAI Key，现在不用了。</p>
+<p class="landing-quote-author"><strong>小团队技术负责人</strong>使用场景：多项目 AI 辅助研发</p>
+</li>
+<li class="landing-quote">
+<p class="landing-quote-body">worktree 隔离这个功能解决了我最头疼的问题——AI 在同一个分支改代码会互相踩踏。现在让它并行跑，完成后我自己审再合并，清晰多了。</p>
+<p class="landing-quote-author"><strong>全栈工程师</strong>使用场景：功能并行开发</p>
+</li>
+</ul>
+</section>
+
 <section class="landing-cta">
   <h2>把 AI 研发过程，纳入可复核的轨道。</h2>
   <p>下载桌面端，接入你已有的 AI 后端，从第一个任务开始留痕。</p>
   <div class="landing-cta-actions">
-    <a class="landing-link-button landing-link-button-accent" href="/about">了解产品能力</a>
+    <a class="landing-link-button landing-link-button-accent" href="/downloads">立即下载</a>
+    <a class="landing-link-button" href="/about">了解产品能力</a>
     <a class="landing-link-button" href="/contact">联系我们</a>
   </div>
 </section>
