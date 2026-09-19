@@ -45,10 +45,6 @@ const activeStage = computed(() => stages[activeIndex.value])
   <!-- Hero product shot band -->
   <div class="he-shot-band">
     <div class="he-shot-inner">
-      <div class="he-shot-backdrop">
-        <div class="he-shot-panel he-shot-panel--left"></div>
-        <div class="he-shot-panel he-shot-panel--right"></div>
-      </div>
       <div class="he-shot-card">
         <div class="he-shot-card-bar">
           <span class="he-shot-traffic"></span>
@@ -180,43 +176,23 @@ const activeStage = computed(() => stages[activeIndex.value])
   overflow: hidden;
 }
 
+/* No backdrop panel behind the shot — the card is the only surface here.
+ *
+ * An earlier take put a second, larger surface behind it (first two panels in
+ * different tokens, then one mat spanning the band). Both read as a stray
+ * rectangle: the palette is achromatic enough that a second surface is only
+ * ~10/255 off the page, so it registers as a smudge rather than as a designed
+ * layer, and a rectangle that is neither the card's size nor the band's width
+ * has nothing to line up with. The card's own border and shadow already carry
+ * the separation; a second empty surface competes with the screenshot. */
 .he-shot-inner {
-  position: relative;
   width: min(var(--pa-page-width), 100% - var(--pa-gutter));
   margin: 0 auto;
   padding: 48px 0 0;
 }
 
-/* Two colored backdrop panels — subtle on achromatic palette */
-.he-shot-backdrop {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  height: 55%;
-  display: flex;
-  pointer-events: none;
-}
-
-.he-shot-panel {
-  flex: 1;
-  border-radius: var(--pa-radius-lg) var(--pa-radius-lg) 0 0;
-}
-
-.he-shot-panel--left {
-  background: var(--vp-c-bg-soft);
-  border-right: 1px solid var(--vp-c-border);
-}
-
-.he-shot-panel--right {
-  background: var(--vp-c-bg-alt);
-}
-
 /* The floating product screenshot card */
 .he-shot-card {
-  position: relative;
-  z-index: 1;
   max-width: 880px;
   margin: 0 auto;
   border: 1px solid var(--vp-c-border);
@@ -604,10 +580,6 @@ const activeStage = computed(() => stages[activeIndex.value])
   .why-band,
   .workbench-band {
     padding-bottom: 56px;
-  }
-
-  .he-shot-backdrop {
-    display: none;
   }
 }
 
