@@ -81,7 +81,7 @@ hero:
 >
 <ul class="landing-points">
 <li><strong>a2ui 独立界面</strong>当前仅支持 Desktop 托管任务，独立浏览器界面尚未实现。</li>
-<li><strong>PinableHoney 独立模式</strong>仅支持带 API Key 的 OpenAI / Anthropic 兼容端点，暂不支持 OAuth、插件、子 Agent 与技能市场。</li>
+<li><strong>PinableAI 独立模式</strong>仅支持带 API Key 的 OpenAI / Anthropic 兼容端点，暂不支持 OAuth、插件、子 Agent 与技能市场。</li>
 <li><strong>后端能力差异</strong>Pi 与 Antigravity 暂不声明支持内置 MCP 与 A2UI 交互界面。</li>
 </ul>
 </SectionShell>

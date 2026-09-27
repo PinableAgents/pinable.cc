@@ -29,7 +29,7 @@ hero:
 <ul class="landing-points">
 <li><strong>配置集中</strong><code class="landing-mono">models.json</code> 与 <code class="landing-mono">agents/*.md</code> 定义可用的模型与 Agent 角色，所有项目共用一份。</li>
 <li><strong>数据自持</strong>任务、交付与经验分别落在 <code class="landing-mono">data/</code>、<code class="landing-mono">delivery/</code>、<code class="landing-mono">experience/</code> 下的本地数据库。</li>
-<li><strong>四个命令行</strong><code class="landing-mono">$PINABLE_HOME/bin</code> 暴露 <code class="landing-mono">pinable</code>、<code class="landing-mono">pinable-honey</code>、<code class="landing-mono">codegraph</code>、<code class="landing-mono">cliproxyapi</code>。</li>
+<li><strong>四个命令行</strong><code class="landing-mono">$PINABLE_HOME/bin</code> 暴露 <code class="landing-mono">pinable</code>、<code class="landing-mono">pinable-ai</code>、<code class="landing-mono">codegraph</code>、<code class="landing-mono">cliproxyapi</code>。</li>
 </ul>
 </SectionShell>
 
@@ -120,7 +120,7 @@ hero:
 >
 <ul class="landing-points">
 <li><strong>a2ui 独立界面</strong>目前仅支持 Desktop 托管任务，独立的浏览器界面尚未实现。</li>
-<li><strong>PinableHoney 独立模式</strong>仅支持带 API Key 的 OpenAI / Anthropic 兼容端点，暂不支持 OAuth、插件、子 Agent 与技能市场。</li>
+<li><strong>PinableAI 独立模式</strong>仅支持带 API Key 的 OpenAI / Anthropic 兼容端点，暂不支持 OAuth、插件、子 Agent 与技能市场。</li>
 <li><strong>后端能力差异</strong>Pi 与 Antigravity 暂不声明支持内置 MCP 与 A2UI 交互界面。</li>
 </ul>
 </SectionShell>
