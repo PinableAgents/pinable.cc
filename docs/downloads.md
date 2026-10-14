@@ -20,6 +20,12 @@ hero:
   </section>
 
   <section class="downloads-note">
+    <h2>软件授权与卡密</h2>
+    <p>桌面端授权页面可购买软件授权及授权卡密。授权卡密购买后，先激活本订单的软件授权，再在购买窗口刷新并领取卡密；备货和人工交付状态会单独显示。外部卡密需要按商品说明到第三方服务手动兑换，不会自动导入模型额度。</p>
+    <p>普通外部卡密不含软件授权，可通过购买窗口的「浏览商城其他卡密」入口前往商城登录购买。</p>
+  </section>
+
+  <section class="downloads-note">
     <span class="landing-eyebrow">Release notes</span>
     <p>每个文件都来自同一份发布清单，版本号、文件类型和 SHA-256 校验值保持一致。</p>
     <a href="https://github.com/PinableAgents/pinable.cc/releases" target="_blank" rel="noreferrer">查看全部发布记录 →</a>
