@@ -18,7 +18,7 @@ import { useRoute } from 'vitepress'
  *     re-run on every route change. It does, after `nextTick`, once the new
  *     page's content is in the DOM.
  *
- * Hidden below three sections (so /contact, which has one, gets no rail) and
+ * Hidden below three sections (so short pages get no rail) and
  * below 1280px, where a right-edge rail has nowhere to sit that isn't on top of
  * the content.
  */
