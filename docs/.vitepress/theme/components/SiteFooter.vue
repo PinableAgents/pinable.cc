@@ -5,7 +5,7 @@ const links = [
   { text: '产品', href: '/about' },
   { text: '功能', href: '/#capabilities' },
   { text: '下载', href: '/downloads' },
-  { text: '联系我们', href: '/contact' },
+  { text: '联系我们', href: 'https://github.com/PinableAgents/pinable.cc', rel: 'noreferrer' },
   { text: 'GitHub', href: 'https://github.com/PinableAgents', rel: 'noreferrer' },
 ]
 </script>

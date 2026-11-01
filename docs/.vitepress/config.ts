@@ -30,7 +30,7 @@ export default defineConfig({
       { text: '产品', link: '/about' },
       { text: '功能', link: '/#capabilities' },
       { text: '下载', link: '/downloads' },
-      { text: '联系', link: '/contact' },
+      { text: '联系', link: 'https://github.com/PinableAgents/pinable.cc', target: '_blank', rel: 'noreferrer' },
     ],
 
     sidebar: {

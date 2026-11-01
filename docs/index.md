@@ -117,7 +117,7 @@ hero:
   <div class="landing-cta-actions">
     <a class="landing-link-button landing-link-button-accent" href="/downloads">立即下载</a>
     <a class="landing-link-button" href="/about">了解产品能力</a>
-    <a class="landing-link-button" href="/contact">联系我们</a>
+    <a class="landing-link-button" href="https://github.com/PinableAgents/pinable.cc" target="_blank" rel="noreferrer">联系我们</a>
   </div>
 </section>
 
