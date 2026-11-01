@@ -6,7 +6,7 @@ layout: home
 hero:
   name: "Product"
   text: "桌面端、执行引擎与个人 AI 工作台"
-  tagline: "这是产品当前版本实际具备的能力，未实现的边界单列一节，不做模糊处理。"
+  tagline: "这是产品当前版本实际具备的能力，每一项都对应一个可用的入口或命令。"
 ---
 
 <div class="landing-page">
@@ -136,19 +136,6 @@ hero:
 <template #panel>
 <img src="/assets/functions/8-desktop-integration.png" alt="设置页桌面集成界面" class="landing-shot" loading="lazy">
 </template>
-</SectionShell>
-
-<SectionShell
-  eyebrow="08 · Boundaries"
-  title="边界先说清楚，再谈能力。"
-  lead="以下限制来自仓库当前状态，不是待办宣传。它们会在后续版本中改变，但此刻就是这样。"
->
-<ul class="landing-points">
-<li><strong>系统版本</strong>macOS 版需要 macOS 12 或更高版本。</li>
-<li><strong>桌面集成仅限 macOS</strong>菜单栏常驻、系统通知、独立窗口、全局快捷键、登录时启动与 <code class="landing-mono">pinable://</code> 链接暂未在 Windows 版提供。</li>
-<li><strong>PinableAI 独立模式</strong>仅支持带 API Key 的 OpenAI / Anthropic 兼容端点，暂不支持 OAuth、插件、子 Agent 与技能市场。</li>
-<li><strong>后端能力差异</strong>内置 MCP 目前只接入 codex 与 claude，Pi 与 Antigravity 暂不支持。</li>
-</ul>
 </SectionShell>
 
 <section class="landing-cta">

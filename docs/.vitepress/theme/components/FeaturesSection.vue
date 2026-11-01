@@ -76,7 +76,7 @@ const features = [
       <span class="landing-eyebrow">Capabilities</span>
       <h2 id="features-title">能力清单，按它实际所在的位置排列。</h2>
       <p>
-        下面每一条都对应产品里一个真实可用的入口或命令。没有占位功能，也没有"即将上线"。
+        下面每一条都对应产品里一个真实可用的入口或命令。
       </p>
     </div>
 

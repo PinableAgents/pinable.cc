@@ -91,18 +91,6 @@ hero:
 </template>
 </SectionShell>
 
-<SectionShell
-  eyebrow="06 · Roadmap"
-  title="还没做完的，也写在这里。"
-  lead="以下边界来自仓库当前状态。与其让用户在下载后发现，不如先说清楚。"
->
-<ul class="landing-points">
-<li><strong>桌面集成仅限 macOS</strong>菜单栏常驻、系统通知、独立窗口与全局快捷键暂未在 Windows 版提供。</li>
-<li><strong>PinableAI 独立模式</strong>仅支持带 API Key 的 OpenAI / Anthropic 兼容端点，暂不支持 OAuth、插件、子 Agent 与技能市场。</li>
-<li><strong>后端能力差异</strong>内置 MCP 目前只接入 codex 与 claude，Pi 与 Antigravity 暂不支持。</li>
-</ul>
-</SectionShell>
-
 <section class="landing-section">
 <span class="landing-eyebrow">用户声音</span>
 <h2 class="landing-title">正在用 PinableAgents 的人在说什么。</h2>
