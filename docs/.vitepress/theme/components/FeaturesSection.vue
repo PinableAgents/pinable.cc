@@ -67,6 +67,26 @@ const features = [
     title: 'A2A 与外部接入',
     details: '以 Agent Card 与访问凭据对外暴露能力，并发与授权范围可独立控制。',
   },
+  {
+    group: 'Desktop',
+    title: '菜单栏常驻',
+    details: 'macOS 上关闭主窗口只隐藏到菜单栏，后台任务不中断；可开启登录时启动与 ⌃⌥P 全局唤出。',
+  },
+  {
+    group: 'Desktop',
+    title: '任务完成通知',
+    details: '主窗口不在前台时，任务完成发系统通知并在 Dock 角标计数，点击通知直达对应 Agent 会话。',
+  },
+  {
+    group: 'Desktop',
+    title: '独立查看窗口',
+    details: 'Agent 会话、日志、对话、历史会话与模块/技能文件可在新窗口打开，同一目标只开一个窗口。',
+  },
+  {
+    group: 'Desktop',
+    title: '原生菜单与链接',
+    details: '「前往」菜单提供 ⌘K 命令中心与 ⌘1–7 切页；pinable:// 链接从浏览器或终端直接打开会话。',
+  },
 ]
 </script>
 

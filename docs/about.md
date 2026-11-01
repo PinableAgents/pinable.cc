@@ -114,11 +114,34 @@ hero:
 </SectionShell>
 
 <SectionShell
-  eyebrow="07 · Boundaries"
+  eyebrow="07 · Desktop"
+  title="像原生应用一样待在 macOS 上。"
+  lead="桌面端接入了 macOS 的菜单栏、通知、登录项与 URL 链接。关掉窗口不等于退出，任务跑完会来找你。"
+>
+<ul class="landing-chips">
+<li>⌘K 命令中心</li>
+<li>⌘1–7 切换页面</li>
+<li>⌃⌥P 显示 / 隐藏</li>
+<li>pinable:// 链接</li>
+</ul>
+
+<ul class="landing-points">
+<li><strong>常驻与唤出</strong>关闭主窗口只隐藏到菜单栏，<code class="landing-mono">⌘Q</code> 才退出；设置页「桌面集成」可开启登录时启动和 <code class="landing-mono">⌃⌥P</code> 全局快捷键，默认都关闭。</li>
+<li><strong>完成提醒</strong>主窗口不在前台时，任务完成发系统通知并在 Dock 角标累计未读，点击通知恢复窗口并打开对应 Agent 会话。</li>
+<li><strong>独立窗口</strong>Agent 会话、日志控制台、对话详情、历史会话详情与模块/技能文件可在新窗口打开；进入终端等操作回到主窗口执行。</li>
+<li><strong>链接直达</strong>在浏览器或终端打开 <code class="landing-mono">pinable://agent-session/&lt;id&gt;</code>，应用会恢复主窗口并跳到该会话，冷启动也会在就绪后跳转。</li>
+<li><strong>顺手的细节</strong>记住窗口位置与尺寸；终端右键菜单改为系统原生菜单，粘贴可直接读取其他应用复制的文本、Finder 文件与图片。</li>
+</ul>
+</SectionShell>
+
+<SectionShell
+  eyebrow="08 · Boundaries"
   title="边界先说清楚，再谈能力。"
   lead="以下限制来自仓库当前状态，不是待办宣传。它们会在后续版本中改变，但此刻就是这样。"
 >
 <ul class="landing-points">
+<li><strong>系统版本</strong>macOS 版需要 macOS 12 或更高版本。</li>
+<li><strong>桌面集成仅限 macOS</strong>菜单栏常驻、系统通知、独立窗口、全局快捷键、登录时启动与 <code class="landing-mono">pinable://</code> 链接暂未在 Windows 版提供。</li>
 <li><strong>a2ui 独立界面</strong>目前仅支持 Desktop 托管任务，独立的浏览器界面尚未实现。</li>
 <li><strong>PinableAI 独立模式</strong>仅支持带 API Key 的 OpenAI / Anthropic 兼容端点，暂不支持 OAuth、插件、子 Agent 与技能市场。</li>
 <li><strong>后端能力差异</strong>Pi 与 Antigravity 暂不声明支持内置 MCP 与 A2UI 交互界面。</li>

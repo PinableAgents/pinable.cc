@@ -75,11 +75,24 @@ hero:
 </SectionShell>
 
 <SectionShell
-  eyebrow="05 · Roadmap"
+  eyebrow="05 · Desktop"
+  title="关上窗口，任务照样跑完。"
+  lead="macOS 版桌面端常驻菜单栏。任务在后台跑完会发系统通知，会话和日志可以拆到独立窗口里并排看。"
+>
+<ul class="landing-points">
+<li><strong>常驻菜单栏</strong>关闭主窗口只是隐藏，后台任务与定时任务不中断；在设置中开启后，按 <code class="landing-mono">⌃⌥P</code> 随时唤出。</li>
+<li><strong>完成即通知</strong>主窗口不在前台时，任务完成发系统通知并在 Dock 角标计数，点击通知直接打开对应会话。</li>
+<li><strong>独立窗口</strong>Agent 会话、日志、对话与历史详情可以在新窗口打开，一边看输出一边做别的事。</li>
+</ul>
+</SectionShell>
+
+<SectionShell
+  eyebrow="06 · Roadmap"
   title="还没做完的，也写在这里。"
   lead="以下边界来自仓库当前状态。与其让用户在下载后发现，不如先说清楚。"
 >
 <ul class="landing-points">
+<li><strong>桌面集成仅限 macOS</strong>菜单栏常驻、系统通知、独立窗口与全局快捷键暂未在 Windows 版提供。</li>
 <li><strong>a2ui 独立界面</strong>当前仅支持 Desktop 托管任务，独立浏览器界面尚未实现。</li>
 <li><strong>PinableAI 独立模式</strong>仅支持带 API Key 的 OpenAI / Anthropic 兼容端点，暂不支持 OAuth、插件、子 Agent 与技能市场。</li>
 <li><strong>后端能力差异</strong>Pi 与 Antigravity 暂不声明支持内置 MCP 与 A2UI 交互界面。</li>
