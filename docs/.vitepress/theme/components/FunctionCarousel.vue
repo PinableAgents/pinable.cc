@@ -11,11 +11,14 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
  */
 
 const slides = [
-  { src: '/assets/functions/1-provider.png', alt: 'Provider 与执行引擎配置界面' },
+  { src: '/assets/functions/1-provider.png', alt: 'AI 提供商配置界面' },
   { src: '/assets/functions/2-workflow.png', alt: '工作流列表界面' },
+  { src: '/assets/functions/3-runtime-engines.png', alt: '执行引擎配置界面' },
   { src: '/assets/functions/4-workflow-tasks.png', alt: '工作流任务执行界面' },
-  { src: '/assets/functions/5-teminal.png', alt: '终端执行界面' },
+  { src: '/assets/functions/5-terminal.png', alt: '终端执行界面' },
   { src: '/assets/functions/6-history.png', alt: '历史记录界面' },
+  { src: '/assets/functions/7-agent-session.png', alt: 'Agent 会话详情界面' },
+  { src: '/assets/functions/8-desktop-integration.png', alt: '设置页桌面集成界面' },
 ]
 
 const SWIPE_THRESHOLD_RATIO = 0.14

@@ -13,7 +13,7 @@ hero:
 
 <section class="landing-section">
   <p class="landing-eyebrow">Interface · 界面导览</p>
-  <h2 class="landing-title">五张真实截图，不是渲染图。</h2>
+  <h2 class="landing-title">八张真实截图，不是渲染图。</h2>
   <p class="landing-lead">拖动、点击箭头或使用左右方向键浏览。这是产品当前版本的实际界面。</p>
   <div class="landing-frame">
     <FunctionCarousel />
@@ -63,7 +63,7 @@ hero:
 </ul>
 
 <template #panel>
-<img src="/assets/functions/5-teminal.png" alt="终端执行界面" class="landing-shot" loading="lazy">
+<img src="/assets/functions/5-terminal.png" alt="终端执行界面" class="landing-shot" loading="lazy">
 </template>
 </SectionShell>
 
@@ -117,6 +117,7 @@ hero:
   eyebrow="07 · Desktop"
   title="像原生应用一样待在 macOS 上。"
   lead="桌面端接入了 macOS 的菜单栏、通知、登录项与 URL 链接。关掉窗口不等于退出，任务跑完会来找你。"
+  panel-label="settings / desktop integration"
 >
 <ul class="landing-chips">
 <li>⌘K 命令中心</li>
@@ -132,6 +133,10 @@ hero:
 <li><strong>链接直达</strong>在浏览器或终端打开 <code class="landing-mono">pinable://agent-session/&lt;id&gt;</code>，应用会恢复主窗口并跳到该会话，冷启动也会在就绪后跳转。</li>
 <li><strong>顺手的细节</strong>记住窗口位置与尺寸；终端右键菜单改为系统原生菜单，粘贴可直接读取其他应用复制的文本、Finder 文件与图片。</li>
 </ul>
+
+<template #panel>
+<img src="/assets/functions/8-desktop-integration.png" alt="设置页桌面集成界面" class="landing-shot" loading="lazy">
+</template>
 </SectionShell>
 
 <SectionShell

@@ -24,7 +24,7 @@ hero:
 </ul>
 
 <template #panel>
-<img src="/assets/functions/1-provider.png" alt="Provider 与执行引擎配置界面" class="landing-shot" loading="lazy">
+<img src="/assets/functions/1-provider.png" alt="AI 提供商配置界面" class="landing-shot" loading="lazy">
 </template>
 </SectionShell>
 
@@ -78,12 +78,17 @@ hero:
   eyebrow="05 · Desktop"
   title="关上窗口，任务照样跑完。"
   lead="macOS 版桌面端常驻菜单栏。任务在后台跑完会发系统通知，会话和日志可以拆到独立窗口里并排看。"
+  panel-label="agent session"
 >
 <ul class="landing-points">
 <li><strong>常驻菜单栏</strong>关闭主窗口只是隐藏，后台任务与定时任务不中断；在设置中开启后，按 <code class="landing-mono">⌃⌥P</code> 随时唤出。</li>
 <li><strong>完成即通知</strong>主窗口不在前台时，任务完成发系统通知并在 Dock 角标计数，点击通知直接打开对应会话。</li>
 <li><strong>独立窗口</strong>Agent 会话、日志、对话与历史详情可以在新窗口打开，一边看输出一边做别的事。</li>
 </ul>
+
+<template #panel>
+<img src="/assets/functions/7-agent-session.png" alt="Agent 会话详情界面" class="landing-shot" loading="lazy">
+</template>
 </SectionShell>
 
 <SectionShell
