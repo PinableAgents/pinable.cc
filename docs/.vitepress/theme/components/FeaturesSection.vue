@@ -19,18 +19,13 @@ const features = [
   },
   {
     group: 'Execution',
-    title: '并行任务编排',
-    details: '--parallel 读入 ---TASK--- 块，按 dependencies 排序执行，逐任务指定 workdir、backend 与 skills。',
-  },
-  {
-    group: 'Execution',
-    title: 'Git worktree 隔离',
-    details: '--worktree 让每个任务在自己的 worktree 中执行，互不踩踏，完成后可单独审阅。',
+    title: '并行编排与 worktree 隔离',
+    details: '--parallel 读入 ---TASK--- 块并按 dependencies 排序；--worktree 让每个任务在独立 worktree 中执行。',
   },
   {
     group: 'Execution',
     title: '内置终端与远程服务器',
-    details: '多 Tab PTY 终端，本机与 SSH 服务器统一接入，危险命令有 Guard 规则拦截。',
+    details: '多 Tab PTY 终端，本机与 SSH 服务器统一接入，服务器命令经 Guard 规则检查。',
   },
   {
     group: 'Delivery',
@@ -44,48 +39,33 @@ const features = [
   },
   {
     group: 'Surface',
-    title: '消息网关与定时任务',
-    details: 'telegram、feishu、weixin、weixin_miniapp 四个通道接入，支持后台执行或终端接管。',
-  },
-  {
-    group: 'Surface',
-    title: '内置 MCP 与 CodeGraph',
-    details: 'codegraph 提供 8 个只读代码图谱工具，另有 remote-servers 与 a2ui 开箱可用。',
-  },
-  {
-    group: 'Surface',
-    title: '可安装模块',
-    details: 'do、bugfix、image-gen、video-analysis、a2ui、pinable 六个模块按需安装，支持依赖排序。',
+    title: '消息网关',
+    details: 'telegram、feishu、weixin、weixin_miniapp 四个通道接入，任务可后台执行或转到终端接管。',
   },
   {
     group: 'Surface',
     title: '定时任务与静态站',
-    details: '把周期性工作交给调度器，本机静态站点服务直接对外，无需另起一套工具。',
+    details: '周期性工作交给调度器，本机静态站点服务直接对外，无需另起一套工具。',
   },
   {
     group: 'Surface',
-    title: 'A2A 与外部接入',
-    details: '以 Agent Card 与访问凭据对外暴露能力，并发与授权范围可独立控制。',
+    title: '内置 MCP 与 CodeGraph',
+    details: 'codegraph 提供 8 个只读代码图谱工具，remote-servers 提供远程服务器操作，codex 与 claude 开箱可用。',
+  },
+  {
+    group: 'Surface',
+    title: '可安装模块',
+    details: 'do、bugfix、image-gen、video-analysis、pinable 五个模块按需安装，支持依赖排序。',
+  },
+  {
+    group: 'Surface',
+    title: 'A2A 对外协作',
+    details: '以 Agent Card 对外暴露能力，访问凭据可限定允许访问的项目。',
   },
   {
     group: 'Desktop',
-    title: '菜单栏常驻',
-    details: 'macOS 上关闭主窗口只隐藏到菜单栏，后台任务不中断；可开启登录时启动与 ⌃⌥P 全局唤出。',
-  },
-  {
-    group: 'Desktop',
-    title: '任务完成通知',
-    details: '主窗口不在前台时，任务完成发系统通知并在 Dock 角标计数，点击通知直达对应 Agent 会话。',
-  },
-  {
-    group: 'Desktop',
-    title: '独立查看窗口',
-    details: 'Agent 会话、日志、对话、历史会话与模块/技能文件可在新窗口打开，同一目标只开一个窗口。',
-  },
-  {
-    group: 'Desktop',
-    title: '原生菜单与链接',
-    details: '「前往」菜单提供 ⌘K 命令中心与 ⌘1–7 切页；pinable:// 链接从浏览器或终端直接打开会话。',
+    title: 'macOS 桌面集成',
+    details: '菜单栏常驻、任务完成通知、独立查看窗口、⌘K 命令中心与 pinable:// 链接直达会话。',
   },
 ]
 </script>

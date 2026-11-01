@@ -98,9 +98,8 @@ hero:
 >
 <ul class="landing-points">
 <li><strong>桌面集成仅限 macOS</strong>菜单栏常驻、系统通知、独立窗口与全局快捷键暂未在 Windows 版提供。</li>
-<li><strong>a2ui 独立界面</strong>当前仅支持 Desktop 托管任务，独立浏览器界面尚未实现。</li>
 <li><strong>PinableAI 独立模式</strong>仅支持带 API Key 的 OpenAI / Anthropic 兼容端点，暂不支持 OAuth、插件、子 Agent 与技能市场。</li>
-<li><strong>后端能力差异</strong>Pi 与 Antigravity 暂不声明支持内置 MCP 与 A2UI 交互界面。</li>
+<li><strong>后端能力差异</strong>内置 MCP 目前只接入 codex 与 claude，Pi 与 Antigravity 暂不支持。</li>
 </ul>
 </SectionShell>
 

@@ -102,12 +102,11 @@ hero:
 <li>bugfix 1.5</li>
 <li>video-analysis 2.0</li>
 <li>image-gen 3.1</li>
-<li>a2ui 1.3</li>
 <li>pinable 2.0</li>
 </ul>
 
 <ul class="landing-points">
-<li><strong>三个内置 MCP</strong><code class="landing-mono">codegraph</code>（8 个只读代码检索工具）、<code class="landing-mono">remote-servers</code>、<code class="landing-mono">a2ui</code>。</li>
+<li><strong>两个内置 MCP</strong><code class="landing-mono">codegraph</code>（8 个只读代码检索工具）与 <code class="landing-mono">remote-servers</code>，codex 与 claude 任务自动接入。</li>
 <li><strong>四条网关通道</strong><code class="landing-mono">telegram</code>、<code class="landing-mono">feishu</code>、<code class="landing-mono">weixin</code>、<code class="landing-mono">weixin_miniapp</code>，同一套任务从聊天窗口发起。</li>
 <li><strong>其余出口</strong>终端、定时任务、服务器托管、静态站点发布、A2A 协作与 HealthBuddy 健康检查。</li>
 </ul>
@@ -147,9 +146,8 @@ hero:
 <ul class="landing-points">
 <li><strong>系统版本</strong>macOS 版需要 macOS 12 或更高版本。</li>
 <li><strong>桌面集成仅限 macOS</strong>菜单栏常驻、系统通知、独立窗口、全局快捷键、登录时启动与 <code class="landing-mono">pinable://</code> 链接暂未在 Windows 版提供。</li>
-<li><strong>a2ui 独立界面</strong>目前仅支持 Desktop 托管任务，独立的浏览器界面尚未实现。</li>
 <li><strong>PinableAI 独立模式</strong>仅支持带 API Key 的 OpenAI / Anthropic 兼容端点，暂不支持 OAuth、插件、子 Agent 与技能市场。</li>
-<li><strong>后端能力差异</strong>Pi 与 Antigravity 暂不声明支持内置 MCP 与 A2UI 交互界面。</li>
+<li><strong>后端能力差异</strong>内置 MCP 目前只接入 codex 与 claude，Pi 与 Antigravity 暂不支持。</li>
 </ul>
 </SectionShell>
 
