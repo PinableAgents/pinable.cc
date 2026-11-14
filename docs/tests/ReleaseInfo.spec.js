@@ -108,4 +108,93 @@ describe('ReleaseInfo', () => {
 
     wrapper.unmount()
   })
+
+  it('copies the whole checksum list in SHA256SUMS format', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+    const wrapper = await mountWithFeed(makeFeed())
+
+    const allButton = wrapper.find('.ri-checksums-head .ri-copy')
+    expect(allButton.text()).toBe('复制全部')
+    await allButton.trigger('click')
+    await flushPromises()
+
+    const text = writeText.mock.calls[0][0]
+    const lines = text.split('\n')
+    expect(lines).toHaveLength(7)
+    expect(text.includes('\n\n')).toBe(false)
+    expect(lines[0]).toBe(`${latest.platforms.darwin.sha256}  PinableAgents-mac.dmg`)
+    expect(lines[5]).toBe(
+      `${latest.platforms['linux-core'].sha256}  pinable-linux-core.tar.gz`,
+    )
+    expect(lines[6]).toBe('')
+    expect(allButton.text()).toBe('已复制')
+
+    wrapper.unmount()
+  })
+
+  it('reports a rejected clipboard for the bulk copy', async () => {
+    const writeText = vi.fn().mockRejectedValue(new Error('denied'))
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+    const wrapper = await mountWithFeed(makeFeed())
+
+    const allButton = wrapper.find('.ri-checksums-head .ri-copy')
+    await allButton.trigger('click')
+    await flushPromises()
+
+    expect(allButton.text()).toBe('复制失败')
+
+    wrapper.unmount()
+  })
+
+  it('reports a bulk copy failure when the clipboard is unavailable', async () => {
+    delete navigator.clipboard
+    const wrapper = await mountWithFeed(makeFeed())
+
+    const allButton = wrapper.find('.ri-checksums-head .ri-copy')
+    await allButton.trigger('click')
+    await flushPromises()
+
+    expect(allButton.text()).toBe('复制失败')
+
+    wrapper.unmount()
+  })
+
+  it('copies only the assets that still carry a checksum', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+    const feed = makeFeed()
+    feed.platforms.windows.sha256 = ''
+    const wrapper = await mountWithFeed(feed)
+
+    expect(wrapper.findAll('.ri-row')).toHaveLength(5)
+    await wrapper.find('.ri-checksums-head .ri-copy').trigger('click')
+    await flushPromises()
+
+    const lines = writeText.mock.calls[0][0].split('\n')
+    expect(lines).toHaveLength(6)
+    expect(lines[3]).toBe(
+      `${latest.asset_sha256.windows_exe}  PinableAgents-win.exe`,
+    )
+    expect(lines.at(-2)).toBe(
+      `${latest.platforms['linux-core'].sha256}  pinable-linux-core.tar.gz`,
+    )
+
+    wrapper.unmount()
+  })
+
+  it('does not render the bulk copy button without checksums', async () => {
+    const feed = makeFeed()
+    for (const key of ['darwin', 'darwin-arm64', 'darwin-amd64', 'windows', 'linux-core']) {
+      feed.platforms[key].sha256 = ''
+    }
+    feed.asset_sha256.windows_exe = ''
+    const wrapper = await mountWithFeed(feed)
+
+    expect(wrapper.find('.ri-version').exists()).toBe(true)
+    expect(wrapper.find('.ri-checksums').exists()).toBe(false)
+    expect(wrapper.find('.ri-checksums-head .ri-copy').exists()).toBe(false)
+
+    wrapper.unmount()
+  })
 })

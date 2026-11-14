@@ -85,6 +85,27 @@ export function resolveDownloads(feed) {
   })
 }
 
+/**
+ * Render resolved downloads as SHA256SUMS text: one `<sha256>  <filename>`
+ * line per usable entry, in the same order as `resolveDownloads`. Entries
+ * without a hash or filename are skipped, as are filenames that would break
+ * the line format. The input is never mutated.
+ */
+export function formatChecksums(entries) {
+  if (!Array.isArray(entries)) return ''
+
+  const lines = []
+  for (const entry of entries) {
+    const sha = typeof entry?.sha256 === 'string' ? entry.sha256.trim() : ''
+    const rawName = typeof entry?.assetName === 'string' ? entry.assetName : ''
+    const name = rawName.trim()
+    if (!sha || !name || /[\r\n]/.test(rawName)) continue
+    lines.push(`${sha}  ${name}`)
+  }
+
+  return lines.length ? `${lines.join('\n')}\n` : ''
+}
+
 /** The primary entry for a platform, else its first entry, else null. */
 export function pickRecommended(entries, platform) {
   if (!platform) return null

@@ -4,6 +4,7 @@ import { afterEach, describe, it } from 'node:test'
 import {
   TARGETS,
   assetNameFor,
+  formatChecksums,
   formatReleaseDate,
   loadReleaseFeed,
   parseNotes,
@@ -193,6 +194,72 @@ describe('assetNameFor', () => {
     delete feed.platforms.darwin.asset_name
     const target = TARGETS.find((entry) => entry.key === 'darwin')
     assert.equal(assetNameFor(feed, target), 'PinableAgents-mac.dmg')
+  })
+})
+
+describe('formatChecksums', () => {
+  it('renders the real manifest as a six-line SHA256SUMS list', () => {
+    const text = formatChecksums(resolveDownloads(makeFeed()))
+    const line = (sha, name) => `${sha}  ${name}`
+    const nameFromUrl = (url) => url.split('/').filter(Boolean).pop()
+
+    assert.equal(
+      text,
+      [
+        line(latest.platforms.darwin.sha256, latest.platforms.darwin.asset_name),
+        line(latest.platforms['darwin-arm64'].sha256, latest.platforms['darwin-arm64'].asset_name),
+        line(latest.platforms['darwin-amd64'].sha256, latest.platforms['darwin-amd64'].asset_name),
+        line(latest.platforms.windows.sha256, latest.platforms.windows.asset_name),
+        line(latest.asset_sha256.windows_exe, nameFromUrl(latest.assets.windows_exe)),
+        line(latest.platforms['linux-core'].sha256, latest.platforms['linux-core'].asset_name),
+        '',
+      ].join('\n'),
+    )
+  })
+
+  it('returns an empty string for non-arrays and empty input', () => {
+    assert.equal(formatChecksums(null), '')
+    assert.equal(formatChecksums(undefined), '')
+    assert.equal(formatChecksums('not-an-array'), '')
+    assert.equal(formatChecksums([]), '')
+  })
+
+  it('skips entries without a usable hash or filename', () => {
+    const entries = [
+      { sha256: 'a'.repeat(64), assetName: 'keep.dmg' },
+      { sha256: '', assetName: 'missing-hash.zip' },
+      { sha256: 'b'.repeat(64), assetName: '' },
+      { sha256: 'c'.repeat(64), assetName: 'line\nbreak.zip' },
+      { sha256: 'd'.repeat(64), assetName: 'carriage\rreturn.zip' },
+      { sha256: null, assetName: 'null-hash.zip' },
+      { sha256: 'e'.repeat(64) },
+    ]
+
+    assert.equal(formatChecksums(entries), `${'a'.repeat(64)}  keep.dmg\n`)
+  })
+
+  it('keeps resolveDownloads order and does not mutate the entries', () => {
+    const entries = resolveDownloads(makeFeed())
+    const snapshot = structuredClone(entries)
+    const text = formatChecksums(entries)
+    const lines = text.split('\n')
+
+    assert.deepEqual(entries, snapshot)
+    assert.equal(lines.length, 7)
+    assert.equal(lines.at(-1), '')
+    assert.ok(lines[0].endsWith('  PinableAgents-mac.dmg'))
+    assert.ok(lines.at(-2).endsWith('  pinable-linux-core.tar.gz'))
+    assert.equal(text.includes('\n\n'), false)
+  })
+
+  it('returns an empty string when no entry is usable', () => {
+    assert.equal(
+      formatChecksums([
+        { sha256: '', assetName: 'a.zip' },
+        { sha256: 'b'.repeat(64), assetName: '' },
+      ]),
+      '',
+    )
   })
 })
 

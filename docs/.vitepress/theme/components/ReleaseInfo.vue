@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import {
+  formatChecksums,
   formatReleaseDate,
   loadReleaseFeed,
   parseNotes,
@@ -21,6 +22,7 @@ const feed = ref(null)
 const version = computed(() => feed.value?.version ?? '')
 const releaseDate = computed(() => formatReleaseDate(feed.value))
 const checksums = computed(() => resolveDownloads(feed.value).filter((entry) => entry.sha256))
+const checksumsText = computed(() => formatChecksums(checksums.value))
 
 /** Group the flat note list into paragraph/list blocks, preserving order. */
 const noteBlocks = computed(() => {
@@ -41,27 +43,35 @@ const hasInfo = computed(() =>
 const copied = ref({ key: null, ok: false })
 let copiedTimer = null
 
+const ALL_CHECKSUMS = '@all-checksums'
+
 const keyFor = (entry) => entry.key || entry.asset || entry.label
 
-function copyLabel(entry) {
-  if (copied.value.key !== keyFor(entry)) return '复制'
+function labelFor(key, idle = '复制') {
+  if (copied.value.key !== key) return idle
   return copied.value.ok ? '已复制' : '复制失败'
 }
 
-async function copySha(entry) {
-  try {
-    await navigator.clipboard.writeText(entry.sha256)
-    copied.value = { key: keyFor(entry), ok: true }
-  } catch {
-    // Insecure context or a denied clipboard — report it, never throw.
-    copied.value = { key: keyFor(entry), ok: false }
-  }
-
+function flashCopied(key, ok) {
+  copied.value = { key, ok }
   clearTimeout(copiedTimer)
   copiedTimer = setTimeout(() => {
     copied.value = { key: null, ok: false }
   }, 1500)
 }
+
+async function copyText(key, text) {
+  try {
+    await navigator.clipboard.writeText(text)
+    flashCopied(key, true)
+  } catch {
+    // Insecure context or a denied clipboard — report it, never throw.
+    flashCopied(key, false)
+  }
+}
+
+const copySha = (entry) => copyText(keyFor(entry), entry.sha256)
+const copyAll = () => copyText(ALL_CHECKSUMS, checksumsText.value)
 
 onMounted(async () => {
   feed.value = await loadReleaseFeed()
@@ -91,7 +101,18 @@ onUnmounted(() => clearTimeout(copiedTimer))
     </div>
 
     <div v-if="checksums.length" class="ri-checksums">
-      <p class="ri-subtitle">文件 SHA-256</p>
+      <div class="ri-checksums-head">
+        <p class="ri-subtitle">文件 SHA-256</p>
+        <button
+          v-if="checksumsText"
+          type="button"
+          class="ri-copy"
+          :aria-label="'复制全部文件的 SHA-256 校验清单'"
+          @click="copyAll"
+        >
+          {{ labelFor(ALL_CHECKSUMS, '复制全部') }}
+        </button>
+      </div>
       <div v-for="entry in checksums" :key="keyFor(entry)" class="ri-row">
         <span class="ri-file">{{ entry.assetName }}</span>
         <code class="ri-sha">{{ entry.sha256 }}</code>
@@ -101,7 +122,7 @@ onUnmounted(() => clearTimeout(copiedTimer))
           :aria-label="`复制 ${entry.assetName} 的 SHA-256`"
           @click="copySha(entry)"
         >
-          {{ copyLabel(entry) }}
+          {{ labelFor(keyFor(entry)) }}
         </button>
       </div>
     </div>
@@ -176,8 +197,17 @@ onUnmounted(() => clearTimeout(copiedTimer))
   margin-top: 20px;
 }
 
-.ri-subtitle {
-  margin: 0 0 6px;
+.ri-checksums-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+/* Prefix needed for the same (0,2,0) tie as .ri-title above. */
+.release-info .ri-subtitle {
+  margin: 0;
   font-family: var(--vp-font-family-mono);
   font-size: 0.6875rem;
   font-weight: 500;
@@ -215,8 +245,6 @@ onUnmounted(() => clearTimeout(copiedTimer))
 }
 
 .ri-copy {
-  grid-column: 2;
-  grid-row: 1 / span 2;
   min-height: 28px;
   padding: 0 10px;
   border: 1px solid var(--vp-c-border);
@@ -228,6 +256,11 @@ onUnmounted(() => clearTimeout(copiedTimer))
   white-space: nowrap;
   cursor: pointer;
   transition: background-color var(--pa-transition), border-color var(--pa-transition);
+}
+
+.ri-row .ri-copy {
+  grid-column: 2;
+  grid-row: 1 / span 2;
 }
 
 .ri-copy:hover {
