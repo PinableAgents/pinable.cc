@@ -1,5 +1,6 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
-import latest from '../public/releases/latest.json'
+import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import { afterEach, describe, it } from 'node:test'
 import {
   TARGETS,
   assetNameFor,
@@ -13,23 +14,33 @@ import {
   urlFor,
 } from '../.vitepress/theme/lib/releases.js'
 
+/*
+ * Node's built-in runner only — no vitest and no .vue import — so `node --test`
+ * runs this file on its own, and `npm test` runs it alongside the component
+ * specs. The manifest is read as data because a bare JSON import needs an
+ * import attribute under Node's own ESM loader.
+ */
+const latest = JSON.parse(
+  readFileSync(new URL('../public/releases/latest.json', import.meta.url), 'utf8'),
+)
 const makeFeed = () => structuredClone(latest)
 
 const labelsOf = (entries) => entries.map((entry) => entry.label)
+const originalFetch = globalThis.fetch
 
 afterEach(() => {
-  vi.unstubAllGlobals()
+  globalThis.fetch = originalFetch
 })
 
 describe('resolveDownloads', () => {
   it('returns nothing without a feed', () => {
-    expect(resolveDownloads(null)).toEqual([])
-    expect(resolveDownloads(undefined)).toEqual([])
+    assert.deepEqual(resolveDownloads(null), [])
+    assert.deepEqual(resolveDownloads(undefined), [])
   })
 
   it('resolves every target the real manifest carries, in display order', () => {
     const entries = resolveDownloads(makeFeed())
-    expect(labelsOf(entries)).toEqual([
+    assert.deepEqual(labelsOf(entries), [
       'macOS · Universal',
       'macOS · Apple Silicon',
       'macOS · Intel',
@@ -38,60 +49,59 @@ describe('resolveDownloads', () => {
       'Linux · Core',
     ])
     for (const entry of entries) {
-      expect(entry.url).toMatch(/^https:\/\//)
-      expect(entry.sha256).toMatch(/^[0-9a-f]{64}$/)
-      expect(entry.assetName).not.toBe('')
+      assert.match(entry.url, /^https:\/\//)
+      assert.match(entry.sha256, /^[0-9a-f]{64}$/)
+      assert.notEqual(entry.assetName, '')
     }
   })
 
   it('drops an entry whose platform key is missing', () => {
     const feed = makeFeed()
     delete feed.platforms['linux-core']
-    expect(labelsOf(resolveDownloads(feed))).not.toContain('Linux · Core')
+    assert.ok(!labelsOf(resolveDownloads(feed)).includes('Linux · Core'))
   })
 
   it('drops the macOS entries when their platform keys are missing', () => {
     const feed = makeFeed()
     for (const key of ['darwin', 'darwin-arm64', 'darwin-amd64']) delete feed.platforms[key]
     const labels = labelsOf(resolveDownloads(feed))
-    expect(labels.some((label) => label.startsWith('macOS'))).toBe(false)
-    expect(labels).toContain('Windows · 便携版')
+    assert.equal(labels.some((label) => label.startsWith('macOS')), false)
+    assert.ok(labels.includes('Windows · 便携版'))
   })
 
   it('drops an asset-style entry when its URL is null', () => {
     const feed = makeFeed()
     feed.assets.windows_exe = null
-    expect(labelsOf(resolveDownloads(feed))).not.toContain('Windows · 安装程序')
+    assert.ok(!labelsOf(resolveDownloads(feed)).includes('Windows · 安装程序'))
   })
 
   it('reads asset-style entries from assets / asset_sha256', () => {
     const feed = makeFeed()
     const target = TARGETS.find((entry) => entry.asset === 'windows_exe')
-    expect(urlFor(feed, target)).toBe(feed.assets.windows_exe)
-    expect(shaFor(feed, target)).toBe(feed.asset_sha256.windows_exe)
+    assert.equal(urlFor(feed, target), feed.assets.windows_exe)
+    assert.equal(shaFor(feed, target), feed.asset_sha256.windows_exe)
   })
 
   it('treats every lookup as nullable', () => {
     const target = TARGETS[0]
-    expect(urlFor(null, target)).toBeNull()
-    expect(shaFor(null, target)).toBeNull()
-    expect(assetNameFor(null, target)).toBe('')
-    expect(resolveDownloads({})).toEqual([])
+    assert.equal(urlFor(null, target), null)
+    assert.equal(shaFor(null, target), null)
+    assert.equal(assetNameFor(null, target), '')
+    assert.deepEqual(resolveDownloads({}), [])
   })
 })
 
 describe('assetNameFor', () => {
   it('uses the manifest filename when present', () => {
-    const feed = makeFeed()
     const target = TARGETS.find((entry) => entry.key === 'darwin')
-    expect(assetNameFor(feed, target)).toBe('PinableAgents-mac.dmg')
+    assert.equal(assetNameFor(makeFeed(), target), 'PinableAgents-mac.dmg')
   })
 
   it('falls back to the URL basename', () => {
     const feed = makeFeed()
     delete feed.platforms.darwin.asset_name
     const target = TARGETS.find((entry) => entry.key === 'darwin')
-    expect(assetNameFor(feed, target)).toBe('PinableAgents-mac.dmg')
+    assert.equal(assetNameFor(feed, target), 'PinableAgents-mac.dmg')
   })
 })
 
@@ -99,83 +109,87 @@ describe('pickRecommended', () => {
   const entries = resolveDownloads(makeFeed())
 
   it('prefers the platform primary', () => {
-    expect(pickRecommended(entries, 'mac').key).toBe('darwin')
+    assert.equal(pickRecommended(entries, 'mac').key, 'darwin')
   })
 
   it('falls back to the first entry of that platform', () => {
     const withoutPrimary = entries.filter((entry) => entry.key !== 'darwin')
-    expect(pickRecommended(withoutPrimary, 'mac').key).toBe('darwin-arm64')
+    assert.equal(pickRecommended(withoutPrimary, 'mac').key, 'darwin-arm64')
   })
 
   it('returns null for a platform with no entries or no hint', () => {
-    expect(pickRecommended(entries, 'beos')).toBeNull()
-    expect(pickRecommended(entries, null)).toBeNull()
-    expect(pickRecommended([], 'mac')).toBeNull()
+    assert.equal(pickRecommended(entries, 'beos'), null)
+    assert.equal(pickRecommended(entries, null), null)
+    assert.equal(pickRecommended([], 'mac'), null)
   })
 })
 
 describe('parseNotes', () => {
   it('splits the real notes into one paragraph and four list items', () => {
     const notes = parseNotes(latest.notes)
-    expect(notes.filter((item) => item.type === 'p')).toHaveLength(1)
-    expect(notes.filter((item) => item.type === 'li')).toHaveLength(4)
-    expect(notes[0].text).toContain('备份数据')
-    expect(notes[1].text).not.toMatch(/^- /)
+    assert.equal(notes.filter((item) => item.type === 'p').length, 1)
+    assert.equal(notes.filter((item) => item.type === 'li').length, 4)
+    assert.ok(notes[0].text.includes('备份数据'))
+    assert.doesNotMatch(notes[1].text, /^- /)
   })
 
   it('returns nothing for empty or non-string notes', () => {
-    expect(parseNotes('')).toEqual([])
-    expect(parseNotes('   ')).toEqual([])
-    expect(parseNotes(undefined)).toEqual([])
+    assert.deepEqual(parseNotes(''), [])
+    assert.deepEqual(parseNotes('   '), [])
+    assert.deepEqual(parseNotes(undefined), [])
   })
 })
 
 describe('formatReleaseDate', () => {
   it('reads published_at first', () => {
-    expect(formatReleaseDate(latest)).toBe('2026-10-11')
+    assert.equal(formatReleaseDate(latest), '2026-10-11')
   })
 
   it('falls back through pub_date and released_at', () => {
-    expect(formatReleaseDate({ pub_date: '2026-10-11T09:25:56Z' })).toBe('2026-10-11')
-    expect(formatReleaseDate({ released_at: '2026-10-11 17:25:56 +0800' })).toBe('2026-10-11')
+    assert.equal(formatReleaseDate({ pub_date: '2026-10-11T09:25:56Z' }), '2026-10-11')
+    assert.equal(formatReleaseDate({ released_at: '2026-10-11 17:25:56 +0800' }), '2026-10-11')
   })
 
   it('returns an empty string when nothing parses', () => {
-    expect(formatReleaseDate({ published_at: 'not-a-date' })).toBe('')
-    expect(formatReleaseDate(null)).toBe('')
+    assert.equal(formatReleaseDate({ published_at: 'not-a-date' }), '')
+    assert.equal(formatReleaseDate(null), '')
   })
 })
 
 describe('shortSha', () => {
   it('truncates to eight characters', () => {
-    expect(shortSha('5574a89ebedf46b43cc715c0796a1fc73b7d36a8895974531df4e3d1e191d3f3')).toBe(
-      '5574a89e',
-    )
+    assert.equal(shortSha('5574a89ebedf46b43cc715c0796a1fc73b7d36a8895974531df4e3d1e191d3f3'), '5574a89e')
   })
 
   it('handles a missing value', () => {
-    expect(shortSha(null)).toBe('')
-    expect(shortSha('')).toBe('')
+    assert.equal(shortSha(null), '')
+    assert.equal(shortSha(''), '')
   })
 })
 
 describe('loadReleaseFeed', () => {
   it('shares one request between concurrent callers', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ version: 'v' }) })
-    vi.stubGlobal('fetch', fetchMock)
+    const payload = { version: 'v' }
+    let calls = 0
+    globalThis.fetch = async () => {
+      calls += 1
+      return { ok: true, json: async () => payload }
+    }
 
     const [first, second] = await Promise.all([loadReleaseFeed(), loadReleaseFeed()])
 
-    expect(fetchMock).toHaveBeenCalledTimes(1)
-    expect(first).toEqual({ version: 'v' })
-    expect(second).toEqual(first)
+    assert.equal(calls, 1)
+    assert.deepEqual(first, payload)
+    assert.deepEqual(second, first)
   })
 
   it('resolves null when the request fails or the response is not ok', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')))
-    expect(await loadReleaseFeed()).toBeNull()
+    globalThis.fetch = async () => {
+      throw new Error('offline')
+    }
+    assert.equal(await loadReleaseFeed(), null)
 
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, json: async () => ({}) }))
-    expect(await loadReleaseFeed()).toBeNull()
+    globalThis.fetch = async () => ({ ok: false, json: async () => ({}) })
+    assert.equal(await loadReleaseFeed(), null)
   })
 })

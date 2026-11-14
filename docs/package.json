@@ -6,7 +6,7 @@
     "dev": "vitepress dev",
     "build": "vitepress build",
     "preview": "vitepress preview",
-    "test": "vitest run"
+    "test": "vitest run && node --test"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.4",

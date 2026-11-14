@@ -18,10 +18,12 @@ npm ci          # install (CI uses npm ci, not npm install)
 npm run dev     # vitepress dev — local dev server
 npm run build   # vitepress build → docs/.vitepress/dist
 npm run preview # serve the built output
-npm test        # vitest run — unit/component tests under docs/tests
+npm test        # vitest run && node --test — component specs + release-feed tests under docs/tests
 ```
 
 There is no linter or formatter configured. `npm test` covers the release-feed logic and the components that consume it; `vitepress build` is the only check for everything else — run both before considering a change done, since the build resolves the markdown, sidebar links, and Vue components. CLI and CI both run the suite before building.
+
+The suite has two runners on purpose. `tests/*.spec.js` import `.vue` files, so they need vitest and its Vue transform (`docs/vitest.config.js` includes only those). `tests/*.test.js` is plain Node and uses `node:test`/`node:assert`, so `node --test` — the runner a repository check is likely to reach for — runs it without any transform; that is also why it reads the manifest with `readFileSync` instead of importing the JSON.
 
 VitePress 1.6.x is pinned via `docs/package-lock.json`; Node 20 in CI.
 
