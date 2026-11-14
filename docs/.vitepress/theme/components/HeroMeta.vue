@@ -1,14 +1,26 @@
 <script setup>
+import {
+  CORE_PLATFORMS,
+  DESKTOP_PLATFORMS,
+  EXPERIMENTAL_BACKENDS,
+  STABLE_BACKENDS,
+} from '../lib/productFacts.js'
+
 /**
  * Monospace capability strip under the hero.
  *
  * Static by design — every claim here is a fact about the shipped product
- * (the four backends in pinable/backend/registry.go, the three artifact
+ * (the four stable backends in pinable/internal/backend/registry.go, the three artifact
  * families in the release manifest, and the PINABLE_HOME run root), so it
  * needs no fetch and renders identically on server and client.
  */
-const backends = ['codex', 'claude', 'antigravity', 'pi']
-const platforms = ['macOS', 'Windows', 'Linux']
+const platforms = [
+  ...DESKTOP_PLATFORMS,
+  ...CORE_PLATFORMS.map((platform) => `${platform} 运行包`),
+]
+const experimentalEngineLabel = EXPERIMENTAL_BACKENDS
+  .map((backend) => (backend === 'deepseek' ? 'DeepSeek' : backend))
+  .join('、')
 </script>
 
 <template>
@@ -16,7 +28,8 @@ const platforms = ['macOS', 'Windows', 'Linux']
     <div class="hm-row">
       <span class="hm-label">统一调度</span>
       <ul class="hm-backends">
-        <li v-for="backend in backends" :key="backend">{{ backend }}</li>
+        <li v-for="backend in STABLE_BACKENDS" :key="backend">{{ backend }}</li>
+        <li class="hm-note">＋ {{ experimentalEngineLabel }} 实验引擎（首期限定时任务）</li>
       </ul>
     </div>
     <div class="hm-row hm-row-muted">
@@ -79,6 +92,12 @@ const platforms = ['macOS', 'Windows', 'Linux']
   border-radius: var(--pa-radius-sm);
   background: var(--vp-c-bg-soft);
   color: var(--vp-c-text-2);
+}
+
+.hm-backends li.hm-note {
+  border-style: dashed;
+  background: transparent;
+  color: var(--vp-c-text-3);
 }
 
 .hm-sep {

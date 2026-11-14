@@ -1,7 +1,9 @@
 <script setup>
 import { computed, ref } from 'vue'
+import { DELIVERY_STAGES, EXPERIMENTAL_BACKENDS, STABLE_BACKENDS } from '../lib/productFacts.js'
 
 const activeIndex = ref(0)
+const deliveryChain = DELIVERY_STAGES.join(' → ')
 
 const stages = [
   {
@@ -10,7 +12,7 @@ const stages = [
     kicker: 'Configure',
     signal: 'models.json · agents/*.md',
     body: '在统一运行根 $PINABLE_HOME 下接入 Provider 与执行引擎，安装 Skill、Workflow、MCP。配置一次，之后所有任务共用。',
-    points: ['4 个后端', 'models.json', 'managed-modules/'],
+    points: [`${STABLE_BACKENDS.length} 个内置后端`, 'models.json', 'managed-modules/'],
   },
   {
     step: '02',
@@ -24,8 +26,8 @@ const stages = [
     step: '03',
     title: '交付',
     kicker: 'Deliver',
-    signal: 'validate → approve → evidence',
-    body: '变更走可验证交付链路：提交、校验、执行、审批，每一步留下证据与时间线，AI 产出的改动有据可查。',
+    signal: deliveryChain,
+    body: '提交后先在隔离 worktree 里实现，验证不通过就回到实现；评审与合入由宿主执行，证据与时间线全程留痕。',
     points: ['审批留痕', '证据沉淀', '时间线回放'],
   },
   {
@@ -78,7 +80,8 @@ const activeStage = computed(() => stages[activeIndex.value])
           </li>
           <li>
             <strong>不是孤岛</strong>
-            四个 AI 后端统一调度，配置一次、所有项目共用，不需要为每个工具单独维护一套配置。
+            {{ STABLE_BACKENDS.length }} 个内置 AI 后端统一调度，配置一次、所有项目共用，不需要为每个工具单独维护一套配置。
+            另有 DeepSeek 实验引擎，首期只在定时任务页执行。
           </li>
           <li>
             <strong>不是实验</strong>
@@ -149,8 +152,8 @@ const activeStage = computed(() => stages[activeIndex.value])
     <section class="impact-strip" aria-label="运行事实">
       <div class="impact-item">
         <span class="impact-label">统一调度</span>
-        <strong>4 <em>个 AI 后端</em></strong>
-        <p>codex · claude · antigravity · pi</p>
+        <strong>{{ STABLE_BACKENDS.length }} <em>个内置 AI 后端</em></strong>
+        <p>{{ STABLE_BACKENDS.join(' · ') }} · ＋ {{ EXPERIMENTAL_BACKENDS.join(' · ') }}（实验）</p>
       </div>
       <div class="impact-item">
         <span class="impact-label">并行编排</span>

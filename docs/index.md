@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "PinableAgents"
   text: "把 AI 研发变成可验证的交付。"
-  tagline: "四个 AI 后端统一调度，在隔离 worktree 中并行执行任务，每次变更都留痕、可审批、可追溯。"
+  tagline: "四个内置 AI 后端统一调度，在隔离 worktree 中并行执行任务，每次变更都留痕、可审批、可追溯。"
 ---
 
 <HomeExperience />
@@ -14,14 +14,14 @@ hero:
 <SectionShell
   eyebrow="01 · Runtime"
   rail-label="运行时"
-  title="四个 AI 后端，一个控制面。"
-  lead="不必为每个 AI 工具各维护一套配置。Provider、模型与执行引擎集中在一处，按任务决定这一次用哪个。"
+  title="四个内置 AI 后端，一个控制面。"
+  lead="不必为每个 AI 工具各维护一套配置。Provider、模型与执行引擎集中在一处，按任务决定这一次用哪个。另有 DeepSeek 实验引擎，首期只在定时任务页执行。"
   panel-label="provider / runtime engines / agent models"
 >
 <ul class="landing-points">
 <li><strong>逐任务选后端</strong><code class="landing-mono">--backend</code> 与 <code class="landing-mono">--model</code> 可按任务指定，同一批任务里混用不同后端。</li>
 <li><strong>配置只写一次</strong>Provider、模型与 Agent 定义都落在 <code class="landing-mono">$PINABLE_HOME</code>，所有项目共用一份。</li>
-<li><strong>算力池随包可用</strong>内置 AI 兼容网关统一出口，密钥与账号不必散落到每个项目。</li>
+<li><strong>算力池按需启用</strong>受管 CLIProxyAPI 提供本地统一出口，密钥与账号不必散落到每个项目。</li>
 </ul>
 
 <template #panel>
@@ -51,11 +51,11 @@ hero:
   eyebrow="03 · Delivery"
   rail-label="交付"
   title="AI 的改动，走完审批才落地。"
-  lead="变更走一条固定的交付链路：提交、校验、执行、审批、证据、时间线。每一步都留痕，随时可以回看当时发生了什么。"
+  lead="变更走一条固定的五阶段链路：规划 → 实现 ⇄ 验证 → 评审 → 合入。每一步都留痕，随时可以回看当时发生了什么。"
   panel-label="history"
 >
 <ul class="landing-points">
-<li><strong>六段链路</strong><code class="landing-mono">submit</code> → <code class="landing-mono">validate</code> → <code class="landing-mono">start</code> → <code class="landing-mono">approve</code> → <code class="landing-mono">evidence</code> → <code class="landing-mono">timeline</code>。</li>
+<li><strong>五段推进</strong>规划 → 实现 ⇄ 验证 → 评审 → 合入；评审与合入由宿主执行。</li>
 <li><strong>审批留痕</strong>谁在什么时候批准了哪一次变更，记录在案，可追溯。</li>
 <li><strong>证据沉淀</strong>检查结果与产出物随交付一起保存，不是聊完就散。</li>
 </ul>
@@ -66,7 +66,21 @@ hero:
 </SectionShell>
 
 <SectionShell
-  eyebrow="04 · Experience"
+  eyebrow="04 · Projects"
+  rail-label="项目"
+  title="长期目标，拆成可验收的交付。"
+  lead="同一目标可以连续产生多次交付；事项保留问题、答复、拍板与发布进展，自动规则决定哪些工作流能自己接活。"
+>
+<ul class="landing-points">
+<li><strong>事项跨多次交付</strong>同一目标下的交付、问题与发布进展留在同一事项里，后续交付继续复用已验收的上下文。</li>
+<li><strong>四种完成终点</strong>本地验收、推送、变更请求与上线各自保存证据，完成一项不代表其他终点自动完成。</li>
+<li><strong>交付模板</strong>验收标准里以 <code class="landing-mono">$ </code> 开头的行就是验证命令，模板执行时按它检查结果。</li>
+<li><strong>授权与预算</strong>自动规则按模板创建事项；预算按事项累计 Token、费用、时长与尝试次数，权限档不自动提权。</li>
+</ul>
+</SectionShell>
+
+<SectionShell
+  eyebrow="05 · Experience"
   rail-label="经验"
   title="踩过的坑，下一次会被想起来。"
   lead="从任务过程与人工纠正中采集候选经验，脱敏评审后进入复用库，在相似上下文里按需召回，并持续验证它是否真的改善了结果。"
@@ -79,15 +93,15 @@ hero:
 </SectionShell>
 
 <SectionShell
-  eyebrow="05 · Desktop"
+  eyebrow="06 · Desktop"
   rail-label="桌面端"
   title="关上窗口，任务照样跑完。"
-  lead="macOS 版桌面端常驻菜单栏。任务在后台跑完会发系统通知，会话和日志可以拆到独立窗口里并排看。"
+  lead="macOS 与 Windows 桌面端都常驻菜单栏或系统托盘。任务在后台跑完会发系统通知，会话和日志可以拆到独立窗口里并排看。"
   panel-label="agent session"
 >
 <ul class="landing-points">
-<li><strong>常驻菜单栏</strong>关闭主窗口只是隐藏，后台任务与定时任务不中断；在设置中开启后，按 <code class="landing-mono">⌃⌥P</code> 随时唤出。</li>
-<li><strong>完成即通知</strong>主窗口不在前台时，任务完成发系统通知并在 Dock 角标计数，点击通知直接打开对应会话。</li>
+<li><strong>常驻菜单栏或托盘</strong>关闭主窗口只是隐藏，后台任务与定时任务不中断；在设置中开启后，可按 <code class="landing-mono">⌃⌥P</code>（Windows 为 <code class="landing-mono">Ctrl+Alt+P</code>）随时唤出。</li>
+<li><strong>完成即通知</strong>主窗口不在前台时，任务完成发系统通知并在 Dock 或任务栏角标计数，点击通知直接打开对应会话。</li>
 <li><strong>独立窗口</strong>Agent 会话、日志、对话与历史详情可以在新窗口打开，一边看输出一边做别的事。</li>
 </ul>
 
@@ -106,7 +120,7 @@ hero:
 <p class="landing-quote-author"><strong>独立开发者</strong>使用场景：个人项目迭代</p>
 </li>
 <li class="landing-quote">
-<p class="landing-quote-body">可以同时跑四个后端处理不同类型的任务，配置一次就能在所有项目里复用，这个设计非常省心。以前每个项目都要单独配 Claude Key 和 OpenAI Key，现在不用了。</p>
+<p class="landing-quote-body">可以同时跑四个内置后端处理不同类型的任务，配置一次就能在所有项目里复用，这个设计非常省心。以前每个项目都要单独配 Claude Key 和 OpenAI Key，现在不用了。</p>
 <p class="landing-quote-author"><strong>小团队技术负责人</strong>使用场景：多项目 AI 辅助研发</p>
 </li>
 <li class="landing-quote">

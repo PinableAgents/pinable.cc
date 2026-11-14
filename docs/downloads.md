@@ -1,6 +1,6 @@
 ---
 title: 下载 PinableAgents
-description: 获取 PinableAgents 的 macOS、Windows 与 Linux 版本
+description: 获取 PinableAgents 的 macOS 与 Windows 桌面端，以及 Linux Core 运行包
 layout: home
 
 hero:
@@ -14,7 +14,7 @@ hero:
     <div class="downloads-panel-head">
       <span class="landing-eyebrow">Latest release</span>
       <h2 id="downloads-title">下载最新版本</h2>
-      <p>选择你的操作系统。推荐版本会根据当前设备自动显示。macOS 版需要 macOS 12 或更高版本。</p>
+      <p>选择你的操作系统。推荐版本会根据当前设备自动显示。macOS 桌面端需要 macOS 12 或更高版本；Windows 提供便携版与安装程序；Linux 提供不含桌面界面的 Core 运行包。</p>
     </div>
     <HeroDownloads :start-expanded="true" />
   </section>

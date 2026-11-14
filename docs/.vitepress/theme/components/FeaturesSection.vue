@@ -1,4 +1,16 @@
 <script setup>
+import {
+  A2A_ROLES,
+  CORE_PLATFORMS,
+  DELIVERY_STAGES,
+  DESKTOP_PLATFORMS,
+  EXPERIMENTAL_BACKENDS,
+  GATEWAY_CHANNELS,
+  MCP_HARNESSES,
+  MODULES,
+  STABLE_BACKENDS,
+} from '../lib/productFacts.js'
+
 /**
  * Capability matrix — the dense grid near the end of the landing page.
  *
@@ -6,16 +18,26 @@
  * sounds, and each one names something concrete (a flag, a protocol, a count)
  * so the grid reads as an inventory, not as adjectives.
  */
+const backendList = STABLE_BACKENDS.join('、')
+const experimentalEngineLabel = EXPERIMENTAL_BACKENDS
+  .map((backend) => (backend === 'deepseek' ? 'DeepSeek' : backend))
+  .join('、')
+const stageChain = DELIVERY_STAGES.join(' → ')
+const gatewayList = GATEWAY_CHANNELS.join('、')
+const moduleSummary = MODULES.map((module) => `${module.name} ${module.version}`).join('、')
+const harnessList = MCP_HARNESSES.join('、')
+const a2aRoleList = A2A_ROLES.join('、')
+
 const features = [
   {
     group: 'Runtime',
-    title: '四个 AI 后端统一调度',
-    details: 'codex、claude、antigravity、pi 在同一控制面配置，按任务指定 --backend 与 --model。',
+    title: '四个内置 AI 后端统一调度',
+    details: `${backendList} 在同一控制面配置，按任务指定 --backend 与 --model；${experimentalEngineLabel} 实验引擎首期只在定时任务页执行。`,
   },
   {
     group: 'Runtime',
     title: 'Provider 与算力池',
-    details: '集中管理 Provider、模型与随包 AI 兼容网关，密钥与账号不外散到各个项目。',
+    details: 'Provider、模型集中管理；受管 CLIProxyAPI 按需启用，密钥账号不外散。',
   },
   {
     group: 'Execution',
@@ -30,7 +52,12 @@ const features = [
   {
     group: 'Delivery',
     title: '可验证交付',
-    details: '提交、校验、执行、审批、证据、时间线六段链路，AI 变更全程留痕可回放。',
+    details: `${stageChain}；评审与合入由宿主执行，证据与时间线留痕。`,
+  },
+  {
+    group: 'Delivery',
+    title: '项目事项与自动执行',
+    details: '同一目标跨多次交付；本地验收、推送、变更请求、上线四种完成终点；模板、自动规则与按事项预算。',
   },
   {
     group: 'Delivery',
@@ -39,39 +66,34 @@ const features = [
   },
   {
     group: 'Surface',
-    title: '消息网关',
-    details: 'telegram、feishu、weixin、weixin_miniapp 四个通道接入，任务可后台执行或转到终端接管。',
+    title: '网关、定时任务与静态站',
+    details: `${gatewayList} 三个通道接入任务；周期任务按计划执行；本机静态站点直接发布。`,
   },
   {
     group: 'Surface',
-    title: '定时任务与静态站',
-    details: '周期性工作交给调度器，本机静态站点服务直接对外，无需另起一套工具。',
-  },
-  {
-    group: 'Surface',
-    title: '内置 MCP 与 CodeGraph',
-    details: 'codegraph 提供 8 个只读代码图谱工具，remote-servers 提供远程服务器操作，codex 与 claude 开箱可用。',
+    title: '内置与外部 MCP',
+    details: `codegraph 提供 8 个只读代码工具，remote-servers 提供远程执行；${harnessList} 开箱可用，外部 MCP 可在界面集中管理。`,
   },
   {
     group: 'Surface',
     title: '可安装模块',
-    details: 'do、bugfix、image-gen、video-analysis、pinable 五个模块按需安装，支持依赖排序。',
+    details: `${moduleSummary}，五个模块按需安装，支持依赖排序。`,
   },
   {
     group: 'Surface',
     title: 'A2A 对外协作',
-    details: '以 Agent Card 对外暴露能力，访问凭据可限定允许访问的项目。',
+    details: `五个内置角色：${a2aRoleList}；调用凭据按 Agent 与 Skill 授权。`,
   },
   {
     group: 'Desktop',
-    title: 'macOS 桌面集成',
-    details: '菜单栏常驻、任务完成通知、独立查看窗口、⌘K 命令中心与 pinable:// 链接直达会话。',
+    title: `${DESKTOP_PLATFORMS.join(' 与 ')} 桌面集成`,
+    details: `菜单栏或系统托盘常驻、任务完成通知、独立查看窗口、⌘K / Ctrl+K 与 pinable:// 链接；${CORE_PLATFORMS.join('、')} 运行包不含桌面界面。`,
   },
 ]
 </script>
 
 <template>
-  <section class="features-section" aria-labelledby="features-title" data-rail-label="能力清单">
+  <section id="capabilities" class="features-section" aria-labelledby="features-title" data-rail-label="能力清单">
     <div class="features-header">
       <span class="landing-eyebrow">Capabilities</span>
       <h2 id="features-title">能力清单，按它实际所在的位置排列。</h2>
