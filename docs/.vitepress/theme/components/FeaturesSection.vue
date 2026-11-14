@@ -71,7 +71,7 @@ const features = [
 </script>
 
 <template>
-  <section class="features-section" aria-labelledby="features-title">
+  <section class="features-section" aria-labelledby="features-title" data-rail-label="能力清单">
     <div class="features-header">
       <span class="landing-eyebrow">Capabilities</span>
       <h2 id="features-title">能力清单，按它实际所在的位置排列。</h2>

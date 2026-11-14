@@ -9,11 +9,16 @@ defineProps({
   title: { type: String, default: '' },
   lead: { type: String, default: '' },
   panelLabel: { type: String, default: '' },
+  railLabel: { type: String, default: '' },
 })
 </script>
 
 <template>
-  <section class="landing-section" :class="{ 'landing-section--split': $slots.panel }">
+  <section
+    class="landing-section"
+    :class="{ 'landing-section--split': $slots.panel }"
+    :data-rail-label="railLabel || null"
+  >
     <div class="landing-section-content">
       <span v-if="eyebrow" class="landing-eyebrow">{{ eyebrow }}</span>
       <h2 v-if="title" class="landing-title">{{ title }}</h2>

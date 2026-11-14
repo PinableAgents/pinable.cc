@@ -37,12 +37,25 @@ const activeIndex = ref(0)
 
 let frame = null
 
-/** The eyebrow is already a short section index — prefer it to the title. */
+/**
+ * The rail is navigation chrome, so its wording follows the page language
+ * rather than the Latin design eyebrow. Pages declare a Chinese label with
+ * `data-rail-label`; the eyebrow remains the fallback for sections that have
+ * not opted in yet.
+ */
+function railLabelOf(section) {
+  return section.dataset.railLabel?.trim() ?? ''
+}
+
+/** Legacy fallback for sections that have not declared a rail label. */
 function eyebrowOf(section) {
   return section.querySelector('.landing-eyebrow')?.textContent?.trim() ?? ''
 }
 
 function labelFor(section, index) {
+  const railLabel = railLabelOf(section)
+  if (railLabel) return railLabel
+
   const eyebrow = eyebrowOf(section)
   if (eyebrow) return eyebrow
 

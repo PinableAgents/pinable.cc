@@ -11,8 +11,8 @@ hero:
 
 <div class="landing-page">
 
-<section class="landing-section">
-  <p class="landing-eyebrow">Interface · 界面导览</p>
+<section class="landing-section" data-rail-label="界面导览">
+  <p class="landing-eyebrow">界面导览</p>
   <h2 class="landing-title">八张真实截图，不是渲染图。</h2>
   <p class="landing-lead">拖动、点击箭头或使用左右方向键浏览。这是产品当前版本的实际界面。</p>
   <div class="landing-frame">
@@ -22,6 +22,7 @@ hero:
 
 <SectionShell
   eyebrow="01 · Runtime"
+  rail-label="运行时"
   title="一个运行根，装下全部状态。"
   lead="Provider、模型、Agent 定义、模块、运行数据与经验库都落在同一个目录下。备份它、迁移它、或者直接看它，都不需要翻找散落各处的配置。"
   panel-label="$PINABLE_HOME"
@@ -35,6 +36,7 @@ hero:
 
 <SectionShell
   eyebrow="02 · Orchestration"
+  rail-label="编排"
   title="任务写成块，顺序交给依赖。"
   lead="工作流文件由 ---TASK--- 块组成。每个块声明自己是谁、在哪里跑、用哪个后端，以及依赖谁——执行顺序由依赖推导，不需要人工排期。"
   panel-label="workflow"
@@ -52,6 +54,7 @@ hero:
 
 <SectionShell
   eyebrow="03 · Sessions"
+  rail-label="会话"
   title="会话可以中断，也可以接着来。"
   lead="每次执行都会回传会话标识，对话过程被完整捕获。中断之后用同一个标识恢复，上下文不会从头再来。"
   panel-label="terminal / session timeline"
@@ -69,6 +72,7 @@ hero:
 
 <SectionShell
   eyebrow="04 · Delivery"
+  rail-label="交付"
   title="六个动作，构成一条交付链路。"
   lead="AI 产出的改动不直接落到主线。它经由一条固定的链路推进，每一次状态转移都留下记录，批准与驳回都有据可查。"
   panel-label="delivery chain"
@@ -82,6 +86,7 @@ hero:
 
 <SectionShell
   eyebrow="05 · Experience"
+  rail-label="经验"
   title="经验不是日志，是要被验证的假设。"
   lead="过程与人工纠正中被采集为候选经验，脱敏评审后进入复用库；在相似上下文里被召回之后，还要继续跟踪它是否真的改善了结果。"
 >
@@ -94,6 +99,7 @@ hero:
 
 <SectionShell
   eyebrow="06 · Extensions"
+  rail-label="扩展"
   title="可安装模块，与内置的集成面。"
   lead="能力以模块形式随包发布、按需安装；对外集成则走内置的 MCP 服务与网关通道，不必自己写胶水。"
 >
@@ -114,6 +120,7 @@ hero:
 
 <SectionShell
   eyebrow="07 · Desktop"
+  rail-label="桌面端"
   title="像原生应用一样待在 macOS 上。"
   lead="桌面端接入了 macOS 的菜单栏、通知、登录项与 URL 链接。关掉窗口不等于退出，任务跑完会来找你。"
   panel-label="settings / desktop integration"

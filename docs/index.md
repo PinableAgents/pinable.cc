@@ -13,6 +13,7 @@ hero:
 
 <SectionShell
   eyebrow="01 · Runtime"
+  rail-label="运行时"
   title="四个 AI 后端，一个控制面。"
   lead="不必为每个 AI 工具各维护一套配置。Provider、模型与执行引擎集中在一处，按任务决定这一次用哪个。"
   panel-label="provider / runtime engines / agent models"
@@ -30,6 +31,7 @@ hero:
 
 <SectionShell
   eyebrow="02 · Orchestration"
+  rail-label="编排"
   title="并行跑一组任务，各自隔离。"
   lead="把一批任务交给 pinable，它读入任务块、按依赖排序、逐个在独立 worktree 中执行——互不踩踏，产物可分别审阅。"
   panel-label="workflow tasks"
@@ -47,6 +49,7 @@ hero:
 
 <SectionShell
   eyebrow="03 · Delivery"
+  rail-label="交付"
   title="AI 的改动，走完审批才落地。"
   lead="变更走一条固定的交付链路：提交、校验、执行、审批、证据、时间线。每一步都留痕，随时可以回看当时发生了什么。"
   panel-label="history"
@@ -64,6 +67,7 @@ hero:
 
 <SectionShell
   eyebrow="04 · Experience"
+  rail-label="经验"
   title="踩过的坑，下一次会被想起来。"
   lead="从任务过程与人工纠正中采集候选经验，脱敏评审后进入复用库，在相似上下文里按需召回，并持续验证它是否真的改善了结果。"
 >
@@ -76,6 +80,7 @@ hero:
 
 <SectionShell
   eyebrow="05 · Desktop"
+  rail-label="桌面端"
   title="关上窗口，任务照样跑完。"
   lead="macOS 版桌面端常驻菜单栏。任务在后台跑完会发系统通知，会话和日志可以拆到独立窗口里并排看。"
   panel-label="agent session"
@@ -91,7 +96,7 @@ hero:
 </template>
 </SectionShell>
 
-<section class="landing-section">
+<section class="landing-section" data-rail-label="用户声音">
 <span class="landing-eyebrow">用户声音</span>
 <h2 class="landing-title">正在用 PinableAgents 的人在说什么。</h2>
 <p class="landing-lead">早期用户的真实反馈——不是市场文案，是他们在实际项目里用过之后说的话。</p>
