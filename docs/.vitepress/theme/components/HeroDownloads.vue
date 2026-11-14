@@ -7,6 +7,7 @@ import {
   resolveDownloads,
   shortSha,
 } from '../lib/releases.js'
+import { detectPlatform } from '../lib/platform.js'
 
 /**
  * Reads the release manifest the pipeline publishes to /releases/latest.json
@@ -28,21 +29,6 @@ const expanded = ref(props.startExpanded)
 const available = computed(() => resolveDownloads(feed.value))
 
 const version = computed(() => feed.value?.version ?? '')
-
-/**
- * Coarse platform detection. userAgentData is the modern hint; platform is the
- * legacy one. Android and iPadOS both claim to be Linux/macOS, so anything
- * ambiguous falls through to no match rather than guessing wrong.
- */
-function detectPlatform() {
-  const hint = `${navigator.userAgentData?.platform ?? ''} ${navigator.platform ?? ''} ${navigator.userAgent ?? ''}`
-
-  if (/android|iphone|ipad|ipod|mobile/i.test(hint)) return null
-  if (/mac/i.test(hint)) return 'mac'
-  if (/win/i.test(hint)) return 'windows'
-  if (/linux|x11/i.test(hint)) return 'linux'
-  return null
-}
 
 const visitorPlatform = ref(null)
 

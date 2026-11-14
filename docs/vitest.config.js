@@ -9,6 +9,10 @@ import vue from '@vitejs/plugin-vue'
  */
 export default defineConfig({
   plugins: [vue()],
+  // Vite resolves the default "localhost" server host through DNS, which fails
+  // in sandboxes whose hosts file has no loopback entry. A literal address
+  // keeps the test runner independent of that lookup.
+  server: { host: '127.0.0.1' },
   test: {
     environment: 'jsdom',
     include: ['tests/**/*.spec.js'],

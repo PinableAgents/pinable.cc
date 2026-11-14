@@ -31,4 +31,8 @@ hero:
     <p>每个文件都来自同一份发布清单，版本号、文件类型和 SHA-256 校验值保持一致。</p>
     <a href="https://github.com/PinableAgents/pinable.cc/releases" target="_blank" rel="noreferrer">查看全部发布记录 →</a>
   </section>
+
+  <section class="downloads-note">
+    <InstallGuide />
+  </section>
 </div>
