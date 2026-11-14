@@ -1,63 +1,31 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import {
+  RELEASES_PAGE,
+  loadReleaseFeed,
+  pickRecommended,
+  resolveDownloads,
+  shortSha,
+} from '../lib/releases.js'
 
 /**
  * Reads the release manifest the pipeline publishes to /releases/latest.json
  * and turns it into per-platform download entries.
  *
- * This is the one component on the site that consumes the release feed. It is
- * written to survive VitePress's static render + hydrate: at build time there
- * is no navigator and no fetch, so the server-rendered markup is deliberately
- * the *degraded* state — a plain link to the GitHub release. Everything
- * platform-aware happens in onMounted, which means the first client frame
- * matches the server exactly and a failed request simply leaves the fallback
- * in place.
+ * It is written to survive VitePress's static render + hydrate: at build time
+ * there is no navigator and no fetch, so the server-rendered markup is
+ * deliberately the *degraded* state — a plain link to the GitHub release.
+ * Everything platform-aware happens in onMounted, which means the first client
+ * frame matches the server exactly and a failed request simply leaves the
+ * fallback in place.
  */
-
-const RELEASES_PAGE = 'https://github.com/PinableAgents/pinable.cc/releases'
 
 const props = defineProps({ startExpanded: { type: Boolean, default: false } })
 const feed = ref(null)
 const expanded = ref(props.startExpanded)
 
-/** Every entry we can offer, in a stable display order. */
-const TARGETS = [
-  { platform: 'mac', label: 'macOS · Universal', hint: '.dmg', key: 'darwin', primary: true },
-  { platform: 'mac', label: 'macOS · Apple Silicon', hint: '.zip', key: 'darwin-arm64' },
-  { platform: 'mac', label: 'macOS · Intel', hint: '.zip', key: 'darwin-amd64' },
-  { platform: 'windows', label: 'Windows · 便携版', hint: '.zip', key: 'windows', primary: true },
-  { platform: 'windows', label: 'Windows · 安装程序', hint: '.exe', asset: 'windows_exe' },
-  { platform: 'linux', label: 'Linux · Core', hint: '.tar.gz', key: 'linux-core', primary: true },
-]
-
-/**
- * The manifest keeps URLs in two places: `platforms` holds objects (url +
- * sha256 + asset_name), `assets` holds bare URL strings. Some `assets` keys are
- * declared but null in practice (linux_tar_gz_amd64, linux_appimage_amd64), so
- * every lookup is treated as possibly empty.
- */
-function urlFor(target) {
-  if (!feed.value) return null
-
-  if (target.asset) {
-    const value = feed.value.assets?.[target.asset]
-    return typeof value === 'string' && value ? value : null
-  }
-
-  const entry = feed.value.platforms?.[target.key]
-  return entry && typeof entry.url === 'string' && entry.url ? entry.url : null
-}
-
-function shaFor(target) {
-  if (!feed.value) return null
-  const sha = target.asset
-    ? feed.value.asset_sha256?.[target.asset]
-    : feed.value.platforms?.[target.key]?.sha256
-  return typeof sha === 'string' && sha ? sha : null
-}
-
 /** Only offer entries the manifest actually resolves to a URL. */
-const available = computed(() => TARGETS.filter((target) => urlFor(target)))
+const available = computed(() => resolveDownloads(feed.value))
 
 const version = computed(() => feed.value?.version ?? '')
 
@@ -78,21 +46,11 @@ function detectPlatform() {
 
 const visitorPlatform = ref(null)
 
-const recommended = computed(() => {
-  if (!visitorPlatform.value) return null
-  const match = available.value.find(
-    (target) => target.platform === visitorPlatform.value && target.primary,
-  )
-  // Fall back to the first entry for that platform when no primary is listed.
-  return match ?? available.value.find((target) => target.platform === visitorPlatform.value) ?? null
-})
+const recommended = computed(() => pickRecommended(available.value, visitorPlatform.value))
 
 const primaryTarget = computed(() => recommended.value ?? null)
 
-const primaryUrl = computed(() => {
-  const target = primaryTarget.value
-  return (target && urlFor(target)) || RELEASES_PAGE
-})
+const primaryUrl = computed(() => primaryTarget.value?.url || RELEASES_PAGE)
 
 const primaryLabel = computed(() =>
   primaryTarget.value ? `下载 ${primaryTarget.value.label}` : '下载 PinableAgents',
@@ -100,11 +58,7 @@ const primaryLabel = computed(() =>
 
 const primaryHint = computed(() => primaryTarget.value?.hint ?? '')
 
-const primarySha = computed(() => {
-  const target = primaryTarget.value
-  const sha = target && shaFor(target)
-  return sha ? sha.slice(0, 8) : ''
-})
+const primarySha = computed(() => shortSha(primaryTarget.value?.sha256))
 
 const alternatives = computed(() =>
   primaryTarget.value
@@ -126,16 +80,13 @@ const alternativeGroups = computed(() => {
     .filter((group) => group.items.length)
 })
 
+/** Template helper: entries already carry their resolved URL. */
+const urlFor = (target) => target?.url ?? null
+
 onMounted(async () => {
   visitorPlatform.value = detectPlatform()
-
-  try {
-    const response = await fetch('/releases/latest.json', { cache: 'no-cache' })
-    if (!response.ok) return
-    feed.value = await response.json()
-  } catch {
-    // Offline or the manifest is missing — the static fallback link stands.
-  }
+  // Offline or a missing manifest resolves to null — the fallback stands.
+  feed.value = await loadReleaseFeed()
 })
 </script>
 

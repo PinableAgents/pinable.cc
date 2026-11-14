@@ -18,9 +18,10 @@ npm ci          # install (CI uses npm ci, not npm install)
 npm run dev     # vitepress dev — local dev server
 npm run build   # vitepress build → docs/.vitepress/dist
 npm run preview # serve the built output
+npm test        # vitest run — unit/component tests under docs/tests
 ```
 
-There is no test suite, linter, or formatter configured. `vitepress build` is the only correctness check available — run it before considering a change done, since it resolves the markdown, sidebar links, and Vue components.
+There is no linter or formatter configured. `npm test` covers the release-feed logic and the components that consume it; `vitepress build` is the only check for everything else — run both before considering a change done, since the build resolves the markdown, sidebar links, and Vue components. CLI and CI both run the suite before building.
 
 VitePress 1.6.x is pinned via `docs/package-lock.json`; Node 20 in CI.
 
@@ -34,7 +35,7 @@ VitePress 1.6.x is pinned via `docs/package-lock.json`; Node 20 in CI.
 
 At runtime it is served as `https://pinable.cc/releases/latest.json`. It carries per-platform `download_url`/`sha256` entries and legacy `assets`/`asset_sha256` maps that must stay mutually consistent. When editing it by hand, keep the overlapping keys (`darwin`/`darwin-universal`, `windows`/`windows-amd64`/`windows-x86_64`, and the `assets` vs `platforms` duplicate URLs) in sync — consumers index it by several different platform aliases.
 
-**The feed has exactly one consumer in the site**: `theme/components/HeroDownloads.vue`, rendered on `/` only. It fetches the feed in `onMounted` (never during SSR) and degrades to a plain GitHub Releases link, which is what the server renders and what a no-JS visitor sees — the degraded state *is* the SSR state, so there is no hydration mismatch to guard against. Two invariants follow: the SSR markup must stay platform-neutral (no `navigator` access outside `onMounted`), and every asset field must be treated as nullable — `assets.linux_tar_gz_amd64` and `assets.linux_appimage_amd64` are `null` in the current feed, so a missing URL has to render as an omission, never as a dead link.
+**The feed has two consumers in the site**, both going through `theme/lib/releases.js` (platform map, URL/SHA lookups, a shared in-flight request): `theme/components/HeroDownloads.vue`, rendered on `/` only, and `theme/components/ReleaseInfo.vue`, which fills the Release notes block on `/downloads` with the version, date, the manifest's `notes` and every asset's full SHA-256. Both fetch in `onMounted` (never during SSR) and degrade to static content: `HeroDownloads` falls back to a plain GitHub Releases link, `ReleaseInfo` renders no nodes at all and leaves the surrounding static copy in place. The degraded state *is* the SSR state, so there is no hydration mismatch to guard against. Two invariants follow: the SSR markup must stay platform-neutral (no `navigator` access outside `onMounted` or a click handler), and every asset field must be treated as nullable — `assets.linux_tar_gz_amd64` and `assets.linux_appimage_amd64` are `null` in the current feed, so a missing URL has to render as an omission, never as a dead link.
 
 ## Navigation declares pages that don't exist yet
 
@@ -44,7 +45,7 @@ At runtime it is served as `https://pinable.cc/releases/latest.json`. It carries
 
 `docs/.vitepress/theme/` extends the VitePress default theme:
 
-- `index.ts` registers four global components (`HomeExperience`, `FeaturesSection`, `FunctionCarousel`, `SectionShell`) and injects an AdSense `AdSlot` into the `doc-after` layout slot. AdSense client ID appears in both `config.ts` (`head`) and `index.ts`; changing it means changing both.
+- `index.ts` registers five global components (`HomeExperience`, `FeaturesSection`, `FunctionCarousel`, `ReleaseInfo`, `SectionShell`) and injects an AdSense `AdSlot` into the `doc-after` layout slot. AdSense client ID appears in both `config.ts` (`head`) and `index.ts`; changing it means changing both.
 - Three components are **not** registered globally; they are mounted through layout slots, each with different gating because all three pages use `layout: home` and would otherwise share the same slots:
   - `HeroDownloads` → `home-hero-actions-after`, route-gated to `/` (a download offer belongs on the landing page only).
   - `HeroMeta` → `home-hero-after`, ungated — the backend/platform/run-root strip is generic product fact and renders on all three pages, which is what keeps the three heroes structurally identical.

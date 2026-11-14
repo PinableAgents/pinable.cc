@@ -7,6 +7,7 @@ import FeaturesSection from './components/FeaturesSection.vue'
 import HomeExperience from './components/HomeExperience.vue'
 import HeroDownloads from './components/HeroDownloads.vue'
 import HeroMeta from './components/HeroMeta.vue'
+import ReleaseInfo from './components/ReleaseInfo.vue'
 import SectionRail from './components/SectionRail.vue'
 import SectionShell from './components/SectionShell.vue'
 import SiteFooter from './components/SiteFooter.vue'
@@ -48,6 +49,7 @@ export default {
     app.component('FeaturesSection', FeaturesSection)
     app.component('HomeExperience', HomeExperience)
     app.component('HeroDownloads', HeroDownloads)
+    app.component('ReleaseInfo', ReleaseInfo)
     app.component('SectionShell', SectionShell)
   },
 } satisfies Theme
