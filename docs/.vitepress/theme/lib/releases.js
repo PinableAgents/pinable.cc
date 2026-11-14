@@ -10,10 +10,10 @@ export const FEED_URL = '/releases/latest.json'
 
 /** Every entry the site can offer, in a stable display order. */
 export const TARGETS = [
-  { platform: 'mac', label: 'macOS · Universal', hint: '.dmg', key: 'darwin', primary: true },
-  { platform: 'mac', label: 'macOS · Apple Silicon', hint: '.zip', key: 'darwin-arm64' },
-  { platform: 'mac', label: 'macOS · Intel', hint: '.zip', key: 'darwin-amd64' },
-  { platform: 'windows', label: 'Windows · 便携版', hint: '.zip', key: 'windows', primary: true },
+  { platform: 'mac', label: 'macOS · Universal', hint: '.dmg', key: 'darwin', aliases: ['darwin-universal'], primary: true },
+  { platform: 'mac', label: 'macOS · Apple Silicon', hint: '.zip', key: 'darwin-arm64', aliases: ['darwin-aarch64'] },
+  { platform: 'mac', label: 'macOS · Intel', hint: '.zip', key: 'darwin-amd64', aliases: ['darwin-x86_64'] },
+  { platform: 'windows', label: 'Windows · 便携版', hint: '.zip', key: 'windows', aliases: ['windows-amd64', 'windows-x86_64'], primary: true },
   { platform: 'windows', label: 'Windows · 安装程序', hint: '.exe', asset: 'windows_exe' },
   { platform: 'linux', label: 'Linux · Core', hint: '.tar.gz', key: 'linux-core', primary: true },
 ]
@@ -22,8 +22,19 @@ export const TARGETS = [
  * The manifest keeps URLs in two places: `platforms` holds objects (url +
  * sha256 + asset_name), `assets` holds bare URL strings. Some `assets` keys are
  * declared but null in practice (linux_tar_gz_amd64, linux_appimage_amd64), so
- * every lookup is treated as possibly empty.
+ * every lookup is treated as possibly empty. Platform keys also have aliases
+ * published by the pipeline, so a target resolves from its canonical key first
+ * and then from each alias as a whole entry.
  */
+function platformEntry(feed, target) {
+  if (!target.key) return null
+  for (const key of [target.key, ...(target.aliases ?? [])]) {
+    const entry = feed?.platforms?.[key]
+    if (entry && typeof entry.url === 'string' && entry.url) return entry
+  }
+  return null
+}
+
 export function urlFor(feed, target) {
   if (!feed) return null
 
@@ -32,21 +43,20 @@ export function urlFor(feed, target) {
     return typeof value === 'string' && value ? value : null
   }
 
-  const entry = feed.platforms?.[target.key]
-  return entry && typeof entry.url === 'string' && entry.url ? entry.url : null
+  return platformEntry(feed, target)?.url ?? null
 }
 
 export function shaFor(feed, target) {
   if (!feed) return null
   const sha = target.asset
     ? feed.asset_sha256?.[target.asset]
-    : feed.platforms?.[target.key]?.sha256
+    : platformEntry(feed, target)?.sha256
   return typeof sha === 'string' && sha ? sha : null
 }
 
 /** Prefer the manifest's own filename; fall back to the URL's last segment. */
 export function assetNameFor(feed, target) {
-  const declared = !target.asset ? feed?.platforms?.[target.key]?.asset_name : null
+  const declared = !target.asset ? platformEntry(feed, target)?.asset_name : null
   if (typeof declared === 'string' && declared) return declared
 
   const url = urlFor(feed, target)

@@ -61,9 +61,18 @@ describe('resolveDownloads', () => {
     assert.ok(!labelsOf(resolveDownloads(feed)).includes('Linux · Core'))
   })
 
-  it('drops the macOS entries when their platform keys are missing', () => {
+  it('drops the macOS entries when their platform keys and aliases are missing', () => {
     const feed = makeFeed()
-    for (const key of ['darwin', 'darwin-arm64', 'darwin-amd64']) delete feed.platforms[key]
+    for (const key of [
+      'darwin',
+      'darwin-universal',
+      'darwin-arm64',
+      'darwin-aarch64',
+      'darwin-amd64',
+      'darwin-x86_64',
+    ]) {
+      delete feed.platforms[key]
+    }
     const labels = labelsOf(resolveDownloads(feed))
     assert.equal(labels.some((label) => label.startsWith('macOS')), false)
     assert.ok(labels.includes('Windows · 便携版'))
@@ -88,6 +97,88 @@ describe('resolveDownloads', () => {
     assert.equal(shaFor(null, target), null)
     assert.equal(assetNameFor(null, target), '')
     assert.deepEqual(resolveDownloads({}), [])
+  })
+})
+
+describe('platform aliases', () => {
+  const aliasCases = [
+    ['macOS · Universal', 'darwin', 'darwin-universal'],
+    ['macOS · Apple Silicon', 'darwin-arm64', 'darwin-aarch64'],
+    ['macOS · Intel', 'darwin-amd64', 'darwin-x86_64'],
+    ['Windows · 便携版', 'windows', 'windows-amd64'],
+  ]
+
+  for (const [label, key, alias] of aliasCases) {
+    it(`resolves ${label} from its alias`, () => {
+      const feed = makeFeed()
+      delete feed.platforms[key]
+
+      const entry = resolveDownloads(feed).find((item) => item.label === label)
+      const source = feed.platforms[alias]
+      assert.ok(entry)
+      assert.equal(entry.url, source.url)
+      assert.equal(entry.sha256, source.sha256)
+      assert.equal(entry.assetName, source.asset_name)
+    })
+  }
+
+  it('resolves the Windows portable build from windows-x86_64 alone', () => {
+    const feed = makeFeed()
+    delete feed.platforms.windows
+    delete feed.platforms['windows-amd64']
+
+    const entry = resolveDownloads(feed).find((item) => item.label === 'Windows · 便携版')
+    assert.equal(entry.url, feed.platforms['windows-x86_64'].url)
+    assert.equal(entry.sha256, feed.platforms['windows-x86_64'].sha256)
+  })
+
+  it('prefers the canonical key and keeps URL/SHA from the same entry', () => {
+    const feed = makeFeed()
+    feed.platforms['darwin-universal'].url = 'https://example.com/alias.dmg'
+    feed.platforms['darwin-universal'].sha256 = 'a'.repeat(64)
+    feed.platforms['darwin-universal'].asset_name = 'alias.dmg'
+    const target = TARGETS.find((entry) => entry.key === 'darwin')
+
+    assert.equal(urlFor(feed, target), feed.platforms.darwin.url)
+    assert.equal(shaFor(feed, target), feed.platforms.darwin.sha256)
+    assert.equal(assetNameFor(feed, target), feed.platforms.darwin.asset_name)
+  })
+
+  it('falls back to an alias when the canonical url is unusable', () => {
+    for (const url of [null, '', 42]) {
+      const feed = makeFeed()
+      feed.platforms.darwin.url = url
+      feed.platforms.darwin.sha256 = 'b'.repeat(64)
+      feed.platforms.darwin.asset_name = 'canonical.dmg'
+      const target = TARGETS.find((entry) => entry.key === 'darwin')
+
+      assert.equal(urlFor(feed, target), feed.platforms['darwin-universal'].url)
+      assert.equal(shaFor(feed, target), feed.platforms['darwin-universal'].sha256)
+      assert.equal(assetNameFor(feed, target), feed.platforms['darwin-universal'].asset_name)
+    }
+  })
+
+  it('drops the Windows portable entry when every windows key is missing', () => {
+    const feed = makeFeed()
+    for (const key of ['windows', 'windows-amd64', 'windows-x86_64']) delete feed.platforms[key]
+
+    const labels = labelsOf(resolveDownloads(feed))
+    assert.ok(!labels.includes('Windows · 便携版'))
+    assert.ok(labels.includes('Windows · 安装程序'))
+  })
+
+  it('keeps every published alias consistent with its canonical key', () => {
+    for (const target of TARGETS.filter((entry) => entry.aliases)) {
+      const canonical = latest.platforms[target.key]
+      if (!canonical) continue
+
+      for (const alias of target.aliases) {
+        const entry = latest.platforms[alias]
+        if (!entry) continue
+        assert.equal(entry.url, canonical.url, `${alias} url differs from ${target.key}`)
+        assert.equal(entry.sha256, canonical.sha256, `${alias} sha256 differs from ${target.key}`)
+      }
+    }
   })
 })
 

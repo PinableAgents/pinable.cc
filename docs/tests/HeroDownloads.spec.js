@@ -57,6 +57,23 @@ describe('HeroDownloads', () => {
     wrapper.unmount()
   })
 
+  it('falls back to the universal alias on a Mac', async () => {
+    setPlatform('MacIntel')
+    const feed = makeFeed()
+    delete feed.platforms.darwin
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => feed }))
+
+    const wrapper = mount(HeroDownloads)
+    await flushPromises()
+
+    const primary = wrapper.find('.hd-primary')
+    expect(primary.text()).toContain('macOS · Universal')
+    expect(primary.attributes('href')).toBe(feed.platforms['darwin-universal'].url)
+    expect(wrapper.text()).toContain('5574a89e')
+
+    wrapper.unmount()
+  })
+
   it('never links to an asset the manifest does not carry', async () => {
     setPlatform('MacIntel')
     const feed = makeFeed()

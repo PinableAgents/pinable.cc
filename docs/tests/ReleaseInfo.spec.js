@@ -46,6 +46,24 @@ describe('ReleaseInfo', () => {
     wrapper.unmount()
   })
 
+  it('resolves every platform when only aliases remain', async () => {
+    const feed = makeFeed()
+    for (const key of ['darwin', 'darwin-arm64', 'darwin-amd64', 'windows']) {
+      delete feed.platforms[key]
+    }
+    const wrapper = await mountWithFeed(feed)
+
+    const rows = wrapper.findAll('.ri-row')
+    expect(rows).toHaveLength(6)
+    expect(wrapper.text()).toContain('PinableAgents-mac.dmg')
+    expect(wrapper.text()).toContain('PinableAgents-win-portable.zip')
+    for (const row of rows) {
+      expect(row.find('.ri-sha').text()).toMatch(/^[0-9a-f]{64}$/)
+    }
+
+    wrapper.unmount()
+  })
+
   it('renders nothing when the response is not ok', async () => {
     stubFetch({ ok: false, json: async () => ({}) })
     const wrapper = mount(ReleaseInfo)
