@@ -35,4 +35,8 @@ hero:
   <section class="downloads-note">
     <InstallGuide />
   </section>
+
+  <section class="downloads-note">
+    <ChecksumVerifier />
+  </section>
 </div>

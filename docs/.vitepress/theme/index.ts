@@ -2,6 +2,7 @@ import { h } from 'vue'
 import { useRoute } from 'vitepress'
 import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
+import ChecksumVerifier from './components/ChecksumVerifier.vue'
 import FunctionCarousel from './components/FunctionCarousel.vue'
 import FeaturesSection from './components/FeaturesSection.vue'
 import HomeExperience from './components/HomeExperience.vue'
@@ -46,6 +47,7 @@ export default {
     })
   },
   enhanceApp({ app, router, siteData }) {
+    app.component('ChecksumVerifier', ChecksumVerifier)
     app.component('FunctionCarousel', FunctionCarousel)
     app.component('FeaturesSection', FeaturesSection)
     app.component('HomeExperience', HomeExperience)
