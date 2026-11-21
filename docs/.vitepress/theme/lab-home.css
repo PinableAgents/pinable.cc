@@ -1,0 +1,170 @@
+.lab-home {
+  --lab-text: #172320;
+  --lab-muted: #465a55;
+  --lab-accent: #1b5245;
+  --lab-border: #d7e1dc;
+  --lab-paper: #fff;
+  --lab-soft: #edf4f0;
+  color: var(--lab-text);
+  background: var(--vp-c-bg);
+}
+
+.dark .lab-home {
+  --lab-text: #edf6f3;
+  --lab-muted: #b9cbc5;
+  --lab-accent: #b5e1cf;
+  --lab-border: #364945;
+  --lab-paper: #252c2a;
+  --lab-soft: #23332e;
+}
+
+.lab-wrap { width: min(1112px, calc(100% - 56px)); margin-inline: auto; }
+.lab-home [id] { scroll-margin-top: calc(var(--vp-nav-height) + 16px); }
+
+/* The homepage has one prominent action. Other pages retain their usual
+   download button, and mobile navigation still offers a download link. */
+.Layout:has(.lab-home) .VPNavBarMenu.VPNavBarMenu .VPNavBarMenuLink.VPNavBarMenuLink:last-child {
+  position: static !important;
+  transform: none !important;
+  background: none;
+  color: var(--vp-c-text-2);
+  padding: 0 12px;
+}
+
+.Layout:has(.lab-home) .VPNavBarMenu.VPNavBarMenu .VPNavBarMenuLink.VPNavBarMenuLink:last-child:hover {
+  background: none;
+  color: var(--vp-c-text-1);
+}
+
+.Layout:has(.lab-home) .VPNavBarAppearance.VPNavBarAppearance { right: 24px; }
+
+.lab-hero {
+  border-bottom: 1px solid var(--lab-border);
+}
+
+.lab-hero-inner {
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  gap: clamp(28px, 6vw, 74px);
+  align-items: center;
+  padding-block: clamp(42px, 5.8vw, 78px);
+}
+
+.lab-hero-copy h1 {
+  color: var(--lab-text);
+  font-size: clamp(2.9rem, 5.7vw, 4.6rem);
+  font-weight: 750;
+  letter-spacing: -.06em;
+  line-height: 1.09;
+}
+
+.VPContent.is-home .vp-doc .lab-home .lab-lead {
+  max-width: 25rem;
+  margin: 16px 0 23px;
+  color: var(--lab-muted);
+  line-height: 1.65;
+  font-size: 1.05rem;
+}
+
+.VPContent.is-home .vp-doc .lab-home a.lab-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 0 17px;
+  border-radius: 8px;
+  color: #fff;
+  background: #1b5245;
+  font-weight: 650;
+  font-size: .9375rem;
+  text-decoration: none;
+}
+
+.VPContent.is-home .vp-doc .lab-home a.lab-button:hover { background: #114235; }
+.dark .VPContent.is-home .vp-doc .lab-home a.lab-button { color: #152f25; background: #b5e1cf; }
+.dark .VPContent.is-home .vp-doc .lab-home a.lab-button:hover { background: #ceeadd; }
+.lab-home a:focus-visible { outline: 2px solid var(--lab-accent); outline-offset: 4px; }
+
+.lab-preview {
+  aspect-ratio: 2.05;
+  overflow: hidden;
+  border: 1px solid var(--lab-border);
+  border-radius: 12px;
+  background: var(--lab-soft);
+}
+
+.lab-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 13%;
+}
+
+.lab-products {
+  display: grid;
+  grid-template-columns: 1.12fr 1fr 1fr 1fr;
+  gap: 12px;
+  padding-block: 28px 46px;
+}
+
+.lab-card {
+  min-width: 0;
+  border: 1px solid var(--lab-border);
+  border-radius: 10px;
+  padding: 16px 16px 12px;
+  background: var(--lab-paper);
+}
+
+.lab-card.lab-card-featured { background: var(--lab-soft); }
+
+.VPContent.is-home .vp-doc .lab-home .lab-card h2 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--lab-text);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -.015em;
+  line-height: 1.35;
+}
+
+.VPContent.is-home .vp-doc .lab-home .lab-card p {
+  margin: 5px 0 2px;
+  color: var(--lab-muted);
+  font-size: 1rem;
+  line-height: 1.58;
+}
+
+.VPContent.is-home .vp-doc .lab-home .lab-card > a,
+.lab-status {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  color: var(--lab-muted);
+  font-size: .875rem;
+  line-height: 1.35;
+}
+
+.VPContent.is-home .vp-doc .lab-home .lab-card > a {
+  color: var(--lab-accent);
+  font-weight: 630;
+  text-underline-offset: .25em;
+}
+
+.lab-resource-list li { margin-block: 16px; }
+.lab-resource-list li > span { display: block; font-size: .875rem; color: var(--vp-c-text-2); }
+.lab-resource-list li > p { margin: 4px 0; }
+
+@media (max-width: 880px) {
+  .lab-wrap { width: calc(100% - 44px); }
+  .lab-hero-inner { gap: 28px; }
+  .lab-products { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 620px) {
+  .lab-wrap { width: calc(100% - 36px); }
+  .lab-hero-inner { grid-template-columns: 1fr; gap: 26px; padding-block: 32px 26px; }
+  .lab-hero-copy h1 { font-size: clamp(2.45rem, 10.5vw, 3.2rem); }
+  .lab-products { padding-block: 18px 36px; }
+  .lab-card { padding: 12px 10px 9px; }
+}
