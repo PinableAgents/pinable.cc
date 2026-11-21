@@ -4,7 +4,7 @@ import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import FunctionCarousel from './components/FunctionCarousel.vue'
 import FeaturesSection from './components/FeaturesSection.vue'
-import HomeExperience from './components/HomeExperience.vue'
+import LabHome from './components/LabHome.vue'
 import HeroDownloads from './components/HeroDownloads.vue'
 import HeroMeta from './components/HeroMeta.vue'
 import SectionRail from './components/SectionRail.vue'
@@ -38,15 +38,14 @@ export default {
 
     return h(DefaultTheme.Layout, null, {
       'doc-after': () => h(AdSlot),
-      'home-hero-actions-after': () => (isLanding() ? h(HeroDownloads) : null),
-      'home-hero-after': () => h(HeroMeta),
-      'layout-bottom': () => h('div', null, [h(SectionRail), h(SiteFooter)]),
+      'home-hero-after': () => (isLanding() ? null : h(HeroMeta)),
+      'layout-bottom': () => h('div', null, [h(SectionRail), h(SiteFooter, { compact: isLanding() })]),
     })
   },
   enhanceApp({ app, router, siteData }) {
     app.component('FunctionCarousel', FunctionCarousel)
     app.component('FeaturesSection', FeaturesSection)
-    app.component('HomeExperience', HomeExperience)
+    app.component('LabHome', LabHome)
     app.component('HeroDownloads', HeroDownloads)
     app.component('SectionShell', SectionShell)
   },

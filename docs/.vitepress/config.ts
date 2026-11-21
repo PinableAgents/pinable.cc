@@ -1,8 +1,8 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
-  title: 'PinableAgents',
-  description: '面向超级个体与 AI Power User 的软件交付工作台，统一管理多 AI Runtime 与可安装能力，让个人研发可控、可复用、可追踪。',
+  title: 'PinableLab',
+  description: 'PinableLab 官方网站，提供个人 AI 工作台、团队协作、游戏研发流程和 AI 学习资源。',
 
   lang: 'zh-CN',
   base: '/',
@@ -23,12 +23,14 @@ export default defineConfig({
 
   themeConfig: {
     logo: '/assets/images/logo.png',
-    siteTitle: 'PinableAgents',
+    siteTitle: 'PinableLab',
 
     nav: [
       { text: '首页', link: '/' },
-      { text: '产品', link: '/about' },
-      { text: '功能', link: '/#capabilities' },
+      { text: '个人工作台', link: '/about' },
+      { text: '团队工作台', link: '/#loop' },
+      { text: '游戏研发', link: '/#game-dev' },
+      { text: 'AI 学习', link: '/aihero' },
       { text: '下载', link: '/downloads' },
     ],
 
@@ -52,8 +54,8 @@ export default defineConfig({
     },
 
     footer: {
-      message: 'Workflows / Orchestration / Execution',
-      copyright: 'Copyright © 2026 PinableAgents · PinableLab',
+      message: '工具与方法，服务真实的研发。',
+      copyright: 'Copyright © 2026 PinableLab',
     },
   },
 

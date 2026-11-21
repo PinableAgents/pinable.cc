@@ -729,12 +729,19 @@
 /* ========================================
    Responsive
    ======================================== */
-@media (max-width: 768px) {
-  .VPNavBarAppearance.VPNavBarAppearance,
-  .VPNavBarMenu.VPNavBarMenu .VPNavBarMenuLink.VPNavBarMenuLink:last-child {
+@media (max-width: 767px) {
+  /* Restore VitePress's hamburger and keep the desktop links/appearance
+     controls out of its viewport; the mobile menu renders both separately. */
+  .VPNavBarMenu.VPNavBarMenu {
     display: none;
   }
 
+  .VPNavBarAppearance.VPNavBarAppearance {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
   .VPHero {
     padding: 72px 20px 56px;
   }

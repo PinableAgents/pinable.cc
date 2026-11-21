@@ -1,9 +1,13 @@
 <script setup>
+defineProps({ compact: Boolean })
+
 const year = new Date().getFullYear()
 
 const links = [
-  { text: '产品', href: '/about' },
-  { text: '功能', href: '/#capabilities' },
+  { text: 'Pinable Desktop', href: '/about' },
+  { text: '团队工作台', href: '/#loop' },
+  { text: '游戏研发', href: '/#game-dev' },
+  { text: 'AIHero', href: '/aihero' },
   { text: '下载', href: '/downloads' },
   { text: '联系我们', href: 'https://github.com/PinableAgents/pinable.cc', rel: 'noreferrer' },
   { text: 'GitHub', href: 'https://github.com/PinableAgents', rel: 'noreferrer' },
@@ -11,20 +15,20 @@ const links = [
 </script>
 
 <template>
-  <footer class="site-footer">
+  <footer class="site-footer" :class="{ 'sf-compact': compact }">
     <div class="sf-inner">
       <div class="sf-top">
         <div class="sf-brand">
           <a href="/" class="sf-logo">
             <img src="/assets/images/logo.png" alt="" width="24" height="24">
-            PinableAgents
+            PinableLab
           </a>
-          <p class="sf-desc">把 AI 研发变成可验证的交付。</p>
+          <p v-if="!compact" class="sf-desc">工具与方法，服务真实的研发。</p>
         </div>
 
         <nav aria-label="页脚导航">
           <ul class="sf-links">
-            <li v-for="link in links" :key="link.text">
+            <li v-for="link in compact ? links.slice(-2) : links" :key="link.text">
               <a :href="link.href" :rel="link.rel">{{ link.text }}</a>
             </li>
           </ul>
@@ -32,7 +36,7 @@ const links = [
       </div>
 
       <div class="sf-bottom">
-        <span class="sf-copy">© {{ year }} PinableAgents · PinableLab</span>
+        <span class="sf-copy">© {{ year }} PinableLab</span>
       </div>
     </div>
   </footer>
@@ -118,6 +122,11 @@ const links = [
   font-size: 0.8125rem;
   color: var(--vp-c-text-3);
 }
+
+.sf-compact .sf-inner { padding-block: 19px; }
+.sf-compact .sf-top { padding-bottom: 0; border-bottom: 0; gap: 12px; }
+.sf-compact .sf-logo { margin-bottom: 0; }
+.sf-compact .sf-bottom { padding-top: 9px; }
 
 /* Responsive */
 @media (max-width: 768px) {
