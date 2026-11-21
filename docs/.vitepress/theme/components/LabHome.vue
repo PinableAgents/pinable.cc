@@ -10,8 +10,7 @@ const pillars = [
   {
     id: 'loop',
     name: 'LoopForge',
-    description: '面向团队的 AI 研发工作台。',
-    status: '暂未开放 · 拟更名 Pinable Loop',
+    description: '面向团队的 AI 研发工作台，暂未开放。',
   },
   {
     id: 'game-dev',
@@ -20,11 +19,9 @@ const pillars = [
     status: '含 Pinable Art · 暂未开放',
   },
   {
-    id: 'learning',
+    id: 'aihero',
     name: 'AIHero',
-    description: '持续整理 AI 学习博客与资源。',
-    href: '/aihero',
-    link: '浏览资源',
+    description: 'AI 学习资源整理，暂未开放。',
   },
 ] as const
 </script>
@@ -50,7 +47,7 @@ const pillars = [
         <h2>{{ pillar.name }}</h2>
         <p>{{ pillar.description }}</p>
         <a v-if="'href' in pillar" :href="pillar.href" :aria-label="pillar.name + '：' + pillar.link">{{ pillar.link }}</a>
-        <span v-else class="lab-status">{{ pillar.status }}</span>
+        <span v-else-if="'status' in pillar" class="lab-status">{{ pillar.status }}</span>
       </article>
     </section>
   </div>
