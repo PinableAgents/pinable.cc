@@ -39,7 +39,7 @@ export default {
     return h(DefaultTheme.Layout, null, {
       'doc-after': () => h(AdSlot),
       'home-hero-after': () => (isLanding() ? null : h(HeroMeta)),
-      'layout-bottom': () => h('div', null, [h(SectionRail), h(SiteFooter)]),
+      'layout-bottom': () => h('div', null, [h(SectionRail), h(SiteFooter, { compact: isLanding() })]),
     })
   },
   enhanceApp({ app, router, siteData }) {

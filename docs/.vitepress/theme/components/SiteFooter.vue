@@ -1,4 +1,6 @@
 <script setup>
+defineProps({ compact: Boolean })
+
 const year = new Date().getFullYear()
 
 const links = [
@@ -13,7 +15,7 @@ const links = [
 </script>
 
 <template>
-  <footer class="site-footer">
+  <footer class="site-footer" :class="{ 'sf-compact': compact }">
     <div class="sf-inner">
       <div class="sf-top">
         <div class="sf-brand">
@@ -21,12 +23,12 @@ const links = [
             <img src="/assets/images/logo.png" alt="" width="24" height="24">
             PinableLab
           </a>
-          <p class="sf-desc">工具与方法，服务真实的研发。</p>
+          <p v-if="!compact" class="sf-desc">工具与方法，服务真实的研发。</p>
         </div>
 
         <nav aria-label="页脚导航">
           <ul class="sf-links">
-            <li v-for="link in links" :key="link.text">
+            <li v-for="link in compact ? links.slice(-2) : links" :key="link.text">
               <a :href="link.href" :rel="link.rel">{{ link.text }}</a>
             </li>
           </ul>
@@ -120,6 +122,11 @@ const links = [
   font-size: 0.8125rem;
   color: var(--vp-c-text-3);
 }
+
+.sf-compact .sf-inner { padding-block: 19px; }
+.sf-compact .sf-top { padding-bottom: 0; border-bottom: 0; gap: 12px; }
+.sf-compact .sf-logo { margin-bottom: 0; }
+.sf-compact .sf-bottom { padding-top: 9px; }
 
 /* Responsive */
 @media (max-width: 768px) {
