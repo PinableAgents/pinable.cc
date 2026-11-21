@@ -1,11 +1,11 @@
 ---
-title: 下载 PinableAgents
-description: 获取 PinableAgents 的 macOS、Windows 与 Linux 版本
+title: 下载 Pinable Desktop
+description: 下载 Pinable Desktop 的 macOS 与 Windows 版本以及 Linux 核心运行包
 layout: home
 
 hero:
   name: "Downloads"
-  text: "选择适合你的 PinableAgents"
+  text: "选择适合你的 Pinable Desktop"
   tagline: "从一个统一的下载入口获取桌面端与核心运行包，版本信息和校验值随发布清单自动更新。"
 ---
 

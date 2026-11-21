@@ -2,8 +2,10 @@
 const year = new Date().getFullYear()
 
 const links = [
-  { text: '产品', href: '/about' },
-  { text: '功能', href: '/#capabilities' },
+  { text: 'Pinable Desktop', href: '/about' },
+  { text: '团队工作台', href: '/#loop' },
+  { text: '游戏研发', href: '/#game-dev' },
+  { text: 'AIHero', href: '/aihero' },
   { text: '下载', href: '/downloads' },
   { text: '联系我们', href: 'https://github.com/PinableAgents/pinable.cc', rel: 'noreferrer' },
   { text: 'GitHub', href: 'https://github.com/PinableAgents', rel: 'noreferrer' },
@@ -17,9 +19,9 @@ const links = [
         <div class="sf-brand">
           <a href="/" class="sf-logo">
             <img src="/assets/images/logo.png" alt="" width="24" height="24">
-            PinableAgents
+            PinableLab
           </a>
-          <p class="sf-desc">把 AI 研发变成可验证的交付。</p>
+          <p class="sf-desc">工具与方法，服务真实的研发。</p>
         </div>
 
         <nav aria-label="页脚导航">
@@ -32,7 +34,7 @@ const links = [
       </div>
 
       <div class="sf-bottom">
-        <span class="sf-copy">© {{ year }} PinableAgents · PinableLab</span>
+        <span class="sf-copy">© {{ year }} PinableLab</span>
       </div>
     </div>
   </footer>

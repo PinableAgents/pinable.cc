@@ -95,7 +95,7 @@ const primaryUrl = computed(() => {
 })
 
 const primaryLabel = computed(() =>
-  primaryTarget.value ? `下载 ${primaryTarget.value.label}` : '下载 PinableAgents',
+  primaryTarget.value ? `下载 ${primaryTarget.value.label}` : '下载 Pinable Desktop',
 )
 
 const primaryHint = computed(() => primaryTarget.value?.hint ?? '')

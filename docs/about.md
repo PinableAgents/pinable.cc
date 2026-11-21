@@ -1,10 +1,10 @@
 ---
-title: 产品
-description: PinableAgents 产品界面与能力预览
+title: Pinable Desktop
+description: Pinable Desktop 个人 AI 工作台的实际界面与能力预览
 layout: home
 
 hero:
-  name: "Product"
+  name: "Pinable Desktop"
   text: "桌面端、执行引擎与个人 AI 工作台"
   tagline: "这是产品当前版本实际具备的能力，每一项都对应一个可用的入口或命令。"
 ---
@@ -148,3 +148,5 @@ hero:
 </section>
 
 </div>
+
+<FeaturesSection />
