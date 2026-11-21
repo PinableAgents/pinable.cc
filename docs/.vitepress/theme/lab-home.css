@@ -151,9 +151,6 @@
   text-underline-offset: .25em;
 }
 
-.lab-resource-list li { margin-block: 16px; }
-.lab-resource-list li > span { display: block; font-size: .875rem; color: var(--vp-c-text-2); }
-.lab-resource-list li > p { margin: 4px 0; }
 
 @media (max-width: 880px) {
   .lab-wrap { width: calc(100% - 44px); }
