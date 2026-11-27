@@ -1,3 +1,11 @@
+# Pinable shared local files
+.codegraph/
+.DS_Store
+Thumbs.db
+[Dd]esktop.ini
+.env.local
+.env.*.local
+
 .chatgame
 .claude/do-tasks
 .code-review
